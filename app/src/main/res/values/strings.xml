@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RadioStreamerAlt</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="setting_icon_menu">Icon only Menu</string>
+    <string name="setting_icon_and_text_menu">Icon and Text Menu</string>
+</resources>
