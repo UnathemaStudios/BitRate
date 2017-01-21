@@ -1,18 +1,13 @@
 package com.example.georg.radiostreameralt;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.widget.Switch;
 
 import java.util.ArrayList;
@@ -23,9 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private RadiosFragment radiosFragment;
-    private RecordingNow recordingNow;
-    private SettingsFragment settingsFragment;
-    private Switch swIcon;
+    private PlayingNowFragment playingNowFragment;
+    private RecordFragment recordFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         //-#_#_#_#_#_#_#_#_#_#_#_#_#_#_#-//
 
         radiosFragment = new RadiosFragment();
-        recordingNow = new RecordingNow();
-        settingsFragment = new SettingsFragment();
+        playingNowFragment = new PlayingNowFragment();
+        recordFragment = new RecordFragment();
         //swIcon = (Switch)findViewById(R.id.swIconOption);
         //swIcon.setChecked(false);
 
@@ -53,16 +47,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager){
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(playingNowFragment, "Playing Now");
         adapter.addFragment(radiosFragment, "Radios");
-        adapter.addFragment(recordingNow, "Recording Now");
-        adapter.addFragment(settingsFragment, "Settings");
+        adapter.addFragment(recordFragment, "Record");
         viewPager.setAdapter(adapter);
     }
 
     private void setupTabIcons(){
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_radio);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_recording_now);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_settings);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_play_circle);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_radio);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_recording_now);
     }
 
 
@@ -108,9 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position){
-            String title;
-            //if(swIcon.isChecked()){ title  = null;}
-            {title = fragmentTitleList.get(position);}
+
             return null;
         }
 
