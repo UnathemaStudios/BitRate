@@ -30,4 +30,5 @@ dependencies {
     compile 'com.vstechlab.easyfonts:easyfonts:1.0.0'
     testCompile 'junit:junit:4.12'
     compile 'com.github.amigold.fundapter:library:1.0'
+    compile 'me.grantland:autofittextview:0.2.+'
 }

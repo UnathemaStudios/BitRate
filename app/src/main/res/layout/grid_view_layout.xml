@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:autofit="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/darkGrey">
+
+        <me.grantland.widget.AutofitTextView
+            android:layout_height="48dp"
+            android:maxLines="1"
+            android:textSize="40sp"
+            android:gravity="center"
+            autofit:minTextSize="10sp"
+            android:id="@+id/tvName"
+            android:layout_below="@+id/ivLogo"
+            android:textColor="@color/textColorPrimary"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:textStyle="normal|bold"
+            android:fontFamily="serif-monospace"
+            android:layout_alignParentStart="true"/>
+
+        <ImageView
+            android:id="@+id/tvLogo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>
