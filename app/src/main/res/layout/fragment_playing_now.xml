@@ -1,13 +1,86 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.example.georg.radiostreameralt.PlayingNowFragment">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.example.georg.radiostreameralt.PlayingNowFragment"
+                android:background="@color/darkGrey">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"/>
 
-</FrameLayout>
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:srcCompat="@drawable/ic_radios_logo_1055"
+        android:layout_marginTop="53dp"
+        android:id="@+id/imageView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:elevation="1dp"/>
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@drawable/ic_play_circle"
+        android:id="@+id/imageButton"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:background="@color/transparent"
+        android:scaleType="fitXY"
+        android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageButton"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:textStyle="normal|bold"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView2"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="75dp"
+        android:layout_marginRight="75dp"
+        android:textAlignment="center"/>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:id="@+id/seekBar"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"/>
+
+    <ImageButton
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        app:srcCompat="@drawable/ic_fiber_manual_record"
+        android:id="@+id/imageButton2"
+        android:scaleType="fitXY"
+        android:background="@color/transparent"
+        android:layout_above="@+id/textView"
+        android:layout_alignEnd="@+id/textView2"/>
+
+    <ImageButton
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        app:srcCompat="@drawable/ic_stop"
+        android:id="@+id/imageButton3"
+        android:scaleType="fitXY"
+        android:background="@color/transparent"
+        android:layout_above="@+id/textView"
+        android:layout_alignStart="@+id/textView2"/>
+</RelativeLayout>

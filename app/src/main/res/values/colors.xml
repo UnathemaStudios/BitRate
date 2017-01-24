@@ -8,4 +8,5 @@
     <color name="navigationBarColor">#000000</color>
     <color name="transparent">#00ffffff</color>
     <color name="darkGrey">#757575</color>
+    <color name="lightPrimaryColor">#c5cae9</color>
 </resources>

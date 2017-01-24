@@ -8,7 +8,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private RadiosFragment radiosFragment;
     private PlayingNowFragment playingNowFragment;
     private RecordFragment recordFragment;
+    private boolean playing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +46,19 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout)findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
+        //-//-//-//- Tabs Ended -//-//-//-//-//
 
+        ImageButton ibPPbutton = (ImageButton)findViewById(R.id.ipPPbutton);
+        ImageView ivImageSmall = (ImageView)findViewById(R.id.ivImagePlayBar);
+        TextView tvDescription = (TextView)findViewById(R.id.tvDescription);
+        playing = false;
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     private void setupViewPager(ViewPager viewPager){
