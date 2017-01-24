@@ -13,47 +13,73 @@
         android:layout_alignParentStart="true"
         android:layout_above="@+id/relativeLayout2"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="@color/darkGrey">
 
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/darkGrey"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
         android:id="@+id/relativeLayout2"
-        android:elevation="4dp"
+        android:elevation="2dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
 
         <ImageButton
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:srcCompat="@drawable/ic_fiber_manual_record"
             android:id="@+id/record_now_button"
-            android:background="@drawable/tv_background_selector"
+            android:background="@color/transparent"
             android:elevation="2dp"
-            android:layout_width="130dp"/>
+            android:layout_width="130dp"
+            android:foregroundGravity="center"/>
 
         <ImageButton
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_av_timer"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_watch_later_black"
             android:id="@+id/schedule_button"
-            android:focusable="true"
-            android:background="@drawable/tv_background_selector"
+            android:background="@color/transparent"
             android:elevation="2dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_width="130dp"/>
 
         <ImageButton
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_folder"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_folder_black"
             android:id="@+id/folder_button"
-            android:background="@drawable/tv_background_selector"
+            android:background="@color/transparent"
             android:elevation="2dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_width="130dp"/>
+            android:layout_width="130dp"
+            />
+
+        <TextView
+            android:id="@+id/tvButton2"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="124dp"
+            android:elevation="1dp"
+            android:layout_height="2.2dp"/>
+
+        <TextView
+            android:id="@+id/tvButton1"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_width="127dp"
+            android:elevation="1dp"
+            android:layout_height="2.2dp"/>
+
+        <TextView
+            android:id="@+id/tvButton3"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="127dp"
+            android:elevation="1dp"
+            android:layout_height="2.2dp"/>
 
     </RelativeLayout>
 

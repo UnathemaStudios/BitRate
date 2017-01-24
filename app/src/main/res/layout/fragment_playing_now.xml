@@ -54,16 +54,6 @@
         android:layout_marginRight="75dp"
         android:textAlignment="center"/>
 
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="22dp"
-        android:id="@+id/seekBar"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"/>
-
     <ImageButton
         android:layout_width="35dp"
         android:layout_height="35dp"

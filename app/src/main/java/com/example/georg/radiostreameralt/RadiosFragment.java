@@ -7,10 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
  */
 public class RadiosFragment extends Fragment {
 
-    private ArrayList<Radio> radiosList;
+    private  ArrayList<Radio> radiosList;
 
     public RadiosFragment() {
         // Required empty public constructor
@@ -75,6 +77,14 @@ public class RadiosFragment extends Fragment {
 
         GridView radiosGrid = (GridView) view.findViewById(R.id.gridView);
         radiosGrid.setAdapter(adapter);
+
+        radiosGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(RadiosFragment.this.getContext(), radiosList.get(position).getName
+                        () +" "  +radiosList.get(position).getUrl(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return view;
     }

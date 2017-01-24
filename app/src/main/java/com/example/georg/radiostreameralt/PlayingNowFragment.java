@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import static com.example.georg.radiostreameralt.R.id.tvDescription;
 
 
 /**
@@ -34,7 +37,8 @@ public class PlayingNowFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_playing_now, container, false);
+        View view = inflater.inflate(R.layout.fragment_playing_now, container, false);
+        return view;
     }
 
 }

@@ -1,38 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:autofit="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:background="@color/darkerGrey"
+                android:gravity="center"
                 android:layout_width="match_parent"
-              android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:elevation="10dp">
 
-    <RelativeLayout
+
+    <me.grantland.widget.AutofitTextView
+        android:id="@+id/tvName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ivLogo"
+        android:fontFamily="serif-monospace"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="40sp"
+        android:textStyle="normal|bold"
+        autofit:minTextSize="10sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:elevation="1dp"/>
+
+    <ImageView
+        android:id="@+id/ivLogo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/darkGrey">
-
-        <me.grantland.widget.AutofitTextView
-            android:layout_height="48dp"
-            android:maxLines="1"
-            android:textSize="40sp"
-            android:gravity="center"
-            autofit:minTextSize="10sp"
-            android:id="@+id/tvName"
-            android:layout_below="@+id/ivLogo"
-            android:textColor="@color/textColorPrimary"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp"
-            android:layout_width="match_parent"
-            android:textAlignment="center"
-            android:textStyle="normal|bold"
-            android:fontFamily="serif-monospace"
-            android:layout_alignParentStart="true"/>
-
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"/>
-    </RelativeLayout>
-
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:elevation="2dp"/>
 </RelativeLayout>
