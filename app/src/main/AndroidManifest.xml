@@ -25,6 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service android:name=".MediaPlayerService"/>
+        <service android:name=".MainNotification"/>
+        <service android:name=".Recorder"/>
     </application>
 
 </manifest>
