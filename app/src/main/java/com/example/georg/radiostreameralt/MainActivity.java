@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
@@ -17,13 +18,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,18 +38,19 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
-	
-	private boolean isPaused = false;	
-	private ViewPager viewPager;
+
+    private ViewPager viewPager;
     private TabLayout tabLayout;
     private RadiosFragment radiosFragment;
     private PlayingNowFragment playingNowFragment;
     private RecordFragment recordFragment;
     private ImageButton ibStop;
-    ImageButton ibPPbutton;
-    ImageView ivImageSmall;
-    TextView tvDescription;
+    private ImageButton ibPPbutton;
+    private ImageView ivImageSmall;
+    private TextView tvDescription;
     private int playing; //0=stopped 1=playing 2=paused
+    private RelativeLayout playerLayout;
+    private boolean backPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
 
+        playerLayout = (RelativeLayout)findViewById(R.id.relativeLayout2);
         tabLayout.setOnTabSelectedListener(
                 new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
 
@@ -77,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
                         int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color
                                 .colorAccent);
                         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+
+                        if (tabLayout.getSelectedTabPosition() == 0){
+                            slideToBottom();
+                        }
+                        else if (tabLayout.getSelectedTabPosition() != 0){
+                            slideToTop();
+                        }
                     }
 
                     @Override
@@ -90,12 +104,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
                         super.onTabReselected(tab);
-                        int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color
-                                .colorAccent);
-                        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+//                        int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color
+//                                .colorAccent);
+//                        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                     }
                 }
         );
+
         //-//-//-//- Tabs Ended -//-//-//-//-//
 
         ibPPbutton = (ImageButton)findViewById(R.id.ibPPbutton);
@@ -113,65 +128,85 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(playing==1){
-					playerLoading();
-					//pause player
-					send("PAUSE_STREAM"); //broadcast PAUSE (for media player)	
-					isPaused = true;
+                    disableButtons();
+                    //pause player
+                    send("PAUSE_STREAM"); //broadcast PAUSE (for media player)
+                    playing = 2;
                 }
                 else if(playing == 0||playing == 2){
-					playerLoading();
-					//start player
-					if (!isPaused) //if media player isn't paused
-					{
-						//start media player service
-						Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-						playIntent.putExtra("urlString", "http://philae.shoutca.st:8307/stream");
-						startService(playIntent);
-		
-					}
-					else //if it is paused
-					{
-						send("RESUME_STREAM"); //broadcast RESUME (for media player)
-						isPaused = false;
-					}
+                    disableButtons();
+                    //start player
+                    if (playing==0) //if media player isn't paused
+                    {
+                        //start media player service
+                        Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+                        playIntent.putExtra("urlString", "http://philae.shoutca.st:8307/stream");
+                        startService(playIntent);
+
+                    }
+                    else //if it is paused
+                    {
+                        send("RESUME_STREAM"); //broadcast RESUME (for media player)
+                        playing = 1;
+                    }
                 }
             }
         });
-		
+
         ibStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(playing == 2||playing == 1){
-					playerLoading();
-					//stop
-					send("STOP_STREAM"); //broadcast STOP (for media player)
-					isPaused = false;
+                    disableButtons();
+                    //stop
+                    send("STOP_STREAM"); //broadcast STOP (for media player)
+                    playing = 0;
                 }
             }
         });
-		//start listening for broadcasts
-		if (serviceReceiver != null)
-		{
-			IntentFilter timeFilter = new IntentFilter("TIME_UPDATE");
-			IntentFilter stopFilter = new IntentFilter("0");
-			IntentFilter loadingFilter = new IntentFilter("1");
-			IntentFilter playingFilter = new IntentFilter("2");
-			IntentFilter pausedFilter = new IntentFilter("3");
-			IntentFilter recordingKeyAdd = new IntentFilter("RECORDING_ADDED");
-			IntentFilter recordingKeyRemove = new IntentFilter("RECORDING_STOPPED");
-			registerReceiver(serviceReceiver, timeFilter);
-			registerReceiver(serviceReceiver, stopFilter);
-			registerReceiver(serviceReceiver, loadingFilter);
-			registerReceiver(serviceReceiver, playingFilter);
-			registerReceiver(serviceReceiver, pausedFilter);
-			registerReceiver(serviceReceiver, recordingKeyAdd);
-			registerReceiver(serviceReceiver, recordingKeyRemove);
-		}
-	
-		if (isMyServiceRunning(MediaPlayerService.class)) //IF mediaplayer service is running
-		{
-			send("REQUEST_STATUS"); //request mediaplayer service status
-		}
+        //start listening for broadcasts
+        if (serviceReceiver != null)
+        {
+            IntentFilter timeFilter = new IntentFilter("TIME_UPDATE");
+            IntentFilter stopFilter = new IntentFilter("0");
+            IntentFilter loadingFilter = new IntentFilter("1");
+            IntentFilter playingFilter = new IntentFilter("2");
+            IntentFilter pausedFilter = new IntentFilter("3");
+            IntentFilter recordingKeyAdd = new IntentFilter("RECORDING_ADDED");
+            IntentFilter recordingKeyRemove = new IntentFilter("RECORDING_STOPPED");
+            IntentFilter getRadioFromList = new IntentFilter("radioToPlay");
+            registerReceiver(serviceReceiver, timeFilter);
+            registerReceiver(serviceReceiver, stopFilter);
+            registerReceiver(serviceReceiver, loadingFilter);
+            registerReceiver(serviceReceiver, playingFilter);
+            registerReceiver(serviceReceiver, pausedFilter);
+            registerReceiver(serviceReceiver, recordingKeyAdd);
+            registerReceiver(serviceReceiver, recordingKeyRemove);
+            registerReceiver(serviceReceiver, getRadioFromList);
+        }
+
+        if (isMyServiceRunning(MediaPlayerService.class)) //IF mediaplayer service is running
+        {
+            send("REQUEST_STATUS"); //request mediaplayer service status
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!backPressed) {
+            Toast.makeText(getApplicationContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
+            backPressed = true;
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    backPressed = false;
+                }
+            }, 2000);
+        }
+        else super.onBackPressed();
+
     }
 
     private void playerStop(){
@@ -198,18 +233,19 @@ public class MainActivity extends AppCompatActivity {
         ibStop.setEnabled(true);
     }
 
-    private void playerLoading(){
+    private void disableButtons(){
         ibPPbutton.setEnabled(false);
         ibStop.setEnabled(false);
-        findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
+//        findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        Toast.makeText(this,"strt", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"start", Toast.LENGTH_SHORT).show();
     }
+
+
 
     private void setupViewPager(ViewPager viewPager){
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -224,60 +260,57 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_radio);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_recording_now);
     }
-	
-	
-	
-	
-	//Broadcast Receiver
-	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-			if (intent.getAction().equals("TIME_UPDATE")) //if TIME_UPDATE is received
-			{
+
+    //Broadcast Receiver
+    private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals("TIME_UPDATE")) //if TIME_UPDATE is received
+            {
 //				double time;
 //				time = intent.getDoubleExtra("time", 0); //set time received to time variable, if its empty put 0
-//				
+//
 //				//change current time text field to XX:XX format
 //				currenttime.setText(String.format(Locale.US,"%02d:%02d",
 //						TimeUnit.MILLISECONDS.toMinutes((long) time),
 //						TimeUnit.MILLISECONDS.toSeconds((long) time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) time))));
-			}
-			else if (intent.getAction().equals("0")) //if 0 (STOPPED) is received
-			{
-				//ui after Stopped
-				playerStop();
-			}
-			else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
-			{
-				//ui after Loading
+            }
+            else if (intent.getAction().equals("0")) //if 0 (STOPPED) is received
+            {
+                //ui after Stopped
+                playerStop();
+            }
+            else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
+            {
+                //ui after Loading
+                findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
 //				isPaused = false;
 //				play.setEnabled(false);
 //				pause.setEnabled(false);
 //				stop.setEnabled(false);
-//				
+//
 //				status.setText(R.string.status_loading);
-			}
-			else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
-			{
-				//ui after Resume
-				playerPlay();
-			}
-			else if (intent.getAction().equals("3")) //if 3 (PAUSED) is received
-			{
-				//ui after Paused
-				isPaused = true;
-				playerPause();
-			}
-			else if (intent.getAction().equals("RECORDING_ADDED"))
-			{
-				//Toast.makeText(getApplicationContext(), String.valueOf(currentkey),Toast.LENGTH_LONG).show();
+            }
+            else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
+            {
+                //ui after Resume
+                playerPlay();
+            }
+            else if (intent.getAction().equals("3")) //if 3 (PAUSED) is received
+            {
+                //ui after Pause
+                playerPause();
+            }
+            else if (intent.getAction().equals("RECORDING_ADDED"))
+            {
+                //Toast.makeText(getApplicationContext(), String.valueOf(currentkey),Toast.LENGTH_LONG).show();
 //				activeRecordingList.add(String.valueOf(intent.getIntExtra("key", -1)));
 //				dataAdapter2.notifyDataSetChanged();
-			}
-			else if (intent.getAction().equals("RECORDING_STOPPED"))
-			{
+            }
+            else if (intent.getAction().equals("RECORDING_STOPPED"))
+            {
 //				int currentkey = intent.getIntExtra("key", -1);
 //				for (int i=0; i < activeRecordingList.size(); i++)
 //				{
@@ -287,33 +320,52 @@ public class MainActivity extends AppCompatActivity {
 //						dataAdapter2.notifyDataSetChanged();
 //					}
 //				}
-				
-			}
-		}
-	};
-	
-	@Override
-	protected void onRestart()
-	{
-		if (isMyServiceRunning(MediaPlayerService.class)) //if media player service is running
-		{
-			send("REQUEST_STATUS"); //request media player status
-		}
-		super.onRestart();
-	}
-	
-	@Override
-	protected void onDestroy()
-	{
-		unregisterReceiver(serviceReceiver); //stop listening for broadcasts
-		super.onDestroy();
-	}
-	
-	@RequiresApi(api = Build.VERSION_CODES.M)
-	private void checkForWritePermissionAndRec()
-	{
-		if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-		{
+
+            }
+            else if (intent.getAction().equals("radioToPlay"))
+            {
+                Toast.makeText(getApplicationContext(),intent.getStringExtra("urlString"),Toast.LENGTH_SHORT).show();
+                final String url = intent.getStringExtra("urlString");
+                send("CLOSE");
+                disableButtons();
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //start media player service
+                        Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+                        playIntent.putExtra("urlString", url);
+                        startService(playIntent);
+                    }
+                }, 500);
+
+            }
+        }
+    };
+
+    @Override
+    protected void onRestart()
+    {
+        if (isMyServiceRunning(MediaPlayerService.class)) //if media player service is running
+        {
+            send("REQUEST_STATUS"); //request media player status
+        }
+        super.onRestart();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        unregisterReceiver(serviceReceiver); //stop listening for broadcasts
+        super.onDestroy();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void checkForWritePermissionAndRec()
+    {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        {
 //			Log.w("Main", "Permission (Write to external storage) already granted");
 //			if (duration.length() != 0)
 //			{
@@ -323,22 +375,22 @@ public class MainActivity extends AppCompatActivity {
 //			{
 //				recorder("RECORD", spinner.getSelectedItem().toString(), -1);
 //			}
-		}
-		else
-		{
-			String permissionRequested[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-			requestPermissions(permissionRequested, 5);
-		}
-	}
-	
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-	{
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == 5)
-		{
-			if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-			{
+        }
+        else
+        {
+            String permissionRequested[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            requestPermissions(permissionRequested, 5);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 5)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
 //				Log.w("Main", "Permission (Write to external storage) just granted");
 //				if (duration.length() != 0)
 //				{
@@ -348,60 +400,68 @@ public class MainActivity extends AppCompatActivity {
 //				{
 //					recorder("RECORD", spinner.getSelectedItem().toString(), -1);
 //				}
-			}
-			else
-			{
-				Log.w("Main", "Permission (Write to external storage) denied");
-			}
-		}
-	}
-	
-	public void recorder(String action, String urlString, long duration)
-	{
-		Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
-		serviceIntent.putExtra("Action", action);
-		serviceIntent.putExtra("urlString", urlString);
-		serviceIntent.putExtra("duration", duration);
-		MainActivity.this.startService(serviceIntent);
-	}
-	public void recorder(String action, int key)
-	{
-		Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
-		serviceIntent.putExtra("Action", action);
-		serviceIntent.putExtra("key", key);
-		MainActivity.this.startService(serviceIntent);
-	}
-	
-	//send function to broadcast an action
-	public void send(String actionToSend)
-	{
-		Intent intent = new Intent();
-		intent.setAction(actionToSend);
-		sendBroadcast(intent);
-	}
-	
-	//function to check if a service is running
-	private boolean isMyServiceRunning(Class<?> serviceClass)
-	{
-		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
-		{
-			if (serviceClass.getName().equals(service.service.getClassName()))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+            }
+            else
+            {
+                Log.w("Main", "Permission (Write to external storage) denied");
+            }
+        }
+    }
+
+    public void recorder(String action, String urlString, long duration)
+    {
+        Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
+        serviceIntent.putExtra("Action", action);
+        serviceIntent.putExtra("urlString", urlString);
+        serviceIntent.putExtra("duration", duration);
+        MainActivity.this.startService(serviceIntent);
+    }
+    public void recorder(String action, int key)
+    {
+        Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
+        serviceIntent.putExtra("Action", action);
+        serviceIntent.putExtra("key", key);
+        MainActivity.this.startService(serviceIntent);
+    }
+
+    //send function to broadcast an action
+    public void send(String actionToSend)
+    {
+        Intent intent = new Intent();
+        intent.setAction(actionToSend);
+        sendBroadcast(intent);
+    }
+
+    //function to check if a service is running
+    private boolean isMyServiceRunning(Class<?> serviceClass)
+    {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceClass.getName().equals(service.service.getClassName()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void slideToBottom(){
+        TranslateAnimation animate = new TranslateAnimation(0,0,0,playerLayout.getHeight());
+        animate.setDuration(250);
+        animate.setFillAfter(true);
+        playerLayout.startAnimation(animate);
+        //playerLayout.setVisibility(View.GONE);
+    }
+
+    public void slideToTop(){
+        //playerLayout.setVisibility(View.VISIBLE);
+        TranslateAnimation animate = new TranslateAnimation(0,0,playerLayout.getHeight(),0);
+        animate.setDuration(250);
+        animate.setFillAfter(true);
+        playerLayout.startAnimation(animate);
+    }
+
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -455,5 +515,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
 

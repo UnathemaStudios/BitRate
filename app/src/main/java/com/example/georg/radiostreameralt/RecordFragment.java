@@ -104,54 +104,49 @@ public class RecordFragment extends Fragment {
                 DrawableCompat.setTint(btRecordNow.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .colorAccent));
-                btRecordNow.setEnabled(false);
                 tvButton1.setBackgroundResource(R.color.colorAccent);
                 DrawableCompat.setTint(btSchedule.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .textColorPrimary));
-                btSchedule.setEnabled(true);
                 tvButton2.setBackgroundResource(R.color.transparent);
                 DrawableCompat.setTint(btFolder.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .textColorPrimary));
-                btFolder.setEnabled(true);
                 tvButton3.setBackgroundResource(R.color.transparent);
                 break;
             case 1:
                 DrawableCompat.setTint(btRecordNow.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .textColorPrimary));
-                btRecordNow.setEnabled(true);
                 tvButton1.setBackgroundResource(R.color.transparent);
                 DrawableCompat.setTint(btSchedule.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .colorAccent));
-                btSchedule.setEnabled(false);
                 tvButton2.setBackgroundResource(R.color.colorAccent);
                 DrawableCompat.setTint(btFolder.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .textColorPrimary));
-                btFolder.setEnabled(true);
                 tvButton3.setBackgroundResource(R.color.transparent);
                 break;
             case 2:
                 DrawableCompat.setTint(btRecordNow.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .textColorPrimary));
-                btRecordNow.setEnabled(true);
                 tvButton1.setBackgroundResource(R.color.transparent);
                 DrawableCompat.setTint(btSchedule.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .textColorPrimary));
-                btSchedule.setEnabled(true);
                 tvButton2.setBackgroundResource(R.color.transparent);
                 DrawableCompat.setTint(btFolder.getDrawable(), ContextCompat.getColor
                         (RecordFragment.this.getContext(), R.color
                                 .colorAccent));
-                btFolder.setEnabled(false);
                 tvButton3.setBackgroundResource(R.color.colorAccent);
                 break;
         }
+
+        tvButton1.setEnabled(button==0);
+        tvButton2.setEnabled(button==1);
+        tvButton3.setEnabled(button==2);
     }
 
 }

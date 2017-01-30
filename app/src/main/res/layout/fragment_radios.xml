@@ -3,6 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context="com.example.georg.radiostreameralt.RadiosFragment"
+                android:animateLayoutChanges="true"
                 android:background="@color/darkGrey">
 
     <!-- TODO: Update blank fragment layout -->

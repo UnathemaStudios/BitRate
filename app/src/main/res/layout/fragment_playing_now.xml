@@ -3,6 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
                 tools:context="com.example.georg.radiostreameralt.PlayingNowFragment"
                 android:background="@color/darkGrey">
 
@@ -12,7 +13,7 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         app:srcCompat="@drawable/ic_radios_logo_1055"
-        android:layout_marginTop="53dp"
+        android:layout_marginTop="50dp"
         android:id="@+id/imageView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"

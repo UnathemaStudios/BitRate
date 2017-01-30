@@ -31,6 +31,7 @@ public class MediaPlayerService extends Service
 			else if (intent.getAction().equals("STOP_STREAM")) {stop();}
 			else if (intent.getAction().equals("CLOSE")) {close();}
 			else if (intent.getAction().equals("REQUEST_STATUS")) {send(Integer.toString(status));}
+//			else if (intent.getAction().equals("SWAP_STREAM")) {swap();}
 		}
 	};
 	
@@ -51,17 +52,21 @@ public class MediaPlayerService extends Service
 			IntentFilter resumeFilter = new IntentFilter("RESUME_STREAM");
 			IntentFilter stopFilter = new IntentFilter("STOP_STREAM");
 			IntentFilter closeFilter = new IntentFilter("CLOSE");
-			IntentFilter reqstatusFilter = new IntentFilter("REQUEST_STATUS");			
+			IntentFilter reqstatusFilter = new IntentFilter("REQUEST_STATUS");
+//			IntentFilter swapStream = new IntentFilter("SWAP_STREAM");
 			registerReceiver(serviceReceiver, playFilter);
 			registerReceiver(serviceReceiver, pauseFilter);
 			registerReceiver(serviceReceiver, resumeFilter);
 			registerReceiver(serviceReceiver, stopFilter);
 			registerReceiver(serviceReceiver, closeFilter);
-			registerReceiver(serviceReceiver, reqstatusFilter);			
+			registerReceiver(serviceReceiver, reqstatusFilter);
+//			registerReceiver(serviceReceiver, swapStream);
 		}
 		
 		return START_STICKY;
 	}
+
+
 
 	//play pause resume stop close functions
 	public void play()

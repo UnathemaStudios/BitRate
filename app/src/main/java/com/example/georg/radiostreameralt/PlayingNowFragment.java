@@ -7,8 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import static com.example.georg.radiostreameralt.R.id.loadingLayout;
 import static com.example.georg.radiostreameralt.R.id.tvDescription;
 
 
@@ -27,12 +30,6 @@ public class PlayingNowFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
-    @Override
-    public View getView() {
-        return super.getView();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,4 +38,9 @@ public class PlayingNowFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
 }
+

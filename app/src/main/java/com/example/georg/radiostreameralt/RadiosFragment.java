@@ -1,16 +1,19 @@
 package com.example.georg.radiostreameralt;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.vstechlab.easyfonts.EasyFonts;
 
+import java.lang.annotation.AnnotationTypeMismatchException;
 import java.util.ArrayList;
 
 
@@ -83,10 +87,29 @@ public class RadiosFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(RadiosFragment.this.getContext(), radiosList.get(position).getName
                         () +" "  +radiosList.get(position).getUrl(), Toast.LENGTH_SHORT).show();
+
+                send("radioToPlay",radiosList.get(position).getUrl(),radiosList.get(position)
+                        .getIcon());
             }
         });
 
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    //send function to broadcast an action
+    public void send(String actionToSend, String url, int imageID)
+    {
+        Intent intent = new Intent();
+        intent.setAction(actionToSend);
+        intent.putExtra("urlString", url);
+        intent.putExtra("imageID", imageID);
+//        sendBroadcast(intent);
+        getActivity().sendBroadcast(intent);
+    }
 }
