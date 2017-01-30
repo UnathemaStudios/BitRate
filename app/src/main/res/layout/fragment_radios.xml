@@ -4,23 +4,25 @@
                 android:layout_height="match_parent"
                 tools:context="com.example.georg.radiostreameralt.RadiosFragment"
                 android:animateLayoutChanges="true"
-                android:background="@color/darkGrey">
+                android:background="@color/darkGrey"
+    >
 
     <!-- TODO: Update blank fragment layout -->
 
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="1"
         android:verticalSpacing="4dp"
-        android:horizontalSpacing="1dp"
+        android:horizontalSpacing="4dp"
         android:stretchMode="columnWidth"
         android:gravity="center"
         android:id="@+id/gridView"
-        android:paddingRight="4dp"
-        android:paddingLeft="4dp"
-        android:paddingBottom="4dp"
+        android:paddingRight="0dp"
+        android:paddingLeft="0dp"
+        android:paddingBottom="0dp"
         android:elevation="4dp"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:numColumns="1"/>
 
 </RelativeLayout>

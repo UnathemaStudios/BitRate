@@ -25,13 +25,13 @@ public class MediaPlayerService extends Service
 	{
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals("PLAY_STREAM")) {play();}
+			if (intent.getAction().equals("PLAY_STREAM")) {play(url);}
 			else if (intent.getAction().equals("PAUSE_STREAM")) {pause();}
 			else if (intent.getAction().equals("RESUME_STREAM")) {resume();}
 			else if (intent.getAction().equals("STOP_STREAM")) {stop();}
 			else if (intent.getAction().equals("CLOSE")) {close();}
 			else if (intent.getAction().equals("REQUEST_STATUS")) {send(Integer.toString(status));}
-//			else if (intent.getAction().equals("SWAP_STREAM")) {swap();}
+			else if (intent.getAction().equals("SWAP_STREAM")) {swap(intent.getStringExtra("urlString"));}
 		}
 	};
 	
@@ -53,23 +53,21 @@ public class MediaPlayerService extends Service
 			IntentFilter stopFilter = new IntentFilter("STOP_STREAM");
 			IntentFilter closeFilter = new IntentFilter("CLOSE");
 			IntentFilter reqstatusFilter = new IntentFilter("REQUEST_STATUS");
-//			IntentFilter swapStream = new IntentFilter("SWAP_STREAM");
+			IntentFilter swapStream = new IntentFilter("SWAP_STREAM");
 			registerReceiver(serviceReceiver, playFilter);
 			registerReceiver(serviceReceiver, pauseFilter);
 			registerReceiver(serviceReceiver, resumeFilter);
 			registerReceiver(serviceReceiver, stopFilter);
 			registerReceiver(serviceReceiver, closeFilter);
 			registerReceiver(serviceReceiver, reqstatusFilter);
-//			registerReceiver(serviceReceiver, swapStream);
+			registerReceiver(serviceReceiver, swapStream);
 		}
 		
 		return START_STICKY;
 	}
 
-
-
-	//play pause resume stop close functions
-	public void play()
+	//play pause resume stop close swap functions
+	public void play(String urlString)
 	{
 		status = 1; //LOADING
 		send(Integer.toString(status)); //broadcast media player status for main and notification
@@ -92,7 +90,7 @@ public class MediaPlayerService extends Service
 //			}
 //		});
 		try {
-			streamPlayer.setDataSource(url);
+			streamPlayer.setDataSource(urlString);
 			streamPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
 			{
 				@Override
@@ -146,7 +144,13 @@ public class MediaPlayerService extends Service
 		stopSelf(); //stop media player service
 	}
 	
-		
+	public void swap(String url)
+	{
+		stop();
+		play(url);
+	}
+	
+	
 	//handler for time update
 	private Runnable UpdateSongTime = new Runnable() {
 		public void run() {

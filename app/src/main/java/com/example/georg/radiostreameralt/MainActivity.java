@@ -325,20 +325,22 @@ public class MainActivity extends AppCompatActivity {
             else if (intent.getAction().equals("radioToPlay"))
             {
                 Toast.makeText(getApplicationContext(),intent.getStringExtra("urlString"),Toast.LENGTH_SHORT).show();
-                final String url = intent.getStringExtra("urlString");
-                send("CLOSE");
-                disableButtons();
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        //start media player service
-                        Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-                        playIntent.putExtra("urlString", url);
-                        startService(playIntent);
-                    }
-                }, 500);
+//                final String url = intent.getStringExtra("urlString");
+//                send("CLOSE");
+//                disableButtons();
+//
+//                final Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //start media player service
+//                        Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+//                        playIntent.putExtra("urlString", url);
+//                        startService(playIntent);
+//                    }
+//                }, 500);
+				
+				sendSwapUrl(intent.getStringExtra("urlString"));
 
             }
         }
@@ -431,6 +433,15 @@ public class MainActivity extends AppCompatActivity {
         intent.setAction(actionToSend);
         sendBroadcast(intent);
     }
+	
+	//send function to broadcast an action
+	public void sendSwapUrl(String url)
+	{
+		Intent intent = new Intent();
+		intent.setAction("SWAP_STREAM");
+		intent.putExtra("urlString", url);
+		sendBroadcast(intent);
+	}
 
     //function to check if a service is running
     private boolean isMyServiceRunning(Class<?> serviceClass)
