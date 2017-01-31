@@ -31,7 +31,7 @@ public class MediaPlayerService extends Service
 			else if (intent.getAction().equals("STOP_STREAM")) {stop();}
 			else if (intent.getAction().equals("CLOSE")) {close();}
 			else if (intent.getAction().equals("REQUEST_STATUS")) {send(Integer.toString(status));}
-			else if (intent.getAction().equals("SWAP_STREAM")) {swap(intent.getStringExtra("urlString"));}
+//			else if (intent.getAction().equals("SWAP_STREAM")) {swap(intent.getStringExtra("urlString"));}
 		}
 	};
 	
@@ -53,19 +53,19 @@ public class MediaPlayerService extends Service
 			IntentFilter stopFilter = new IntentFilter("STOP_STREAM");
 			IntentFilter closeFilter = new IntentFilter("CLOSE");
 			IntentFilter reqstatusFilter = new IntentFilter("REQUEST_STATUS");
-			IntentFilter swapStream = new IntentFilter("SWAP_STREAM");
+//			IntentFilter swapStream = new IntentFilter("SWAP_STREAM");
 			registerReceiver(serviceReceiver, playFilter);
 			registerReceiver(serviceReceiver, pauseFilter);
 			registerReceiver(serviceReceiver, resumeFilter);
 			registerReceiver(serviceReceiver, stopFilter);
 			registerReceiver(serviceReceiver, closeFilter);
 			registerReceiver(serviceReceiver, reqstatusFilter);
-			registerReceiver(serviceReceiver, swapStream);
+//			registerReceiver(serviceReceiver, swapStream);
 		}
 		
 		return START_STICKY;
 	}
-
+	
 	//play pause resume stop close swap functions
 	public void play(String urlString)
 	{
@@ -121,7 +121,7 @@ public class MediaPlayerService extends Service
 		status = 2; //PLAYING
 		send(Integer.toString(status)); //broadcast media player status for main and notification
 	}
-		
+	
 	public void stop()
 	{
 		myHandler.removeCallbacks(UpdateSongTime); // stop time updater
@@ -132,7 +132,7 @@ public class MediaPlayerService extends Service
 		send(Integer.toString(status)); //broadcast media player status for main and notification
 		
 	}
-
+	
 	public void close()
 	{
 		if (status != 0)
@@ -144,12 +144,11 @@ public class MediaPlayerService extends Service
 		stopSelf(); //stop media player service
 	}
 	
-	public void swap(String url)
-	{
-		stop();
-		play(url);
-	}
-	
+//	public void swap(String url)
+//	{
+//		stop();
+//		play(url);
+//	}
 	
 	//handler for time update
 	private Runnable UpdateSongTime = new Runnable() {

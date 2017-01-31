@@ -18,11 +18,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
@@ -34,8 +31,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,16 +46,16 @@ public class MainActivity extends AppCompatActivity {
     private int playing; //0=stopped 1=playing 2=paused
     private RelativeLayout playerLayout;
     private boolean backPressed = false;
-
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
-
+		
         //-#_#_#_#_#_#_#_#_#_#_#_#_#_#_#-//
-
+		
         radiosFragment = new RadiosFragment();
         playingNowFragment = new PlayingNowFragment();
         recordFragment = new RecordFragment();
@@ -73,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout)findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
-
-        playerLayout = (RelativeLayout)findViewById(R.id.relativeLayout2);
+	
+		playerLayout = (RelativeLayout)findViewById(R.id.relativeLayout2);
         tabLayout.setOnTabSelectedListener(
                 new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
 
@@ -88,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
                         if (tabLayout.getSelectedTabPosition() == 0){
                             slideToBottom();
                         }
-                        else if (tabLayout.getSelectedTabPosition() != 0){
-                            slideToTop();
-                        }
                     }
 
                     @Override
@@ -99,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
                         int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color
                                 .textColorPrimary);
                         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+						if (tabLayout.getSelectedTabPosition() == 0){
+							slideToTop();
+						}
                     }
 
                     @Override
@@ -189,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         {
             send("REQUEST_STATUS"); //request mediaplayer service status
         }
-    }
+	}
 
     @Override
     public void onBackPressed() {
@@ -243,9 +238,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Toast.makeText(this,"start", Toast.LENGTH_SHORT).show();
-    }
-
-
+	}
 
     private void setupViewPager(ViewPager viewPager){
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -322,30 +315,42 @@ public class MainActivity extends AppCompatActivity {
 //				}
 
             }
-            else if (intent.getAction().equals("radioToPlay"))
-            {
-                Toast.makeText(getApplicationContext(),intent.getStringExtra("urlString"),Toast.LENGTH_SHORT).show();
-//                final String url = intent.getStringExtra("urlString");
-//                send("CLOSE");
-//                disableButtons();
-//
-//                final Handler handler = new Handler();
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        //start media player service
-//                        Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-//                        playIntent.putExtra("urlString", url);
-//                        startService(playIntent);
-//                    }
-//                }, 500);
+			else if (intent.getAction().equals("radioToPlay"))
+			{
+				Toast.makeText(getApplicationContext(), intent.getStringExtra("urlString"), Toast.LENGTH_SHORT).show();
+				final String url = intent.getStringExtra("urlString");
+				disableButtons();
+				send("CLOSE");
 				
-				sendSwapUrl(intent.getStringExtra("urlString"));
-
+				new Handler().postDelayed(new Runnable(){
+					@Override
+					public void run()
+					{
+						new Thread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								int i = 0;
+								while (isMyServiceRunning(MediaPlayerService.class))
+								{
+									Log.w("Waiting Service to Stop", Integer.toString(i));
+									i++;
+								}
+								//start media player service
+								Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+								playIntent.putExtra("urlString", url);
+								startService(playIntent);
+							}
+						}).start();
+					}
+				},50);
+				
+//				sendSwapUrl(intent.getStringExtra("urlString"));
             }
         }
     };
-
+	
     @Override
     protected void onRestart()
     {
@@ -526,4 +531,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
