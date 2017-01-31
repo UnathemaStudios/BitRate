@@ -29,78 +29,88 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:animateLayoutChanges="true"
-        android:id="@+id/relativeLayout2"
-        android:background="@color/colorPrimaryDark"
-        android:layout_height="50dp">
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:scaleType="fitXY"
-            android:id="@+id/ivImagePlayBar"/>
-
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/ibPPbutton"
-            android:background="@color/transparent"
-            android:elevation="4dp"
-            android:scaleType="fitXY"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/ivImagePlayBar"
-            android:layout_marginStart="10dp"/>
-
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:srcCompat="@drawable/ic_stop"
-            android:id="@+id/ibStop"
-            android:scaleType="fitXY"
-            android:elevation="4dp"
-            android:background="@color/transparent"
-            android:layout_marginStart="11dp"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/ibPPbutton"
-            android:layout_marginEnd="10dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/tvDescription"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/ibStop"/>
-
-        <RelativeLayout
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:gravity="center"
-            android:animateLayoutChanges="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/loadingLayout">
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:id="@+id/progressBar"/>
-        </RelativeLayout>
-    </RelativeLayout>
-
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/relativeLayout2"
+        android:layout_above="@+id/relativeLayoutClone"
         android:animateLayoutChanges="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_below="@+id/appBarLayout"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/darkGrey"
+        android:id="@+id/relativeLayoutClone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:animateLayoutChanges="true"
+            android:id="@+id/relativeLayout2"
+            android:background="@color/colorPrimaryDark"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:scaleType="fitXY"
+                android:id="@+id/ivImagePlayBar"
+                android:layout_marginLeft="10dp"/>
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/ibPPbutton"
+                android:background="@color/transparent"
+                android:elevation="4dp"
+                android:scaleType="fitXY"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/ivImagePlayBar"
+                android:layout_marginStart="10dp"/>
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:srcCompat="@drawable/ic_stop"
+                android:id="@+id/ibStop"
+                android:scaleType="fitXY"
+                android:elevation="4dp"
+                android:background="@color/transparent"
+                android:layout_marginStart="11dp"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/ibPPbutton"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/tvDescription"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/ibStop"/>
+
+            <RelativeLayout
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:animateLayoutChanges="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/loadingLayout">
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:id="@+id/progressBar"/>
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

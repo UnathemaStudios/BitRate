@@ -22,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private int playing; //0=stopped 1=playing 2=paused
     private RelativeLayout playerLayout;
     private boolean backPressed = false;
+    private boolean playerVisible = false;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout)findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
-	
+
 		playerLayout = (RelativeLayout)findViewById(R.id.relativeLayout2);
         tabLayout.setOnTabSelectedListener(
                 new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
@@ -80,8 +82,13 @@ public class MainActivity extends AppCompatActivity {
                                 .colorAccent);
                         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
 
-                        if (tabLayout.getSelectedTabPosition() == 0){
+                        if (tabLayout.getSelectedTabPosition() == 0 && playerVisible){
                             slideToBottom();
+                            playerVisible = false;
+                        }
+                        else if(tabLayout.getSelectedTabPosition() != 0 && !playerVisible){
+                            slideToTop();
+                            playerVisible = true;
                         }
                     }
 
@@ -91,9 +98,6 @@ public class MainActivity extends AppCompatActivity {
                         int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color
                                 .textColorPrimary);
                         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-						if (tabLayout.getSelectedTabPosition() == 0){
-							slideToTop();
-						}
                     }
 
                     @Override
@@ -113,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         tvDescription = (TextView)findViewById(R.id.tvDescription);
         ibStop = (ImageButton)findViewById(R.id.ibStop);
         findViewById(R.id.loadingLayout).setVisibility(View.GONE);
+        slideToBottom();
         playing = 0;
         if(playing == 0||playing == 2) {
             ibPPbutton.setBackgroundResource(R.drawable.ic_play);
@@ -133,10 +138,12 @@ public class MainActivity extends AppCompatActivity {
                     //start player
                     if (playing==0) //if media player isn't paused
                     {
-                        //start media player service
-                        Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-                        playIntent.putExtra("urlString", "http://philae.shoutca.st:8307/stream");
-                        startService(playIntent);
+                        if(!isMyServiceRunning(MediaPlayerService.class)) {
+                            //start media player service
+                            Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
+                            playIntent.putExtra("urlString", "http://philae.shoutca.st:8307/stream");
+                            startService(playIntent);
+                        }
 
                     }
                     else //if it is paused
@@ -347,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
 				},50);
 				
 //				sendSwapUrl(intent.getStringExtra("urlString"));
+                ivImageSmall.setBackgroundResource(intent.getIntExtra("imageID",R.color.transparent));
             }
         }
     };
