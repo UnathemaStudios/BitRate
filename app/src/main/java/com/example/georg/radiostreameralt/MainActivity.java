@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private RadiosFragment radiosFragment;
     private PlayingNowFragment playingNowFragment;
     private RecordFragment recordFragment;
-    private ImageButton ibStop;
     private ImageButton ibPPbutton;
     private ImageView ivImageSmall;
     private TextView tvDescription;
@@ -110,28 +109,28 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        pageSelector(1);
+
         //-//-//-//- Tabs Ended -//-//-//-//-//
 
         ibPPbutton = (ImageButton)findViewById(R.id.ibPPbutton);
         ivImageSmall = (ImageView)findViewById(R.id.ivImagePlayBar);
         tvDescription = (TextView)findViewById(R.id.tvDescription);
-        ibStop = (ImageButton)findViewById(R.id.ibStop);
         findViewById(R.id.loadingLayout).setVisibility(View.GONE);
-        slideToBottom();
         playing = 0;
         if(playing == 0||playing == 2) {
             ibPPbutton.setBackgroundResource(R.drawable.ic_play);
         }
-        else  ibPPbutton.setBackgroundResource(R.drawable.ic_pause_circle_filled);
+        else  ibPPbutton.setBackgroundResource(R.drawable.ic_stop);
 
         ibPPbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(playing==1){
                     disableButtons();
-                    //pause player
-                    send("PAUSE_STREAM"); //broadcast PAUSE (for media player)
-                    playing = 2;
+                    //STOP player
+                    send("STOP_STREAM"); //broadcast STOP (for media player)
+                    playing = 0;
                 }
                 else if(playing == 0||playing == 2){
                     disableButtons();
@@ -144,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
                             playIntent.putExtra("urlString", "http://philae.shoutca.st:8307/stream");
                             startService(playIntent);
                         }
+                        else{
+                            send("RESUME_STREAM");
+                            playing = 1;
+                        }
 
                     }
                     else //if it is paused
@@ -151,18 +154,6 @@ public class MainActivity extends AppCompatActivity {
                         send("RESUME_STREAM"); //broadcast RESUME (for media player)
                         playing = 1;
                     }
-                }
-            }
-        });
-
-        ibStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(playing == 2||playing == 1){
-                    disableButtons();
-                    //stop
-                    send("STOP_STREAM"); //broadcast STOP (for media player)
-                    playing = 0;
                 }
             }
         });
@@ -213,18 +204,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void playerStop(){
         ibPPbutton.setBackgroundResource(R.drawable.ic_play);
-        ibStop.setEnabled(false);
         ibPPbutton.setEnabled(true);
         playing = 0;
     }
 
     private void playerPlay(){
-        ibPPbutton.setBackgroundResource(R.drawable.ic_pause_circle_filled);
-        ibStop.setEnabled(true);
+        ibPPbutton.setBackgroundResource(R.drawable.ic_stop);
         ibPPbutton.setEnabled(true);
         findViewById(R.id.loadingLayout).setVisibility(View.GONE);
-        //ivImageSmall.setBackgroundResource();
-        //tvDescription.setText(radiofwna.get(position pou esteiles).getName);
         playing = 1;
     }
 
@@ -232,12 +219,10 @@ public class MainActivity extends AppCompatActivity {
         ibPPbutton.setBackgroundResource(R.drawable.ic_play);
         playing = 2;
         ibPPbutton.setEnabled(true);
-        ibStop.setEnabled(true);
     }
 
     private void disableButtons(){
         ibPPbutton.setEnabled(false);
-        ibStop.setEnabled(false);
 //        findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
     }
 
@@ -355,6 +340,7 @@ public class MainActivity extends AppCompatActivity {
 				
 //				sendSwapUrl(intent.getStringExtra("urlString"));
                 ivImageSmall.setBackgroundResource(intent.getIntExtra("imageID",R.color.transparent));
+                tvDescription.setText(intent.getStringExtra("radioName"));
             }
         }
     };
@@ -484,6 +470,11 @@ public class MainActivity extends AppCompatActivity {
         animate.setDuration(250);
         animate.setFillAfter(true);
         playerLayout.startAnimation(animate);
+    }
+
+    private void pageSelector(int pagePosition){
+        tabLayout.setScrollPosition(pagePosition,0f,true);
+        viewPager.setCurrentItem(pagePosition);
     }
 
     /*@Override

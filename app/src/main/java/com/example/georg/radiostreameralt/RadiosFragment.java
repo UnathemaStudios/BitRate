@@ -89,7 +89,7 @@ public class RadiosFragment extends Fragment {
                         () +" "  +radiosList.get(position).getUrl(), Toast.LENGTH_SHORT).show();
 
                 send("radioToPlay",radiosList.get(position).getUrl(),radiosList.get(position)
-                        .getIcon());
+                        .getIcon(), radiosList.get(position).getName());
             }
         });
 
@@ -103,12 +103,13 @@ public class RadiosFragment extends Fragment {
     }
 
     //send function to broadcast an action
-    public void send(String actionToSend, String url, int imageID)
+    public void send(String actionToSend, String url, int imageID, String radioName)
     {
         Intent intent = new Intent();
         intent.setAction(actionToSend);
         intent.putExtra("urlString", url);
         intent.putExtra("imageID", imageID);
+        intent.putExtra("radioName", radioName);
 //        sendBroadcast(intent);
         getActivity().sendBroadcast(intent);
     }
