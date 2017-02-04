@@ -1,6 +1,7 @@
 package com.example.georg.radiostreameralt;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,13 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.vstechlab.easyfonts.EasyFonts;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.annotation.AnnotationTypeMismatchException;
 import java.util.ArrayList;
 
@@ -33,6 +41,9 @@ import java.util.ArrayList;
 public class RadiosFragment extends Fragment {
 
     private  ArrayList<Radio> radiosList;
+    private File radiosFile;
+    private FileOutputStream fileOutputStream;
+    private FileInputStream fileInputStream;
 
     public RadiosFragment() {
         // Required empty public constructor
@@ -49,6 +60,26 @@ public class RadiosFragment extends Fragment {
                 .drawable.ic_radio_infinitygreece));
         radiosList.add(new Radio("Radio Nowhere", "http://philae.shoutca.st:8307/stream", R
                 .drawable.ic_radio_nowhere));
+        radiosFile = new File(getContext().getFilesDir(), "RadiosList.txt");
+
+        if (!radiosFile.exists())
+            try {
+                radiosFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        // Adds a line to the trace file
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(radiosFile));
+            for(int i=0;i<radiosList.size();i++){
+                writer.write(radiosList.get(i).getName() + " ");
+                writer.write(radiosList.get(i).getUrl() + " ");
+                writer.write(radiosList.get(i).getIcon());
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

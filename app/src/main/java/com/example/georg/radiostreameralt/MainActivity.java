@@ -30,6 +30,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +54,10 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout playerLayout;
     private boolean backPressed = false;
     private boolean playerVisible = false;
-	
+    private File radiosFile;
+	private BufferedReader bufferedReader;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,7 +192,22 @@ public class MainActivity extends AppCompatActivity {
         {
             send("REQUEST_STATUS"); //request mediaplayer service status
         }
-	}
+        //--/---/--/--/-/-/-/-/-/--/--/--/-Files Testing//-//-//-/-/-/-/-////-/-/-/
+
+        radiosFile = new File(getApplicationContext().getFilesDir(), "RadiosList.txt");
+        try {
+            bufferedReader = new BufferedReader(new FileReader(radiosFile));
+            String str;
+            while((str=bufferedReader.readLine())!=null){
+                System.out.println(str);
+            }
+            bufferedReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onBackPressed() {
