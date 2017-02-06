@@ -556,9 +556,10 @@ public class MainActivity extends AppCompatActivity {
 
 //TODO LIST
 //
-//TODO: Recorder service stop by duration
+//TODO: Recording correct stop by duration
+//TODO: Recording http error arenafm kitkat
 //TODO: Correct RecordingNow fragment onView
-//TODO: FolderRecordings
+//TODO: FolderRecordings + play with external player
 //TODO: RecordingNow Controls + Volume
 //TODO: Logging file
 //TODO: Warnings (implementation by api version)
