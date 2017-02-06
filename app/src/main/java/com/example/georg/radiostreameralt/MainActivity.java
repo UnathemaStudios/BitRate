@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvDescription;
     private int playing; //0=stopped 1=playing 2=paused
     private RelativeLayout playerLayout;
+    private String currentUrl;
+    private String currentRadioName;
+    private int durationtmp;
     private boolean backPressed = false;
     private boolean playerVisible = false;
     private File radiosFile;
@@ -152,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
                             Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
                             playIntent.putExtra("urlString", "http://philae.shoutca.st:8307/stream");
                             startService(playIntent);
+                            currentUrl = "http://philae.shoutca.st:8307/stream";
+                            currentRadioName = "InfinityGreece";
                         }
                         else{
                             send("RESUME_STREAM");
@@ -170,22 +175,15 @@ public class MainActivity extends AppCompatActivity {
         //start listening for broadcasts
         if (serviceReceiver != null)
         {
-            IntentFilter timeFilter = new IntentFilter("TIME_UPDATE");
-            IntentFilter stopFilter = new IntentFilter("0");
-            IntentFilter loadingFilter = new IntentFilter("1");
-            IntentFilter playingFilter = new IntentFilter("2");
-            IntentFilter pausedFilter = new IntentFilter("3");
-            IntentFilter recordingKeyAdd = new IntentFilter("RECORDING_ADDED");
-            IntentFilter recordingKeyRemove = new IntentFilter("RECORDING_STOPPED");
-            IntentFilter getRadioFromList = new IntentFilter("radioToPlay");
-            registerReceiver(serviceReceiver, timeFilter);
-            registerReceiver(serviceReceiver, stopFilter);
-            registerReceiver(serviceReceiver, loadingFilter);
-            registerReceiver(serviceReceiver, playingFilter);
-            registerReceiver(serviceReceiver, pausedFilter);
-            registerReceiver(serviceReceiver, recordingKeyAdd);
-            registerReceiver(serviceReceiver, recordingKeyRemove);
-            registerReceiver(serviceReceiver, getRadioFromList);
+            registerReceiver(serviceReceiver, new IntentFilter("TIME_UPDATE"));
+            registerReceiver(serviceReceiver, new IntentFilter("0"));
+            registerReceiver(serviceReceiver, new IntentFilter("1"));
+            registerReceiver(serviceReceiver, new IntentFilter("2"));
+            registerReceiver(serviceReceiver, new IntentFilter("3"));
+            registerReceiver(serviceReceiver, new IntentFilter("RECORDING_ADDED"));
+            registerReceiver(serviceReceiver, new IntentFilter("RECORDING_STOPPED"));
+            registerReceiver(serviceReceiver, new IntentFilter("radioToPlay"));
+            registerReceiver(serviceReceiver, new IntentFilter("REC_CURRENT"));
         }
 
         if (isMyServiceRunning(MediaPlayerService.class)) //IF mediaplayer service is running
@@ -202,8 +200,6 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(str);
             }
             bufferedReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -335,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
 			else if (intent.getAction().equals("radioToPlay"))
 			{
 				Toast.makeText(getApplicationContext(), intent.getStringExtra("urlString"), Toast.LENGTH_SHORT).show();
-				final String url = intent.getStringExtra("urlString");
+				currentUrl = intent.getStringExtra("urlString");
 				disableButtons();
 				send("CLOSE");
 				
@@ -356,16 +352,26 @@ public class MainActivity extends AppCompatActivity {
 								}
 								//start media player service
 								Intent playIntent = new Intent(MainActivity.this, MediaPlayerService.class);
-								playIntent.putExtra("urlString", url);
+								playIntent.putExtra("urlString", currentUrl);
 								startService(playIntent);
 							}
 						}).start();
 					}
 				},50);
-				
-//				sendSwapUrl(intent.getStringExtra("urlString"));
+                currentRadioName = intent.getStringExtra("radioName");
                 ivImageSmall.setBackgroundResource(intent.getIntExtra("imageID",R.color.transparent));
-                tvDescription.setText(intent.getStringExtra("radioName"));
+                tvDescription.setText(currentRadioName);
+            }
+            else if(intent.getAction().equals("REC_CURRENT")){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                {
+                    //check for permission first and then rec
+                    checkForWritePermissionAndRec(0);
+                }
+                else
+                {
+                  rec(currentUrl, 0);
+                }
             }
         }
     };
@@ -388,22 +394,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkForWritePermissionAndRec()
+    private void checkForWritePermissionAndRec(int duration)
     {
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
         {
-//			Log.w("Main", "Permission (Write to external storage) already granted");
-//			if (duration.length() != 0)
-//			{
-//				recorder("RECORD", spinner.getSelectedItem().toString(), Long.parseLong(duration.getText().toString()));
-//			}
-//			else
-//			{
-//				recorder("RECORD", spinner.getSelectedItem().toString(), -1);
-//			}
+			Log.w("Main", "Permission (Write to external storage) already granted");
+            Log.w("fghj",currentUrl);
+            rec(currentUrl, duration);
         }
         else
         {
+            durationtmp = duration;
             String permissionRequested[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
             requestPermissions(permissionRequested, 5);
         }
@@ -417,15 +418,8 @@ public class MainActivity extends AppCompatActivity {
         {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
-//				Log.w("Main", "Permission (Write to external storage) just granted");
-//				if (duration.length() != 0)
-//				{
-//					recorder("RECORD", spinner.getSelectedItem().toString(), Long.parseLong(duration.getText().toString()));
-//				}
-//				else
-//				{
-//					recorder("RECORD", spinner.getSelectedItem().toString(), -1);
-//				}
+				Log.w("Main", "Permission (Write to external storage) just granted");
+				rec(currentUrl,durationtmp);
             }
             else
             {
@@ -436,11 +430,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void recorder(String action, String urlString, long duration)
     {
-        Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
-        serviceIntent.putExtra("Action", action);
-        serviceIntent.putExtra("urlString", urlString);
-        serviceIntent.putExtra("duration", duration);
-        MainActivity.this.startService(serviceIntent);
+            Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
+            serviceIntent.putExtra("Action", action);
+            serviceIntent.putExtra("urlString", urlString);
+            serviceIntent.putExtra("duration", duration);
+            serviceIntent.putExtra("name", currentRadioName);
+            MainActivity.this.startService(serviceIntent);
     }
     public void recorder(String action, int key)
     {
@@ -448,6 +443,18 @@ public class MainActivity extends AppCompatActivity {
         serviceIntent.putExtra("Action", action);
         serviceIntent.putExtra("key", key);
         MainActivity.this.startService(serviceIntent);
+    }
+    public void rec(String url, int duration){
+
+        if (duration != 0)
+        {
+            recorder("RECORD", url, duration);
+        }
+        else
+        {
+            Log.w("sdfg",url);
+            recorder("RECORD", url, -1);
+        }
     }
 
     //send function to broadcast an action
@@ -457,15 +464,6 @@ public class MainActivity extends AppCompatActivity {
         intent.setAction(actionToSend);
         sendBroadcast(intent);
     }
-	
-	//send function to broadcast an action
-	public void sendSwapUrl(String url)
-	{
-		Intent intent = new Intent();
-		intent.setAction("SWAP_STREAM");
-		intent.putExtra("urlString", url);
-		sendBroadcast(intent);
-	}
 
     //function to check if a service is running
     private boolean isMyServiceRunning(Class<?> serviceClass)

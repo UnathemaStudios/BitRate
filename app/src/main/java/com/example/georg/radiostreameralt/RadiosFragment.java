@@ -4,6 +4,7 @@ package com.example.georg.radiostreameralt;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.vstechlab.easyfonts.EasyFonts;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +44,7 @@ public class RadiosFragment extends Fragment {
 
     private  ArrayList<Radio> radiosList;
     private File radiosFile;
+    private File radiosFileEXT;
     private FileOutputStream fileOutputStream;
     private FileInputStream fileInputStream;
 
@@ -60,23 +63,40 @@ public class RadiosFragment extends Fragment {
                 .drawable.ic_radio_infinitygreece));
         radiosList.add(new Radio("Radio Nowhere", "http://philae.shoutca.st:8307/stream", R
                 .drawable.ic_radio_nowhere));
-        radiosFile = new File(getContext().getFilesDir(), "RadiosList.txt");
 
-        if (!radiosFile.exists())
+        radiosFile = new File(getContext().getFilesDir(), "RadiosList");
+        radiosFileEXT = new File(Environment.getExternalStorageDirectory() + "/Streams",
+                "RadiosListEXT.txt");
+
+        if (!radiosFile.exists()){
             try {
                 radiosFile.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        if(!radiosFileEXT.exists()){
+            try {
+                radiosFileEXT.mkdirs();
+                radiosFileEXT.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         // Adds a line to the trace file
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(radiosFile));
+            BufferedWriter writerEXT = new BufferedWriter(new FileWriter(radiosFileEXT));
             for(int i=0;i<radiosList.size();i++){
                 writer.write(radiosList.get(i).getName() + " ");
+                writerEXT.write(radiosList.get(i).getName() + " ");
                 writer.write(radiosList.get(i).getUrl() + " ");
-                writer.write(radiosList.get(i).getIcon());
+                writerEXT.write(radiosList.get(i).getUrl() + " ");
+                writer.write(Integer.toString(radiosList.get(i).getIcon()));
+                writerEXT.write(Integer.toString(radiosList.get(i).getIcon()));
             }
             writer.close();
+            writerEXT.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,6 +156,7 @@ public class RadiosFragment extends Fragment {
     //send function to broadcast an action
     public void send(String actionToSend, String url, int imageID, String radioName)
     {
+
         Intent intent = new Intent();
         intent.setAction(actionToSend);
         intent.putExtra("urlString", url);

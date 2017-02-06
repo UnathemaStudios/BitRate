@@ -1,6 +1,8 @@
 package com.example.georg.radiostreameralt;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
@@ -11,6 +13,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +22,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.georg.radiostreameralt.Recorder.RECORDING;
 import static com.example.georg.radiostreameralt.Recorder.STOPPED;
@@ -27,6 +31,26 @@ public class Recorder extends Service
 {
 	public final static int RECORDING = 1;
 	public final static int STOPPED = 2;
+
+	private NotificationManager notificationManager;
+	private int notifID = 4321;
+	private void showNotification(boolean first)
+	{
+		Notification notification = new Notification.Builder(this)
+				.setOngoing(true)
+				.setSmallIcon(android.R.drawable.ic_menu_mylocation)  // the status icon
+				.setContentTitle("Recording now...   " +activeRecordings)  // the label of
+				// the entry
+				.build();
+		if (first)
+		{
+			startForeground(notifID, notification);
+		}
+		else
+		{
+			notificationManager.notify(notifID, notification);
+		}
+	}
 	
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
@@ -36,6 +60,8 @@ public class Recorder extends Service
 	@Override
 	public void onCreate()
 	{
+		notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		showNotification(true);
 		Log.w("Recorder", "service created");
 	}
 	
@@ -49,12 +75,17 @@ public class Recorder extends Service
 			{
 				String urlString = intent.getStringExtra("urlString");
 				
-				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)));
+				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
+						,intent.getStringExtra("name")));
 				rec.get(key).start();
-				broadcastRecording("RECORDING_ADDED", key); //send main the key for hash address
+//				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the
+				// key for
+				// hash
+				// address
 				Log.w("Recorder", "REC " + key + " START");
 				key++;
 				activeRecordings++;
+				showNotification(false);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				break;
 			}
@@ -67,10 +98,24 @@ public class Recorder extends Service
 				while (rec.get(passedKey).getStatus() != 2);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				rec.remove(passedKey);
+				showNotification(false);
 				if (activeRecordings == 0)
 				{
 					Log.w("Recorder", "service destroyed");
 					stopSelf();
+				}
+				break;
+			}
+			case "STATUS":
+			{
+
+				for (Map.Entry<Integer, Recording> entry : rec.entrySet())
+				{
+					Log.w("Running Recording: ", entry.getKey().toString());
+					broadcastRecording("RECORDING_ADDED", entry.getKey(),entry.getValue().getName());
+					//send main the
+					// key
+					// for hash address
 				}
 				break;
 			}
@@ -102,6 +147,14 @@ public class Recorder extends Service
 	}
 	
 	//function to broadcast hash key of current Recording
+	public void broadcastRecording(String action, int key, String name)
+	{
+		Intent intent = new Intent();
+		intent.setAction(action);
+		intent.putExtra("key", key);
+		intent.putExtra("name", name);
+		sendBroadcast(intent);
+	}
 	public void broadcastRecording(String action, int key)
 	{
 		Intent intent = new Intent();
@@ -109,21 +162,24 @@ public class Recorder extends Service
 		intent.putExtra("key", key);
 		sendBroadcast(intent);
 	}
+
 }
 
 class Recording
 {
+	private String name;
 	private String date;
 	private String urlString;
 	private long duration;
 	private boolean stopped;
 	private int status;
 	
-	Recording(String date, String urlString, long duration)
+	Recording(String date, String urlString, long duration, String name)
 	{
 		this.date = date;
 		this.urlString = urlString;
 		this.duration = duration;
+		this.name = name;
 		stopped=false;
 	}
 	
@@ -184,5 +240,9 @@ class Recording
 	void stop()
 	{
 		stopped = true;
+	}
+
+	public String getName() {
+		return name;
 	}
 }
