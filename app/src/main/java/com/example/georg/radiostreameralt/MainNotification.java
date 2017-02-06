@@ -80,7 +80,7 @@ public class MainNotification extends Service
 		Intent stopIntent = new Intent("STOP_STREAM");
 		PendingIntent stopPendingIntent = PendingIntent.getBroadcast(this, 0, stopIntent, 0);
 		NotificationCompat.Action stopAction = new NotificationCompat.Action(R.drawable.ic_media_stop, "Stop", stopPendingIntent);
-
+		
 		//notification EXIT button
 		Intent closeIntent = new Intent("CLOSE");
 		PendingIntent closePendingIntent = PendingIntent.getBroadcast(this, 0, closeIntent, 0);

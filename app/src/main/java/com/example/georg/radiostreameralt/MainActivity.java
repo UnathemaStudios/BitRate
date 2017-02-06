@@ -553,3 +553,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+//TODO LIST
+//
+//TODO: Recorder service stop by duration
+//TODO: Correct RecordingNow fragment onView
+//TODO: FolderRecordings
+//TODO: RecordingNow Controls + Volume
+//TODO: Logging file
+//TODO: Warnings (implementation by api version)
+//TODO: 
+//TODO: Alarm (Schedule)
+//TODO: Chat
+//

@@ -16,7 +16,7 @@ import java.io.IOException;
 public class MediaPlayerService extends Service
 {
 	private Handler myHandler = new Handler(); //handler for time update
-	String url;
+	private String url;
 	private MediaPlayer streamPlayer;
 	private int status = 0; //0 STOPPED, 1 LOADING, 2 PLAYING, 3 PAUSED
 	
