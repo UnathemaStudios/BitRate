@@ -556,14 +556,22 @@ public class MainActivity extends AppCompatActivity {
 
 //TODO LIST
 //
-//TODO: Recording correct stop by duration
-//TODO: Recording http error arenafm kitkat
-//TODO: Correct RecordingNow fragment onView
+//TODO: RecordingNow fragment onView FIX
+//TODO: Icon shape/size + 2 column grid view??
+//TODO: Notification icons/buttons??
+//TODO: Player color??
+//TODO: FAB?? add/move custom radio??
+//TODO: Recording stop by duration FIX + while(true) + broadcast current recording time/size?
+//TODO: Recording http error arenafm kitkat FIX
 //TODO: FolderRecordings + play with external player
-//TODO: RecordingNow Controls + Volume
-//TODO: Logging file
-//TODO: Warnings (implementation by api version)
+//TODO: PlayingNow Controls + Volume + color??
+//TODO: Log file
+//TODO: Warnings (implementation by api version) FIX
 //TODO: 
 //TODO: Alarm (Schedule)
+//TODO: Sleep timer
+//TODO: Testing
+//TODO: PlayStore
+//TODO:
 //TODO: Chat
 //
