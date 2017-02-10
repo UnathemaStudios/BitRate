@@ -31,7 +31,6 @@ public class MediaPlayerService extends Service
 			else if (intent.getAction().equals("STOP_STREAM")) {stop();}
 			else if (intent.getAction().equals("CLOSE")) {close();}
 			else if (intent.getAction().equals("REQUEST_STATUS")) {send(Integer.toString(status));}
-//			else if (intent.getAction().equals("SWAP_STREAM")) {swap(intent.getStringExtra("urlString"));}
 		}
 	};
 	
@@ -47,20 +46,12 @@ public class MediaPlayerService extends Service
 		//start listening for broadcasts
 		if (serviceReceiver != null)
 		{
-			IntentFilter playFilter = new IntentFilter("PLAY_STREAM");
-			IntentFilter pauseFilter = new IntentFilter("PAUSE_STREAM");
-			IntentFilter resumeFilter = new IntentFilter("RESUME_STREAM");
-			IntentFilter stopFilter = new IntentFilter("STOP_STREAM");
-			IntentFilter closeFilter = new IntentFilter("CLOSE");
-			IntentFilter reqstatusFilter = new IntentFilter("REQUEST_STATUS");
-//			IntentFilter swapStream = new IntentFilter("SWAP_STREAM");
-			registerReceiver(serviceReceiver, playFilter);
-			registerReceiver(serviceReceiver, pauseFilter);
-			registerReceiver(serviceReceiver, resumeFilter);
-			registerReceiver(serviceReceiver, stopFilter);
-			registerReceiver(serviceReceiver, closeFilter);
-			registerReceiver(serviceReceiver, reqstatusFilter);
-//			registerReceiver(serviceReceiver, swapStream);
+			registerReceiver(serviceReceiver, new IntentFilter("PLAY_STREAM"));
+			registerReceiver(serviceReceiver, new IntentFilter("PAUSE_STREAM"));
+			registerReceiver(serviceReceiver, new IntentFilter("RESUME_STREAM"));
+			registerReceiver(serviceReceiver, new IntentFilter("STOP_STREAM"));
+			registerReceiver(serviceReceiver, new IntentFilter("CLOSE"));
+			registerReceiver(serviceReceiver, new IntentFilter("REQUEST_STATUS"));
 		}
 		
 		return START_STICKY;
@@ -144,11 +135,6 @@ public class MediaPlayerService extends Service
 		stopSelf(); //stop media player service
 	}
 	
-//	public void swap(String url)
-//	{
-//		stop();
-//		play(url);
-//	}
 	
 	//handler for time update
 	private Runnable UpdateSongTime = new Runnable() {

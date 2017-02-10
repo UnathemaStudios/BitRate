@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,8 +37,8 @@ public class Recorder extends Service
 	{
 		Notification notification = new Notification.Builder(this)
 				.setOngoing(true)
-				.setSmallIcon(android.R.drawable.ic_menu_mylocation)  // the status icon
-				.setContentTitle("Recording now...   " +activeRecordings)  // the label of
+				.setSmallIcon(R.drawable.ic_recording_now)  // the status icon
+				.setContentTitle("Recording now...   " + activeRecordings)  // the label of
 				// the entry
 				.build();
 		if (first)
@@ -56,10 +55,31 @@ public class Recorder extends Service
 	private HashMap<Integer, Recording> rec = new HashMap<>();
 	private static Integer key = 0;
 	public static int activeRecordings = 0;
+//	private android.os.Handler myHandler = new android.os.Handler(); //handler for time update
+//	private Runnable BANANA = new Runnable() {
+//		public void run() {
+//			for (Map.Entry<Integer, Recording> entry : rec.entrySet())
+//			{
+//				Log.w("Running Recording", entry.getKey().toString());
+//			}
+//			myHandler.postDelayed(this, 1000);
+//		}
+//	};
 	
 	@Override
 	public void onCreate()
 	{
+//		new Thread(new Runnable()
+//		{
+//			@Override
+//			public void run()
+//			{
+//				myHandler.postDelayed(BANANA,1000);
+//			}
+//		}).start();
+		
+//		myHandler.postDelayed(BANANA,1000);
+		
 		notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		showNotification(true);
 		Log.w("Recorder", "service created");
@@ -97,7 +117,7 @@ public class Recorder extends Service
 				Log.w("Recorder", "REC " + passedKey + " END");
 				while (rec.get(passedKey).getStatus() != 2);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
-				rec.remove(passedKey);
+				//rec.remove(passedKey);
 				showNotification(false);
 				if (activeRecordings == 0)
 				{
