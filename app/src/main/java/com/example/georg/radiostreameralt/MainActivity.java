@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout playerLayout;
     private String currentUrl;
     private String currentRadioName;
+    private int currentRadioDrawable;
     private int durationtmp;
     private boolean backPressed = false;
     private boolean playerVisible = false;
@@ -184,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
             registerReceiver(serviceReceiver, new IntentFilter("RECORDING_STOPPED"));
             registerReceiver(serviceReceiver, new IntentFilter("radioToPlay"));
             registerReceiver(serviceReceiver, new IntentFilter("REC_CURRENT"));
+            registerReceiver(serviceReceiver, new IntentFilter("PLAYING_NOW_UPDATE"));
         }
 
         if (isMyServiceRunning(MediaPlayerService.class)) //IF mediaplayer service is running
@@ -359,7 +361,8 @@ public class MainActivity extends AppCompatActivity {
 					}
 				},50);
                 currentRadioName = intent.getStringExtra("radioName");
-                ivImageSmall.setBackgroundResource(intent.getIntExtra("imageID",R.color.transparent));
+                currentRadioDrawable = intent.getIntExtra("imageID",R.color.transparent);
+                ivImageSmall.setBackgroundResource(currentRadioDrawable);
                 tvDescription.setText(currentRadioName);
             }
             else if(intent.getAction().equals("REC_CURRENT")){
@@ -372,6 +375,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                   rec(currentUrl, 0);
                 }
+            }
+            else if(intent.getAction().equals("PLAYING_NOW_UPDATE")){
+                send("PLAYING_NOW_STATUS", currentRadioName, currentRadioDrawable);
             }
         }
     };
@@ -399,7 +405,6 @@ public class MainActivity extends AppCompatActivity {
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
         {
 			Log.w("Main", "Permission (Write to external storage) already granted");
-            Log.w("fghj",currentUrl);
             rec(currentUrl, duration);
         }
         else
@@ -452,7 +457,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            Log.w("sdfg",url);
             recorder("RECORD", url, -1);
         }
     }
@@ -462,6 +466,13 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setAction(actionToSend);
+        sendBroadcast(intent);
+    }
+    public void send(String actionToSend, String name, int drawable){
+        Intent intent = new Intent();
+        intent.setAction(actionToSend);
+        intent.putExtra("name", name);
+        intent.putExtra("drawable", drawable);
         sendBroadcast(intent);
     }
 

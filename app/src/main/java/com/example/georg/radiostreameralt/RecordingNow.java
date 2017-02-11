@@ -80,9 +80,7 @@ public class RecordingNow extends Fragment {
         tvrecordingNowRadio = (TextView)getActivity().findViewById(R.id.tvRecordingNow);
         Toast.makeText(getContext(), "onViewCreated", Toast.LENGTH_SHORT).show();
         if (isMyServiceRunning(Recorder.class)) {
-            for(int i=0;i<recordingNowRadios.size();i++){
-                recordingNowRadios.remove(i);
-            }
+            recordingNowRadios.clear();
             send("STATUS");
         }
 
