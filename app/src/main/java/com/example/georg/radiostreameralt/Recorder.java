@@ -56,7 +56,7 @@ public class Recorder extends Service
 
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
-	private static Integer key = 0;
+	private static Integer key;
 	public static int activeRecordings = 0;
 
 
@@ -64,13 +64,17 @@ public class Recorder extends Service
 
 	private Runnable BANANA = new Runnable() {
 		public void run() {
+			Log.w("BANANA", "MINIONS");
 			int j = 0;
 			for (int i=0;i<rec.size();i++)
 			{
+				Log.w("BANANA", "FOR");
 				if (rec.get(i) != null)
 				{
+					Log.w("BANANA", "NULL");
 					if (rec.get(i).getStatus() != STOPPED)
 					{
+						Log.w("BANANA", "!=STOPPED");
 						j++;
 						if (rec.get(i).getDuration() != -1)
 						{
@@ -114,7 +118,7 @@ public class Recorder extends Service
 	public void onCreate()
 	{
 		myHandler.postDelayed(BANANA,1000);
-
+		key = 0;
 		notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		showNotification(true);
 		Log.w("Recorder", "service created");
@@ -130,9 +134,11 @@ public class Recorder extends Service
 			{
 				String urlString = intent.getStringExtra("urlString");
 
+				Log.d("key",Integer.toString(key));
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
 						,intent.getStringExtra("name")));
 				rec.get(key).start();
+				Log.w("recording object", rec.get(key).getName());
 //				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the key for hash address
 				//Log.w("Recorder", "REC " + key + " START");
 				key++;
@@ -154,6 +160,7 @@ public class Recorder extends Service
 				if (activeRecordings == 0)
 				{
 					myHandler.removeCallbacks(BANANA);
+					rec.clear();
 					Log.w("Recorder", "service destroyed");
 					stopSelf();
 				}

@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-
+        viewPager.setOffscreenPageLimit(2);
         pageSelector(1);
 
         //-//-//-//- Tabs Ended -//-//-//-//-//

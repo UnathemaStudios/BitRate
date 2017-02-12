@@ -148,5 +148,4 @@ public class RecordFragment extends Fragment {
         tvButton2.setEnabled(button==1);
         tvButton3.setEnabled(button==2);
     }
-
 }
