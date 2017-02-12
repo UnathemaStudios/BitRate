@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.example.georg.radiostreameralt.Recorder.RECORDING;
 import static com.example.georg.radiostreameralt.Recorder.STOPPED;
@@ -30,6 +29,10 @@ public class Recorder extends Service
 {
 	public final static int RECORDING = 1;
 	public final static int STOPPED = 2;
+	public final static int UNLISTED = 3;
+	public final static int FIRSTRECORDING = 0;
+	public final static int LASTRECOEDING = 1;
+	public final static int FIRSTANDLASTRECORDING = 2;
 
 	private NotificationManager notificationManager;
 	private int notifID = 4321;
@@ -37,7 +40,7 @@ public class Recorder extends Service
 	{
 		Notification notification = new Notification.Builder(this)
 				.setOngoing(true)
-				.setSmallIcon(R.drawable.ic_recording_now)  // the status icon
+				.setSmallIcon(R.drawable.ic_launchersmall)  // the status icon
 				.setContentTitle("Recording now...   " + activeRecordings)  // the label of
 				// the entry
 				.build();
@@ -50,41 +53,73 @@ public class Recorder extends Service
 			notificationManager.notify(notifID, notification);
 		}
 	}
-	
+
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
 	private static Integer key = 0;
 	public static int activeRecordings = 0;
-//	private android.os.Handler myHandler = new android.os.Handler(); //handler for time update
-//	private Runnable BANANA = new Runnable() {
-//		public void run() {
-//			for (Map.Entry<Integer, Recording> entry : rec.entrySet())
-//			{
-//				Log.w("Running Recording", entry.getKey().toString());
-//			}
-//			myHandler.postDelayed(this, 1000);
-//		}
-//	};
-	
+
+
+	private android.os.Handler myHandler = new android.os.Handler();
+
+	private Runnable BANANA = new Runnable() {
+		public void run() {
+			int j = 0;
+			for (int i=0;i<rec.size();i++)
+			{
+				if (rec.get(i) != null)
+				{
+					if (rec.get(i).getStatus() != STOPPED)
+					{
+						j++;
+						if (rec.get(i).getDuration() != -1)
+						{
+							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i)
+									+ " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s/"
+									+ rec.get(i).getDuration() + "s Size:"
+									+ rec.get(i).getCurrentSizeInKB() + "KB");
+						}
+						else
+						{
+							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i)
+									+ " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s Size:"
+									+ rec.get(i).getCurrentSizeInKB() + "KB");
+						}
+						if(activeRecordings==1){
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
+									.getCurrentRecordingTimeInSeconds(), rec.get(i)
+									.getCurrentSizeInKB(), FIRSTANDLASTRECORDING);
+						}
+						else if(j==1){
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
+									.getCurrentRecordingTimeInSeconds(), rec.get(i)
+									.getCurrentSizeInKB(), FIRSTRECORDING);
+						}
+						else if(j==activeRecordings){
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
+									.getCurrentRecordingTimeInSeconds(), rec.get(i)
+									.getCurrentSizeInKB(), LASTRECOEDING);
+						}
+						else broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
+								.getCurrentRecordingTimeInSeconds(), rec.get(i)
+								.getCurrentSizeInKB(), 999);
+					}
+				}
+			}
+			myHandler.postDelayed(this, 1000);
+		}
+	};
+
 	@Override
 	public void onCreate()
 	{
-//		new Thread(new Runnable()
-//		{
-//			@Override
-//			public void run()
-//			{
-//				myHandler.postDelayed(BANANA,1000);
-//			}
-//		}).start();
-		
-//		myHandler.postDelayed(BANANA,1000);
-		
+		myHandler.postDelayed(BANANA,1000);
+
 		notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		showNotification(true);
 		Log.w("Recorder", "service created");
 	}
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
@@ -94,15 +129,12 @@ public class Recorder extends Service
 			case "RECORD":
 			{
 				String urlString = intent.getStringExtra("urlString");
-				
+
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
 						,intent.getStringExtra("name")));
 				rec.get(key).start();
-//				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the
-				// key for
-				// hash
-				// address
-				Log.w("Recorder", "REC " + key + " START");
+//				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the key for hash address
+				//Log.w("Recorder", "REC " + key + " START");
 				key++;
 				activeRecordings++;
 				showNotification(false);
@@ -114,35 +146,23 @@ public class Recorder extends Service
 				int passedKey = intent.getIntExtra("key", -1);
 				rec.get(passedKey).stop();
 				broadcastRecording("RECORDING_STOPPED", passedKey);
-				Log.w("Recorder", "REC " + passedKey + " END");
-				while (rec.get(passedKey).getStatus() != 2);
+				//Log.w("Recorder", "REC " + passedKey + " END");
+				while (rec.get(passedKey).getStatus() != STOPPED);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				//rec.remove(passedKey);
 				showNotification(false);
 				if (activeRecordings == 0)
 				{
+					myHandler.removeCallbacks(BANANA);
 					Log.w("Recorder", "service destroyed");
 					stopSelf();
-				}
-				break;
-			}
-			case "STATUS":
-			{
-
-				for (Map.Entry<Integer, Recording> entry : rec.entrySet())
-				{
-					Log.w("Running Recording: ", entry.getKey().toString());
-					broadcastRecording("RECORDING_ADDED", entry.getKey(),entry.getValue().getName());
-					//send main the
-					// key
-					// for hash address
 				}
 				break;
 			}
 		}
 		return START_STICKY;
 	}
-	
+
 	private String date()
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
@@ -158,21 +178,25 @@ public class Recorder extends Service
 			return (String)s;
 		}
 	}
-	
+
 	@Nullable
 	@Override
 	public IBinder onBind(Intent intent)
 	{
 		return null;
 	}
-	
+
 	//function to broadcast hash key of current Recording
-	public void broadcastRecording(String action, int key, String name)
+	public void broadcastRecording(String action, int key, String name, long currentTime, int
+			sizeInKb, int position)
 	{
 		Intent intent = new Intent();
 		intent.setAction(action);
 		intent.putExtra("key", key);
 		intent.putExtra("name", name);
+		intent.putExtra("time", currentTime);
+		intent.putExtra("size", sizeInKb);
+		intent.putExtra("position", position);
 		sendBroadcast(intent);
 	}
 	public void broadcastRecording(String action, int key)
@@ -193,16 +217,21 @@ class Recording
 	private long duration;
 	private boolean stopped;
 	private int status;
-	
+	private int bytesRead;
+	private long startTimeInSeconds;
+
+
 	Recording(String date, String urlString, long duration, String name)
 	{
 		this.date = date;
 		this.urlString = urlString;
 		this.duration = duration;
 		this.name = name;
-		stopped=false;
+		stopped = false;
+		bytesRead = 0;
+		startTimeInSeconds = System.currentTimeMillis()/1000;
 	}
-	
+
 	void start()
 	{
 		status = RECORDING;
@@ -211,9 +240,8 @@ class Recording
 			public void run() {
 				try
 				{
-					status = 0; //Loading
-					long startTimeInSeconds = System.currentTimeMillis()/1000;
-					
+					status = RECORDING;
+
 					URL url = new URL(urlString);
 					InputStream inputStream = url.openStream();
 					FileOutputStream fileOutputStream;
@@ -229,34 +257,46 @@ class Recording
 					}
 					File outputSource = new File(streamsDir,date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
-					
+
 					int c;
-					int bytesRead = 0;
-					status = 1; //Recording
 					while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
 					{
 						fileOutputStream.write(c);
 						bytesRead++;
 					}
-					
+
 					Log.w("Recorder", String.valueOf(bytesRead/1024) + " KBs downloaded.");
-					
+
 					fileOutputStream.close();
-					
-					status = STOPPED;
+
 					//Log.w("Recorder", "finished");
 					Recorder.activeRecordings--;
-					status = 2; //Ended
+					status = STOPPED;
 				} catch (IOException e){e.printStackTrace();}
 			}
 		}).start();
 	}
-	
+
+	int getCurrentSizeInKB()
+	{
+		return (bytesRead/1024);
+	}
+
+	long getCurrentRecordingTimeInSeconds()
+	{
+		return (System.currentTimeMillis()/1000) - startTimeInSeconds;
+	}
+
 	int getStatus()
 	{
 		return status;
 	}
-	
+
+	long getDuration()
+	{
+		return duration;
+	}
+
 	void stop()
 	{
 		stopped = true;

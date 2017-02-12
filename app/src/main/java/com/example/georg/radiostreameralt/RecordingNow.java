@@ -37,10 +37,17 @@ public class RecordingNow extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals("RECORDING_ADDED")){
+                if(intent.getIntExtra("position", 998) == 0 ||(intent.getIntExtra("position",
+                        747) == 2)){
+                    recordingNowRadios.clear();
+                }
                 recordingNowRadios.add(new RecordingRadio(intent.getStringExtra("name"), intent
-                        .getIntExtra("key", 200)));
-                adapter.updateData(recordingNowRadios);
-                Toast.makeText(getContext(), "adapter updated", Toast.LENGTH_SHORT).show();
+                        .getIntExtra("key", 200), intent.getLongExtra("time", -1), intent
+                        .getIntExtra("size", -1)));
+                if((intent.getIntExtra("position", 747) == 1)||(intent.getIntExtra("position",
+                        747) == 2)) {
+                    adapter.updateData(recordingNowRadios);
+                }
             }
             else if(intent.getAction().equals("RECORDING_STOPPED")){
                 int keyToDelete = intent.getIntExtra("key", -1);
@@ -80,8 +87,6 @@ public class RecordingNow extends Fragment {
         tvrecordingNowRadio = (TextView)getActivity().findViewById(R.id.tvRecordingNow);
         Toast.makeText(getContext(), "onViewCreated", Toast.LENGTH_SHORT).show();
         if (isMyServiceRunning(Recorder.class)) {
-            recordingNowRadios.clear();
-            send("STATUS");
         }
 
         BindDictionary<RecordingRadio> dictionary =  new BindDictionary<>();
@@ -91,6 +96,19 @@ public class RecordingNow extends Fragment {
                 return item.getName();
             }
         });
+        dictionary.addStringField(R.id.tvRecordingNowSize, new StringExtractor<RecordingRadio>() {
+            @Override
+            public String getStringValue(RecordingRadio item, int position) {
+                return (Integer.toString(item.getSize()) + " KB ");
+            }
+        });
+        dictionary.addStringField(R.id.tvRecordingNowTime, new StringExtractor<RecordingRadio>() {
+            @Override
+            public String getStringValue(RecordingRadio item, int position) {
+                return (Long.toString(item.getTime())+ " s");
+            }
+        });
+
 
         adapter = new FunDapter<>(view.getContext(),recordingNowRadios, R.layout
                 .recording_now_layout, dictionary );

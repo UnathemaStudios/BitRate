@@ -11,4 +11,22 @@
         android:id="@+id/tvRecordingNow"
         android:textSize="24sp"
         android:textColor="@color/textColorPrimary"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/tvRecordingNowTime"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/tvRecordingNowTime"
+        android:id="@+id/tvRecordingNowSize"
+        android:textSize="18sp"
+        android:textColor="@color/textColorPrimary"/>
 </RelativeLayout>
