@@ -64,7 +64,7 @@ public class RecordFragment extends Fragment {
             public void onClick(View v) {
                 FragmentManager manager = getFragmentManager();
                 manager.beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+                        //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
                         .replace(R.id.record_layout_for_fragments, recordingNow).commit();
                 onSelectChanges(0);
             }
@@ -76,7 +76,7 @@ public class RecordFragment extends Fragment {
                 SchRecord schRecord = new SchRecord();
                 FragmentManager manager = getFragmentManager();
                 manager.beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+                        //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
                         .replace(R.id.record_layout_for_fragments, schRecord).commit();
                 onSelectChanges(1);
             }
@@ -88,7 +88,7 @@ public class RecordFragment extends Fragment {
                 FolderRecordings folderRecordings = new FolderRecordings();
                 FragmentManager manager = getFragmentManager();
                 manager.beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+                        //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
                         .replace(R.id.record_layout_for_fragments, folderRecordings).commit();
                 onSelectChanges(2);
             }
@@ -144,8 +144,8 @@ public class RecordFragment extends Fragment {
                 break;
         }
 
-        tvButton1.setEnabled(button==0);
-        tvButton2.setEnabled(button==1);
-        tvButton3.setEnabled(button==2);
+        btRecordNow.setEnabled(!(button==0));
+        btSchedule.setEnabled(!(button==1));
+        btFolder.setEnabled(!(button==2));
     }
 }

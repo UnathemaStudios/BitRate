@@ -5,6 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,15 +34,6 @@ public class PlayingNowFragment extends Fragment {
     private ImageButton ibSleepTimer;
     private ImageView ivRadio;
     private TextView tvRadioName;
-    private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("PLAYING_NOW_STATUS")){
-                ivRadio.setBackgroundResource(intent.getIntExtra("drawable", R.color.transparent));
-                tvRadioName.setText(intent.getStringExtra("name"));
-            }
-        }
-    };
 
     public PlayingNowFragment() {
         // Required empty public constructor
@@ -44,10 +42,6 @@ public class PlayingNowFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(serviceReceiver !=null){
-            getActivity().registerReceiver(serviceReceiver, new IntentFilter
-                    ("PLAYING_NOW_STATUS"));
-        }
     }
 
     @Override
@@ -70,7 +64,8 @@ public class PlayingNowFragment extends Fragment {
         ivRadio = (ImageView)getActivity().findViewById(R.id.ivPlayingNowExtended);
         tvRadioName = (TextView)getActivity().findViewById(R.id.tvPlayingNowName);
 
-        send("PLAYING_NOW_UPDATE");
+        ivRadio.setBackgroundResource(((MainActivity)getActivity()).getPlayerDrawable());
+        tvRadioName.setText(((MainActivity)getActivity()).getPlayerName());
 
         recordCurrentRadio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,11 +78,43 @@ public class PlayingNowFragment extends Fragment {
     }
 
     //send function to broadcast an action
-    public void send(String actionToSend)
-    {
+    public void send(String actionToSend) {
         Intent intent = new Intent();
         intent.setAction(actionToSend);
         getActivity().sendBroadcast(intent);
+    }
+
+    @Nullable
+    @Override
+    public View getView() {
+        return super.getView();
+    }
+
+    @Override
+    public void setMenuVisibility(final boolean visible) {
+        super.setMenuVisibility(visible);
+        if (visible) {
+            setupPage();
+        }
+    }
+
+    private void setupPage(){
+        ivRadio.setBackgroundResource(((MainActivity)getActivity()).getPlayerDrawable());
+        tvRadioName.setText(((MainActivity)getActivity()).getPlayerName());
+        /*Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
+                ((MainActivity)getActivity()).getPlayerDrawable());
+        int h = getView().getHeight();
+        ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h, getDominantColor(icon), Color.parseColor
+                ("#000000"), Shader.TileMode.REPEAT));
+        getView().setBackgroundDrawable(mDrawable);*/
+    }
+
+    public int getDominantColor(Bitmap bitmap) {
+        Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, 1, 1, true);
+        final int color = newBitmap.getPixel(0, 0);
+        newBitmap.recycle();
+        return color;
     }
 }
 

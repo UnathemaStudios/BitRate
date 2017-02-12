@@ -64,17 +64,13 @@ public class Recorder extends Service
 
 	private Runnable BANANA = new Runnable() {
 		public void run() {
-			Log.w("BANANA", "MINIONS");
 			int j = 0;
 			for (int i=0;i<rec.size();i++)
 			{
-				Log.w("BANANA", "FOR");
 				if (rec.get(i) != null)
 				{
-					Log.w("BANANA", "NULL");
 					if (rec.get(i).getStatus() != STOPPED)
 					{
-						Log.w("BANANA", "!=STOPPED");
 						j++;
 						if (rec.get(i).getDuration() != -1)
 						{
@@ -110,14 +106,14 @@ public class Recorder extends Service
 					}
 				}
 			}
-			myHandler.postDelayed(this, 1000);
+			myHandler.postDelayed(this, 500);
 		}
 	};
 
 	@Override
 	public void onCreate()
 	{
-		myHandler.postDelayed(BANANA,1000);
+		myHandler.postDelayed(BANANA,100);
 		key = 0;
 		notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		showNotification(true);
@@ -134,11 +130,9 @@ public class Recorder extends Service
 			{
 				String urlString = intent.getStringExtra("urlString");
 
-				Log.d("key",Integer.toString(key));
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
 						,intent.getStringExtra("name")));
 				rec.get(key).start();
-				Log.w("recording object", rec.get(key).getName());
 //				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the key for hash address
 				//Log.w("Recorder", "REC " + key + " START");
 				key++;

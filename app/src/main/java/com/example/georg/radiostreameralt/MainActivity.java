@@ -376,9 +376,6 @@ public class MainActivity extends AppCompatActivity {
                   rec(currentUrl, 0);
                 }
             }
-            else if(intent.getAction().equals("PLAYING_NOW_UPDATE")){
-                send("PLAYING_NOW_STATUS", currentRadioName, currentRadioDrawable);
-            }
         }
     };
 	
@@ -468,13 +465,6 @@ public class MainActivity extends AppCompatActivity {
         intent.setAction(actionToSend);
         sendBroadcast(intent);
     }
-    public void send(String actionToSend, String name, int drawable){
-        Intent intent = new Intent();
-        intent.setAction(actionToSend);
-        intent.putExtra("name", name);
-        intent.putExtra("drawable", drawable);
-        sendBroadcast(intent);
-    }
 
     //function to check if a service is running
     private boolean isMyServiceRunning(Class<?> serviceClass)
@@ -509,6 +499,13 @@ public class MainActivity extends AppCompatActivity {
     private void pageSelector(int pagePosition){
         tabLayout.setScrollPosition(pagePosition,0f,true);
         viewPager.setCurrentItem(pagePosition);
+    }
+
+    public int getPlayerDrawable(){
+        return currentRadioDrawable;
+    }
+    public String getPlayerName(){
+        return currentRadioName;
     }
 
     /*@Override

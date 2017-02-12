@@ -7,7 +7,8 @@
     <color name="windowBackground">#d7ccc8</color>
     <color name="navigationBarColor">#ffffff</color>
     <color name="transparent">#00ffffff</color>
-    <color name="darkGrey">#757575</color>
+    <color name="darkGrey">#2d2d31</color>
     <color name="lightPrimaryColor">#9e9e9e</color>
     <color name="darkerGrey">#263238</color>
+    <color name="BLACK">#0f191e</color>
 </resources>
