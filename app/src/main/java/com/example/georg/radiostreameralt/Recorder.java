@@ -22,6 +22,10 @@ import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static com.example.georg.radiostreameralt.Recorder.RECORDING;
 import static com.example.georg.radiostreameralt.Recorder.STOPPED;
 
@@ -232,7 +236,7 @@ class Recording
 		bytesRead = 0;
 		startTimeInSeconds = System.currentTimeMillis()/1000;
 	}
-
+	
 	void start()
 	{
 		status = RECORDING;
@@ -242,8 +246,6 @@ class Recording
 				try
 				{
 					status = RECORDING;
-					URL url = new URL(urlString);
-					InputStream inputStream = url.openStream();
 					FileOutputStream fileOutputStream;
 					File streamsDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
 					if (!streamsDir.exists())
@@ -258,16 +260,43 @@ class Recording
 					File outputSource = new File(streamsDir,date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
 					
-					int c;
-					while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
+					//ICY 200 OK ERROR FIX FOR KITKAT
+					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
 					{
-						fileOutputStream.write(c);
-						bytesRead++;
+						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
+						OkHttpClient client = new OkHttpClient();
+						Request request = new Request.Builder()
+								.url(urlString)
+								.build();
+						Response response = client.newCall(request).execute();
+						InputStream inputStream = response.body().byteStream();
+						
+						int c;
+						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
+						{
+							fileOutputStream.write(c);
+							bytesRead++;
+						}
 					}
-
+					else
+					{
+						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
+						URL url = new URL(urlString);
+						InputStream inputStream = url.openStream();
+						
+						int c;
+						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
+						{
+							fileOutputStream.write(c);
+							bytesRead++;
+						}
+					}
+					
 					Log.w("Recorder", String.valueOf(bytesRead/1024) + " KBs downloaded.");
-					inputStream.close();
+					
 					fileOutputStream.close();
+					
+					//Log.w("Recorder", "finished");
 					Recorder.activeRecordings--;
 					status = STOPPED;
 				} catch (IOException e){e.printStackTrace();}

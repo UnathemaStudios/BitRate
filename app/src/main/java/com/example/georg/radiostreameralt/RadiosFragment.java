@@ -61,7 +61,7 @@ public class RadiosFragment extends Fragment {
                 drawable.ic_radios_logo_1055));
         radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R
                 .drawable.ic_radio_infinitygreece));
-        radiosList.add(new Radio("Radio Nowhere", "http://philae.shoutca.st:8307/stream", R
+        radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream.mp3", R
                 .drawable.ic_radio_nowhere));
 
         radiosFile = new File(getContext().getFilesDir(), "RadiosList");

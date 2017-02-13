@@ -31,4 +31,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.github.amigold.fundapter:library:1.0'
     compile 'me.grantland:autofittextview:0.2.+'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
 }
