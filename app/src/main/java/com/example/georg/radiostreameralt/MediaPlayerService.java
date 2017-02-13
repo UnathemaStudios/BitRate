@@ -37,7 +37,6 @@ public class MediaPlayerService extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) //when service starts
 	{
-		
 		url = intent.getStringExtra("urlString");
 		
 		Intent notifIntent = new Intent(MediaPlayerService.this, MainNotification.class);
@@ -53,7 +52,6 @@ public class MediaPlayerService extends Service
 			registerReceiver(serviceReceiver, new IntentFilter("CLOSE"));
 			registerReceiver(serviceReceiver, new IntentFilter("REQUEST_STATUS"));
 		}
-		
 		return START_STICKY;
 	}
 	

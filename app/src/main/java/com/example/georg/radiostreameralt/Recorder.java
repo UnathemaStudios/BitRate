@@ -242,7 +242,6 @@ class Recording
 				try
 				{
 					status = RECORDING;
-
 					URL url = new URL(urlString);
 					InputStream inputStream = url.openStream();
 					FileOutputStream fileOutputStream;
@@ -258,7 +257,7 @@ class Recording
 					}
 					File outputSource = new File(streamsDir,date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
-
+					
 					int c;
 					while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
 					{
@@ -267,10 +266,8 @@ class Recording
 					}
 
 					Log.w("Recorder", String.valueOf(bytesRead/1024) + " KBs downloaded.");
-
+					inputStream.close();
 					fileOutputStream.close();
-
-					//Log.w("Recorder", "finished");
 					Recorder.activeRecordings--;
 					status = STOPPED;
 				} catch (IOException e){e.printStackTrace();}
