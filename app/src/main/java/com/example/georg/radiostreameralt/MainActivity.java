@@ -192,19 +192,6 @@ public class MainActivity extends AppCompatActivity {
         {
             send("REQUEST_STATUS"); //request mediaplayer service status
         }
-        //--/---/--/--/-/-/-/-/-/--/--/--/-Files Testing//-//-//-/-/-/-/-////-/-/-/
-
-        radiosFile = new File(getApplicationContext().getFilesDir(), "RadiosList");
-        try {
-            bufferedReader = new BufferedReader(new FileReader(radiosFile));
-            String str;
-            while((str=bufferedReader.readLine())!=null){
-                System.out.println(str);
-            }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

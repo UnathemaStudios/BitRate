@@ -167,20 +167,20 @@ public class RadiosFragment extends Fragment {
     private void saveToFIle(){
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(radiosFile));
-            BufferedWriter writerEXT = new BufferedWriter(new FileWriter(radiosFileEXT));
+            //BufferedWriter writerEXT = new BufferedWriter(new FileWriter(radiosFileEXT));
             for(int i=0;i<radiosList.size();i++){
                 writer.write(radiosList.get(i).getName());
                 writer.newLine();
-                writerEXT.write(radiosList.get(i).getName() + " ");
+                //writerEXT.write(radiosList.get(i).getName() + " ");
                 writer.write(radiosList.get(i).getUrl());
                 writer.newLine();
-                writerEXT.write(radiosList.get(i).getUrl() + " ");
+                //writerEXT.write(radiosList.get(i).getUrl() + " ");
                 writer.write(Integer.toString(radiosList.get(i).getIcon()));
                 writer.newLine();
-                writerEXT.write(Integer.toString(radiosList.get(i).getIcon()));
+                //writerEXT.write(Integer.toString(radiosList.get(i).getIcon()));
             }
             writer.close();
-            writerEXT.close();
+            //writerEXT.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
