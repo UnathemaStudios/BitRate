@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //--/---/--/--/-/-/-/-/-/--/--/--/-Files Testing//-//-//-/-/-/-/-////-/-/-/
 
-        radiosFile = new File(getApplicationContext().getFilesDir(), "RadiosList.txt");
+        radiosFile = new File(getApplicationContext().getFilesDir(), "RadiosList");
         try {
             bufferedReader = new BufferedReader(new FileReader(radiosFile));
             String str;

@@ -101,11 +101,12 @@ public class PlayingNowFragment extends Fragment {
     private void setupPage(){
         ivRadio.setBackgroundResource(((MainActivity)getActivity()).getPlayerDrawable());
         tvRadioName.setText(((MainActivity)getActivity()).getPlayerName());
-        /*Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
+       /* Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
                 ((MainActivity)getActivity()).getPlayerDrawable());
         int h = getView().getHeight();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
-        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h, getDominantColor(icon), Color.parseColor
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h, getDominantColor(icon),
+                Color.parseColor
                 ("#000000"), Shader.TileMode.REPEAT));
         getView().setBackgroundDrawable(mDrawable);*/
     }
