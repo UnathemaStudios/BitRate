@@ -319,7 +319,6 @@ public class MainActivity extends AppCompatActivity {
             }
 			else if (intent.getAction().equals("radioToPlay"))
 			{
-				Toast.makeText(getApplicationContext(), intent.getStringExtra("urlString"), Toast.LENGTH_SHORT).show();
 				currentUrl = intent.getStringExtra("urlString");
 				disableButtons();
 				send("CLOSE");

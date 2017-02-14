@@ -85,7 +85,6 @@ public class RecordingNow extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tvrecordingNowRadio = (TextView)getActivity().findViewById(R.id.tvRecordingNow);
-        Toast.makeText(getContext(), "onViewCreated", Toast.LENGTH_SHORT).show();
         if (isMyServiceRunning(Recorder.class)) {
         }
 

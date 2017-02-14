@@ -50,7 +50,6 @@ public class PlayingNowFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_playing_now, container, false);
         send("PLAYING_NOW_UPDATE");
-        Toast.makeText(getContext(), "onCreateView", Toast.LENGTH_SHORT).show();
         return view;
     }
 
