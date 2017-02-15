@@ -95,8 +95,9 @@ public class FolderRecordings extends Fragment {
 				Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1),
 						Thread.currentThread().getStackTrace()[2].getMethodName());
 				
-				File file = new File(Environment.getExternalStorageDirectory()+"/Streams",recFiles.get(position));
+				File file = new File(Environment.getExternalStorageDirectory()+"/Streams/",recFiles.get(position));
 				
+//				API<24 working
 				MimeTypeMap myMime = MimeTypeMap.getSingleton();
 				Intent newIntent = new Intent(Intent.ACTION_VIEW);
 				String mimeType = myMime.getMimeTypeFromExtension(getExtension(file.getName()));
@@ -105,21 +106,23 @@ public class FolderRecordings extends Fragment {
 				try {
 					getActivity().startActivity(newIntent);
 				} catch (ActivityNotFoundException e) {
-					Toast.makeText(getContext(), "No handler for this type of file.", Toast.LENGTH_LONG).show();
+					Toast.makeText(getContext(), "No handler for this type of file.",
+							Toast.LENGTH_LONG).show();
 				}
 				
-//				MH TA SVISEIS !!!!
+				
+//				API > 24 NOT working
 //				MimeTypeMap myMime = MimeTypeMap.getSingleton();
-//				Intent newIntent = new Intent(Intent.ACTION_VIEW);
+//				Uri uri = FileProvider.getUriForFile(getActivity().getApplicationContext(),
+//						getActivity().getApplicationContext().getPackageName()+".provider", file.getAbsoluteFile());				
 //				String mimeType = myMime.getMimeTypeFromExtension(getExtension(file.getName()));
-//				Uri uri = FileProvider.getUriForFile(getActivity().getApplicationContext(), getActivity().getApplicationContext().getPackageName()+".provider",file.getAbsoluteFile());
+//				Intent newIntent = new Intent(Intent.ACTION_VIEW);
 //				newIntent.setDataAndType(uri,mimeType);
-//				newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//				try {
-//					getActivity().startActivity(newIntent);
-//				} catch (ActivityNotFoundException e) {
-//					Toast.makeText(getContext(), "No handler for this type of file.", Toast.LENGTH_LONG).show();
-//				}
+//				newIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//				newIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//				newIntent.setFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+//				newIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//				getActivity().startActivity(newIntent);
 			}
         });
 		recFiles = new ArrayList<>();

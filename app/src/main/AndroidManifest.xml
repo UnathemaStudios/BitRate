@@ -25,12 +25,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        
         <service android:name=".MediaPlayerService"/>
         <service android:name=".MainNotification"/>
         <service android:name=".Recorder"/>
+        
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.example.georg.radiostreameralt.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
