@@ -8,15 +8,13 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +22,6 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
-import com.vstechlab.easyfonts.EasyFonts;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -61,7 +58,7 @@ public class RadiosFragment extends Fragment {
         radiosFileEXTdir = new File(Environment.getExternalStorageDirectory() + "/Streams");
         radiosFileEXT = new  File(radiosFileEXTdir.getAbsolutePath(), "RadiosList.txt");
         radiosList = new ArrayList<>();
-
+		Log.w("radiosFile.exists()", radiosFile.exists()+"");
         if (!radiosFile.exists()){
             radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.
                     drawable.ic_radios_logo_1055));
@@ -71,6 +68,7 @@ public class RadiosFragment extends Fragment {
                     .drawable.ic_radio_nowhere));
             try {
                 boolean fileCreated = radiosFile.createNewFile();
+				Log.w("fileCreated", ""+fileCreated);
                 if(!fileCreated) Toast.makeText(getContext(), "FileNOTcreatedd", Toast.LENGTH_SHORT)
                         .show();
                 saveToFIle();
@@ -154,7 +152,6 @@ public class RadiosFragment extends Fragment {
     //send function to broadcast an action
     public void send(String actionToSend, String url, int imageID, String radioName)
     {
-
         Intent intent = new Intent();
         intent.setAction(actionToSend);
         intent.putExtra("urlString", url);
