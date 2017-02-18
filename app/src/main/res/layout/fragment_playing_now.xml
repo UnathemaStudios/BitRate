@@ -26,6 +26,7 @@
         android:layout_height="300dp"
         android:id="@+id/ivPlayingNowExtended"
         android:elevation="1dp"
+        android:scaleType="centerInside"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"/>

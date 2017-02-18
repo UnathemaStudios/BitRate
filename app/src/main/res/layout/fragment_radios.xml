@@ -19,12 +19,12 @@
         android:stretchMode="columnWidth"
         android:gravity="center"
         android:id="@+id/gridView"
-        android:paddingRight="0dp"
-        android:paddingLeft="0dp"
-        android:paddingBottom="0dp"
         android:elevation="4dp"
         android:numColumns="1"
-        android:layout_marginBottom="50dp"/>
+        android:layout_marginBottom="50dp"
+        android:clipToPadding="false"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
