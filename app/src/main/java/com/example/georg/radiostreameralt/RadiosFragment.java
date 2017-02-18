@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -122,7 +123,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
         adapter = new FunDapter(getContext(), radiosList, R.layout
                 .grid_view_layout, dictionary);
 
-        final GridView radiosGrid = (GridView) view.findViewById(R.id.gridView);
+        final ListView radiosGrid = (ListView) view.findViewById(R.id.gridView);
         radiosGrid.setAdapter(adapter);
 
         radiosGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
