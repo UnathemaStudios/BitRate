@@ -6,4 +6,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="setting_icon_menu">Icon only Menu</string>
     <string name="setting_icon_and_text_menu">Icon and Text Menu</string>
+    <string name="add_radio_dialog_title">Add New Radio</string>
+    <string name="add_radio_dialog_add">ADD</string>
+    <string name="add_radio_dialog_cancel">CANCEL</string>
 </resources>

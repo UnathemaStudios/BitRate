@@ -6,8 +6,8 @@
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:elevation="10dp"
-    >
+                android:elevation="1dp"
+                android:layout_marginTop="0dp">
 
 
     <me.grantland.widget.AutofitTextView

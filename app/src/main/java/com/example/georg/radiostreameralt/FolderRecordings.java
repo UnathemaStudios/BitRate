@@ -51,10 +51,6 @@ public class FolderRecordings extends Fragment {
 
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
 
-//			Example
-//        recFiles.add("Example 1");
-//        recFiles.add("Example 2");
-//        recFiles.add("Example 3");
     }
 
     @Override
