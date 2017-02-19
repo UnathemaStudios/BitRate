@@ -137,7 +137,7 @@ public class Recorder extends Service
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
 						,intent.getStringExtra("name")));
 				rec.get(key).start();
-//				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the key for hash address
+				broadcastRecording("SIMPLE_RECORDING_ADDED"); //send  main the key for hash address
 				//Log.w("Recorder", "REC " + key + " START");
 				key++;
 				activeRecordings++;
@@ -209,6 +209,11 @@ public class Recorder extends Service
 		Intent intent = new Intent();
 		intent.setAction(action);
 		intent.putExtra("key", key);
+		sendBroadcast(intent);
+	}
+	public void broadcastRecording(String action){
+		Intent intent = new Intent();
+		intent.setAction(action);
 		sendBroadcast(intent);
 	}
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@drawable/ic_fiber_manual_record"
+        id="@+id/tab_recording_now"
+        activeColor="@color/colorAccent"
+        title="Recording Now"/>
+    <tab
+        icon="@drawable/ic_watch_later_black"
+        id="@+id/tab_scheduled_recordings"
+        activeColor="@color/colorAccent"
+        title="Scheduled"/>
+    <tab
+        icon="@drawable/ic_folder_black"
+        id="@+id/tab_folder_recordings"
+        activeColor="@color/colorAccent"
+        title="Folder"/>
+</tabs>

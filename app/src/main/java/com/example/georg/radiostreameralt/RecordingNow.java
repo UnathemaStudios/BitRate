@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
+import com.roughike.bottombar.BottomBar;
 
 import java.util.ArrayList;
 
