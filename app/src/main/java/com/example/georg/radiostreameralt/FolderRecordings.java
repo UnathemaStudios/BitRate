@@ -14,7 +14,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v4.os.BuildCompat;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -40,6 +43,7 @@ public class FolderRecordings extends Fragment {
     private ArrayList<String> recFiles;
     private TextView tvRecordingsName;
     private ListView lvFolderRecordings;
+	private FunDapter adapter;
 
     public FolderRecordings() {
         // Required empty public constructor
@@ -66,11 +70,11 @@ public class FolderRecordings extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
 		
-		
 		//Initializing the adapter and the dictionary
         tvRecordingsName = (TextView)getActivity().findViewById(R.id.tvFolderRecordingsName);
         lvFolderRecordings = (ListView)getActivity().findViewById(R.id.lvFolderRecordings);
-
+		registerForContextMenu(lvFolderRecordings);
+		
         BindDictionary<String> dictionary = new BindDictionary<>();
 		dictionary.addStringField(R.id.tvFolderRecordingsName, new StringExtractor<String>() {
 			@Override
@@ -78,11 +82,11 @@ public class FolderRecordings extends Fragment {
 				return item;
 			}
 		});
-	
-		FunDapter adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout,
+		
+		adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout,
                 dictionary);
 		lvFolderRecordings.setAdapter(adapter);
-	
+		
 		//Setting onItemClickListener
 		lvFolderRecordings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -105,7 +109,6 @@ public class FolderRecordings extends Fragment {
 					Toast.makeText(getContext(), "No handler for this type of file.",
 							Toast.LENGTH_LONG).show();
 				}
-				
 				
 //				API > 24 NOT working
 //				MimeTypeMap myMime = MimeTypeMap.getSingleton();
@@ -131,6 +134,30 @@ public class FolderRecordings extends Fragment {
 			}
 		adapter.updateData(recFiles);
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if (v.getId()==R.id.lvFolderRecordings) {
+			MenuInflater inflater = getActivity().getMenuInflater();
+			inflater.inflate(R.menu.folder_context_menu, menu);
+		}
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		switch(item.getItemId()) {
+			case R.id.delete:
+				new File (Environment.getExternalStorageDirectory().toString()+"/Streams",recFiles.get(info.position)).delete();
+				recFiles.remove(info.position);
+				adapter.updateData(recFiles);
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+		}
+	}
+	
 	public String getExtension(String fileName)
 	{
 		int index = fileName.lastIndexOf('.');

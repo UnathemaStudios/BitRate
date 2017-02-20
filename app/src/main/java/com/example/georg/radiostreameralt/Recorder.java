@@ -37,7 +37,7 @@ public class Recorder extends Service
 	public final static int FIRSTRECORDING = 0;
 	public final static int LASTRECOEDING = 1;
 	public final static int FIRSTANDLASTRECORDING = 2;
-
+	
 	private NotificationManager notificationManager;
 	private int notifID = 4321;
 	private void showNotification(boolean first)
@@ -216,7 +216,6 @@ public class Recorder extends Service
 		intent.setAction(action);
 		sendBroadcast(intent);
 	}
-
 }
 
 class Recording
