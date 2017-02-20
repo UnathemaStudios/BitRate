@@ -1,18 +1,12 @@
 package com.example.georg.radiostreameralt;
 
-
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.coreui.*;
-import android.support.coreui.BuildConfig;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
-import android.support.v4.os.BuildCompat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -31,7 +25,6 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -48,15 +41,14 @@ public class FolderRecordings extends Fragment {
     public FolderRecordings() {
         // Required empty public constructor
     }
-
+	
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
-
     }
-
+	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
