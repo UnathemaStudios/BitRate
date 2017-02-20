@@ -18,6 +18,7 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 /**
@@ -111,7 +112,7 @@ public class RecordingNow extends Fragment
 			@Override
 			public String getStringValue(RecordingRadio item, int position)
 			{
-				return (Long.toString(item.getTime()) + " s");
+				return timePretty(item.getTime());
 			}
 		});
 		
@@ -138,6 +139,11 @@ public class RecordingNow extends Fragment
 		serviceIntent.putExtra("Action", actionToSend);
 		serviceIntent.putExtra("key", key);
 		getActivity().startService(serviceIntent);
+	}
+	
+	public String timePretty(long timeInSeconds)
+	{
+		return String.format(Locale.US,"%02d:%02d",timeInSeconds/60,timeInSeconds%60);
 	}
 	
 //	//function to check if a service is running

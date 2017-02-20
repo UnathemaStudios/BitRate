@@ -110,7 +110,7 @@ public class Recorder extends Service
 					}
 				}
 			}
-			myHandler.postDelayed(this, 500);
+			myHandler.postDelayed(this, 200);
 		}
 	};
 
