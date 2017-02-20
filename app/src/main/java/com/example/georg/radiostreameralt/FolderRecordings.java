@@ -34,8 +34,6 @@ import java.util.ArrayList;
 public class FolderRecordings extends Fragment {
 
     private ArrayList<String> recFiles;
-    private TextView tvRecordingsName;
-    private ListView lvFolderRecordings;
 	private FunDapter adapter;
 
     public FolderRecordings() {
@@ -63,8 +61,8 @@ public class FolderRecordings extends Fragment {
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
 		
 		//Initializing the adapter and the dictionary
-        tvRecordingsName = (TextView)getActivity().findViewById(R.id.tvFolderRecordingsName);
-        lvFolderRecordings = (ListView)getActivity().findViewById(R.id.lvFolderRecordings);
+		TextView tvRecordingsName = (TextView) getActivity().findViewById(R.id.tvFolderRecordingsName);
+		ListView lvFolderRecordings = (ListView) getActivity().findViewById(R.id.lvFolderRecordings);
 		registerForContextMenu(lvFolderRecordings);
 		
         BindDictionary<String> dictionary = new BindDictionary<>();
