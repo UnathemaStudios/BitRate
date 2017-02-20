@@ -33,13 +33,12 @@ public class Recorder extends Service
 {
 	public final static int RECORDING = 1;
 	public final static int STOPPED = 2;
-	public final static int UNLISTED = 3;
+//	public final static int UNLISTED = 3;
 	public final static int FIRSTRECORDING = 0;
 	public final static int LASTRECOEDING = 1;
 	public final static int FIRSTANDLASTRECORDING = 2;
 	
 	private NotificationManager notificationManager;
-	private int notifID = 4321;
 	private void showNotification(boolean first)
 	{
 		Notification notification = new Notification.Builder(this)
@@ -48,6 +47,7 @@ public class Recorder extends Service
 				.setContentTitle("Recording now...   " + activeRecordings)  // the label of
 				// the entry
 				.build();
+		int notifID = 4321;
 		if (first)
 		{
 			startForeground(notifID, notification);

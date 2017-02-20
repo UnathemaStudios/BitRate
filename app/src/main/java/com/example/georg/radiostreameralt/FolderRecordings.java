@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
@@ -62,7 +61,7 @@ public class FolderRecordings extends Fragment {
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
 		
 		//Initializing the adapter and the dictionary
-		TextView tvRecordingsName = (TextView) getActivity().findViewById(R.id.tvFolderRecordingsName);
+//		TextView tvRecordingsName = (TextView) getActivity().findViewById(R.id.tvFolderRecordingsName);
 		ListView lvFolderRecordings = (ListView) getActivity().findViewById(R.id.lvFolderRecordings);
 		registerForContextMenu(lvFolderRecordings);
 		
@@ -147,7 +146,7 @@ public class FolderRecordings extends Fragment {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
 			case R.id.delete:
-				new File (Environment.getExternalStorageDirectory().toString()+"/Streams",recFiles.get(info.position)).delete();
+				new File(Environment.getExternalStorageDirectory().toString()+"/Streams",recFiles.get(info.position)).delete();
 				recFiles.remove(info.position);
 				adapter.updateData(recFiles);
 				return true;

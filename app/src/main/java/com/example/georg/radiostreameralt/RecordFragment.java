@@ -24,8 +24,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 public class RecordFragment extends Fragment {
 
     private RecordingNow recordingNow;
-    private BottomBar bottomBar;
-    private BottomBarTab recNowTab;
+	private BottomBarTab recNowTab;
     private int recordings = 0;
 
     private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
@@ -64,8 +63,8 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
-
-        bottomBar = (BottomBar)view.findViewById(R.id.bottomBar);
+	
+		BottomBar bottomBar = (BottomBar) view.findViewById(R.id.bottomBar);
         recNowTab = bottomBar.getTabWithId(R.id.tab_recording_now);
 
         //First Page Immediate transaction without animation

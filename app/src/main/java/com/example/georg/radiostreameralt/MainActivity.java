@@ -2,7 +2,6 @@ package com.example.georg.radiostreameralt;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,37 +10,25 @@ import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.coreui.*;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private int durationtmp;
     private boolean backPressed = false;
     private boolean playerVisible = false;
-    private File radiosFile;
-	private BufferedReader bufferedReader;
+//    private File radiosFile;
+//	private BufferedReader bufferedReader;
 
 
     @Override
@@ -267,18 +254,17 @@ public class MainActivity extends AppCompatActivity {
     {
         @Override
         public void onReceive(Context context, Intent intent) {
-
-            if (intent.getAction().equals("TIME_UPDATE")) //if TIME_UPDATE is received
-            {
+	
+//			if (intent.getAction().equals("TIME_UPDATE")) //if TIME_UPDATE is received
+//			{
 //				double time;
 //				time = intent.getDoubleExtra("time", 0); //set time received to time variable, if its empty put 0
-//
+//		
 //				//change current time text field to XX:XX format
-//				currenttime.setText(String.format(Locale.US,"%02d:%02d",
-//						TimeUnit.MILLISECONDS.toMinutes((long) time),
-//						TimeUnit.MILLISECONDS.toSeconds((long) time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) time))));
-            }
-            else if (intent.getAction().equals("0")) //if 0 (STOPPED) is received
+//				currenttime.setText(String.format(Locale.US, "%02d:%02d", TimeUnit.MILLISECONDS.toMinutes((long) time), TimeUnit.MILLISECONDS.toSeconds((long) time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) time))));
+//			} 
+//			else 
+			if (intent.getAction().equals("0")) //if 0 (STOPPED) is received
             {
                 //ui after Stopped
                 playerStop();
@@ -303,26 +289,25 @@ public class MainActivity extends AppCompatActivity {
             {
                 //ui after Pause
                 playerPause();
-            }
-            else if (intent.getAction().equals("RECORDING_ADDED"))
-            {
-                //Toast.makeText(getApplicationContext(), String.valueOf(currentkey),Toast.LENGTH_LONG).show();
+            } 
+//			else if (intent.getAction().equals("RECORDING_ADDED"))
+//			{
+//				Toast.makeText(getApplicationContext(), String.valueOf(currentkey), Toast.LENGTH_LONG).show();
 //				activeRecordingList.add(String.valueOf(intent.getIntExtra("key", -1)));
 //				dataAdapter2.notifyDataSetChanged();
-            }
-            else if (intent.getAction().equals("RECORDING_STOPPED"))
-            {
+//			}
+//			else if (intent.getAction().equals("RECORDING_STOPPED"))
+//			{
 //				int currentkey = intent.getIntExtra("key", -1);
-//				for (int i=0; i < activeRecordingList.size(); i++)
+//				for (int i = 0; i < activeRecordingList.size(); i++)
 //				{
 //					if (Integer.parseInt(activeRecordingList.get(i)) == currentkey)
 //					{
 //						activeRecordingList.remove(i);
 //						dataAdapter2.notifyDataSetChanged();
 //					}
-//				}
-
-            }
+//				}	
+//			}
 			else if (intent.getAction().equals("radioToPlay"))
 			{
 				currentUrl = intent.getStringExtra("urlString");
@@ -431,13 +416,15 @@ public class MainActivity extends AppCompatActivity {
             serviceIntent.putExtra("name", currentRadioName);
             MainActivity.this.startService(serviceIntent);
     }
-    public void recorder(String action, int key)
-    {
-        Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
-        serviceIntent.putExtra("Action", action);
-        serviceIntent.putExtra("key", key);
-        MainActivity.this.startService(serviceIntent);
-    }
+	
+//    public void recorder(String action, int key)
+//    {
+//        Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
+//        serviceIntent.putExtra("Action", action);
+//        serviceIntent.putExtra("key", key);
+//        MainActivity.this.startService(serviceIntent);
+//    }
+	
     public void rec(String url, int duration){
 
         if (duration != 0)
@@ -526,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
         private final List<Fragment> fragmentList = new ArrayList<>();
         private final List<String> fragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager){
+        ViewPagerAdapter(FragmentManager manager){
             super(manager);
         }
 
@@ -547,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
-        public void addFragment(Fragment fragment, String title){
+        void addFragment(Fragment fragment, String title){
             fragmentList.add(fragment);
             fragmentTitleList.add(title);
         }
