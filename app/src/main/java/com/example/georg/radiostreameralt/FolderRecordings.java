@@ -26,6 +26,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 /**
@@ -90,14 +91,22 @@ public class FolderRecordings extends Fragment {
 //				API<24 working
 				MimeTypeMap myMime = MimeTypeMap.getSingleton();
 				Intent newIntent = new Intent(Intent.ACTION_VIEW);
-				String mimeType = myMime.getMimeTypeFromExtension(getExtension(file.getName()));
-				newIntent.setDataAndType(Uri.fromFile(file.getAbsoluteFile()),mimeType);
-				newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				try {
-					getActivity().startActivity(newIntent);
-				} catch (ActivityNotFoundException e) {
-					Toast.makeText(getContext(), "No handler for this type of file.",
+				if (getExtension(file.getName())==null)
+				{
+					Toast.makeText(getContext(), "This file has no extension.",
 							Toast.LENGTH_LONG).show();
+				}
+				else
+				{
+					String mimeType = myMime.getMimeTypeFromExtension(getExtension(file.getName()));
+					newIntent.setDataAndType(Uri.fromFile(file.getAbsoluteFile()),mimeType);
+					newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					try {
+						getActivity().startActivity(newIntent);
+					} catch (ActivityNotFoundException e) {
+						Toast.makeText(getContext(), "No handler for this type of file.",
+								Toast.LENGTH_LONG).show();
+					}
 				}
 				
 //				API > 24 NOT working
@@ -117,9 +126,8 @@ public class FolderRecordings extends Fragment {
 		recFiles = new ArrayList<>();
 		File[] Files = new File(Environment.getExternalStorageDirectory().toString()+"/Streams").listFiles();
 		for (File file : Files)
-			if (!file.isDirectory())
+			if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3"))
 			{
-				Log.w(file.getName(), getExtension(file.getName()));
 				recFiles.add(file.getName());
 			}
 		adapter.updateData(recFiles);

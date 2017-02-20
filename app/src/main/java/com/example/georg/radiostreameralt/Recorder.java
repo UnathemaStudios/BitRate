@@ -261,7 +261,7 @@ class Recording
 							Log.w("Recorder", "Failed to create directory");
 						}
 					}
-					File outputSource = new File(streamsDir,date + ".mp3");
+					File outputSource = new File(streamsDir,name+date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
 					
 					//ICY 200 OK ERROR FIX FOR KITKAT
