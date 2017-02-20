@@ -38,7 +38,7 @@ public class FolderRecordings extends Fragment {
 
     public FolderRecordings() {
         // Required empty public constructor
-
+		//Empty Constructor
     }
 	
     @Override
