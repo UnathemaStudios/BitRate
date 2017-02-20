@@ -33,13 +33,12 @@ public class Recorder extends Service
 {
 	public final static int RECORDING = 1;
 	public final static int STOPPED = 2;
-	public final static int UNLISTED = 3;
+//	public final static int UNLISTED = 3;
 	public final static int FIRSTRECORDING = 0;
 	public final static int LASTRECOEDING = 1;
 	public final static int FIRSTANDLASTRECORDING = 2;
-
+	
 	private NotificationManager notificationManager;
-	private int notifID = 4321;
 	private void showNotification(boolean first)
 	{
 		Notification notification = new Notification.Builder(this)
@@ -48,6 +47,7 @@ public class Recorder extends Service
 				.setContentTitle("Recording now...   " + activeRecordings)  // the label of
 				// the entry
 				.build();
+		int notifID = 4321;
 		if (first)
 		{
 			startForeground(notifID, notification);
@@ -137,7 +137,7 @@ public class Recorder extends Service
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
 						,intent.getStringExtra("name")));
 				rec.get(key).start();
-//				broadcastRecording("RECORDING_ADDED", key, rec.get(key).getName()); //send main the key for hash address
+				broadcastRecording("SIMPLE_RECORDING_ADDED"); //send  main the key for hash address
 				//Log.w("Recorder", "REC " + key + " START");
 				key++;
 				activeRecordings++;
@@ -211,7 +211,11 @@ public class Recorder extends Service
 		intent.putExtra("key", key);
 		sendBroadcast(intent);
 	}
-
+	public void broadcastRecording(String action){
+		Intent intent = new Intent();
+		intent.setAction(action);
+		sendBroadcast(intent);
+	}
 }
 
 class Recording
@@ -257,7 +261,7 @@ class Recording
 							Log.w("Recorder", "Failed to create directory");
 						}
 					}
-					File outputSource = new File(streamsDir,date + ".mp3");
+					File outputSource = new File(streamsDir,name+date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
 					
 					//ICY 200 OK ERROR FIX FOR KITKAT

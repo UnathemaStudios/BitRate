@@ -23,66 +23,19 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary"
         android:id="@+id/relativeLayout2"
-        android:elevation="2dp"
+        android:elevation="1dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="50dp">
 
-        <ImageButton
+        <com.roughike.bottombar.BottomBar
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/ic_fiber_manual_record"
-            android:id="@+id/record_now_button"
-            android:background="@color/transparent"
-            android:elevation="2dp"
-            android:layout_width="130dp"
-            android:foregroundGravity="center"/>
-
-        <ImageButton
-            android:layout_height="match_parent"
-            app:srcCompat="@drawable/ic_watch_later_black"
-            android:id="@+id/schedule_button"
-            android:background="@color/transparent"
-            android:elevation="2dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_width="130dp"/>
-
-        <ImageButton
-            android:layout_height="match_parent"
-            app:srcCompat="@drawable/ic_folder_black"
-            android:id="@+id/folder_button"
-            android:background="@color/transparent"
-            android:elevation="2dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_width="130dp"
-            />
-
-        <TextView
-            android:id="@+id/tvButton2"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_width="124dp"
-            android:elevation="1dp"
-            android:layout_height="2.2dp"/>
-
-        <TextView
-            android:id="@+id/tvButton1"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:layout_width="127dp"
-            android:elevation="1dp"
-            android:layout_height="2.2dp"/>
-
-        <TextView
-            android:id="@+id/tvButton3"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_width="127dp"
-            android:elevation="1dp"
-            android:layout_height="2.2dp"/>
+            android:layout_alignParentBottom="true"
+            android:elevation="4dp"
+            app:bb_tabXmlResource="@xml/bottom_navigation_tabs" />
 
     </RelativeLayout>
 

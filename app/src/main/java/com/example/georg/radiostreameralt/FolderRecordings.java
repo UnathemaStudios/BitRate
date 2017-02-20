@@ -1,26 +1,22 @@
 package com.example.georg.radiostreameralt;
 
-
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.coreui.*;
-import android.support.coreui.BuildConfig;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
-import android.support.v4.os.BuildCompat;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
@@ -28,8 +24,8 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 /**
@@ -38,21 +34,19 @@ import java.util.ArrayList;
 public class FolderRecordings extends Fragment {
 
     private ArrayList<String> recFiles;
-    private TextView tvRecordingsName;
-    private ListView lvFolderRecordings;
+	private FunDapter adapter;
 
     public FolderRecordings() {
         // Required empty public constructor
     }
-
+	
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
-
     }
-
+	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,11 +60,11 @@ public class FolderRecordings extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
 		
-		
 		//Initializing the adapter and the dictionary
-        tvRecordingsName = (TextView)getActivity().findViewById(R.id.tvFolderRecordingsName);
-        lvFolderRecordings = (ListView)getActivity().findViewById(R.id.lvFolderRecordings);
-
+//		TextView tvRecordingsName = (TextView) getActivity().findViewById(R.id.tvFolderRecordingsName);
+		ListView lvFolderRecordings = (ListView) getActivity().findViewById(R.id.lvFolderRecordings);
+		registerForContextMenu(lvFolderRecordings);
+		
         BindDictionary<String> dictionary = new BindDictionary<>();
 		dictionary.addStringField(R.id.tvFolderRecordingsName, new StringExtractor<String>() {
 			@Override
@@ -78,11 +72,11 @@ public class FolderRecordings extends Fragment {
 				return item;
 			}
 		});
-	
-		FunDapter adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout,
+		
+		adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout,
                 dictionary);
 		lvFolderRecordings.setAdapter(adapter);
-	
+		
 		//Setting onItemClickListener
 		lvFolderRecordings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -96,16 +90,23 @@ public class FolderRecordings extends Fragment {
 //				API<24 working
 				MimeTypeMap myMime = MimeTypeMap.getSingleton();
 				Intent newIntent = new Intent(Intent.ACTION_VIEW);
-				String mimeType = myMime.getMimeTypeFromExtension(getExtension(file.getName()));
-				newIntent.setDataAndType(Uri.fromFile(file.getAbsoluteFile()),mimeType);
-				newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				try {
-					getActivity().startActivity(newIntent);
-				} catch (ActivityNotFoundException e) {
-					Toast.makeText(getContext(), "No handler for this type of file.",
+				if (getExtension(file.getName())==null)
+				{
+					Toast.makeText(getContext(), "This file has no extension.",
 							Toast.LENGTH_LONG).show();
 				}
-				
+				else
+				{
+					String mimeType = myMime.getMimeTypeFromExtension(getExtension(file.getName()));
+					newIntent.setDataAndType(Uri.fromFile(file.getAbsoluteFile()),mimeType);
+					newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					try {
+						getActivity().startActivity(newIntent);
+					} catch (ActivityNotFoundException e) {
+						Toast.makeText(getContext(), "No handler for this type of file.",
+								Toast.LENGTH_LONG).show();
+					}
+				}
 				
 //				API > 24 NOT working
 //				MimeTypeMap myMime = MimeTypeMap.getSingleton();
@@ -124,13 +125,36 @@ public class FolderRecordings extends Fragment {
 		recFiles = new ArrayList<>();
 		File[] Files = new File(Environment.getExternalStorageDirectory().toString()+"/Streams").listFiles();
 		for (File file : Files)
-			if (!file.isDirectory())
+			if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3"))
 			{
-				Log.w(file.getName(), getExtension(file.getName()));
 				recFiles.add(file.getName());
 			}
 		adapter.updateData(recFiles);
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if (v.getId()==R.id.lvFolderRecordings) {
+			MenuInflater inflater = getActivity().getMenuInflater();
+			inflater.inflate(R.menu.folder_context_menu, menu);
+		}
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		switch(item.getItemId()) {
+			case R.id.delete:
+				new File(Environment.getExternalStorageDirectory().toString()+"/Streams",recFiles.get(info.position)).delete();
+				recFiles.remove(info.position);
+				adapter.updateData(recFiles);
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+		}
+	}
+	
 	public String getExtension(String fileName)
 	{
 		int index = fileName.lastIndexOf('.');

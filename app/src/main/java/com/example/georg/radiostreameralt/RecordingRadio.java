@@ -1,18 +1,14 @@
 package com.example.georg.radiostreameralt;
 
-/**
- * Created by georg on 6/2/2017.
- */
-
-public class RecordingRadio {
+class RecordingRadio {
 
     private String name;
     private int id;
     private long time;
     private int size;
-    private boolean stopped;
+//    private boolean stopped;
 
-    public RecordingRadio(String name, int id, long time, int size){
+    RecordingRadio(String name, int id, long time, int size){
         this.name = name;
         this.id = id;
         this.time = time;
@@ -31,7 +27,7 @@ public class RecordingRadio {
         return time;
     }
 
-    public int getSize() {
+    int getSize() {
         return size;
     }
 }

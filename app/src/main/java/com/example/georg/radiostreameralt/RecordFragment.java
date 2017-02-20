@@ -1,20 +1,21 @@
 package com.example.georg.radiostreameralt;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
-
-import com.vstechlab.easyfonts.EasyFonts;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabSelectListener;
 
 
 /**
@@ -23,12 +24,24 @@ import com.vstechlab.easyfonts.EasyFonts;
 public class RecordFragment extends Fragment {
 
     private RecordingNow recordingNow;
-    private ImageButton btRecordNow;
-    private ImageButton btSchedule;
-    private ImageButton btFolder;
-    private TextView tvButton1;
-    private TextView tvButton2;
-    private TextView tvButton3;
+	private BottomBarTab recNowTab;
+    private int recordings = 0;
+
+    private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("SIMPLE_RECORDING_ADDED")){
+                recNowTab.setBadgeCount(recordings++);
+            }
+            else if(intent.getAction().equals("RECORDING_STOPPED")){
+                recordings--;
+                if(recordings==0){
+                    recNowTab.removeBadge();
+                }
+                else recNowTab.setBadgeCount(recordings);
+            }
+        }
+    };
 
     public RecordFragment() {
         // Required empty public constructor
@@ -37,8 +50,12 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         recordingNow = new RecordingNow();
+
+        if (serviceReceiver != null) {
+            getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_ADDED"));
+            getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_STOPPED"));
+        }
     }
 
     @Override
@@ -46,106 +63,39 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
+	
+		BottomBar bottomBar = (BottomBar) view.findViewById(R.id.bottomBar);
+        recNowTab = bottomBar.getTabWithId(R.id.tab_recording_now);
 
-        btRecordNow = (ImageButton) view.findViewById(R.id.record_now_button);
-        btSchedule = (ImageButton)view.findViewById(R.id.schedule_button);
-        btFolder = (ImageButton)view.findViewById(R.id.folder_button);
-        tvButton1 = (TextView)view.findViewById(R.id.tvButton1);
-        tvButton2 = (TextView)view.findViewById(R.id.tvButton2);
-        tvButton3 = (TextView)view.findViewById(R.id.tvButton3);
-        //First Page Immidiate transaction without animation
-        FragmentManager manager = getFragmentManager();
+        //First Page Immediate transaction without animation
+        final FragmentManager manager = getFragmentManager();
         manager.beginTransaction()
                 .replace(R.id.record_layout_for_fragments, recordingNow).commit();
-        this.onSelectChanges(0);
 
-        btRecordNow.setOnClickListener(new View.OnClickListener() {
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
-            public void onClick(View v) {
-                FragmentManager manager = getFragmentManager();
-                manager.beginTransaction()
-                        //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
-                        .replace(R.id.record_layout_for_fragments, recordingNow).commit();
-                onSelectChanges(0);
+            public void onTabSelected(@IdRes int tabId) {
+                if (tabId == R.id.tab_recording_now) {
+                    manager.beginTransaction()
+                            //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+                            .replace(R.id.record_layout_for_fragments, recordingNow).commit();
+                }
+                else if(tabId == R.id.tab_scheduled_recordings){
+                    SchRecord schRecord = new SchRecord();
+                    manager.beginTransaction()
+                            //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+                            .replace(R.id.record_layout_for_fragments, schRecord).commit();
+                }
+                else if(tabId == R.id.tab_folder_recordings){
+                    FolderRecordings folderRecordings = new FolderRecordings();
+                    manager.beginTransaction()
+                            //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+                            .replace(R.id.record_layout_for_fragments, folderRecordings).commit();
+                }
             }
         });
-
-        btSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SchRecord schRecord = new SchRecord();
-                FragmentManager manager = getFragmentManager();
-                manager.beginTransaction()
-                        //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
-                        .replace(R.id.record_layout_for_fragments, schRecord).commit();
-                onSelectChanges(1);
-            }
-        });
-
-        btFolder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FolderRecordings folderRecordings = new FolderRecordings();
-                FragmentManager manager = getFragmentManager();
-                manager.beginTransaction()
-                        //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
-                        .replace(R.id.record_layout_for_fragments, folderRecordings).commit();
-                onSelectChanges(2);
-            }
-        });
-
 
         return view;
     }
 
-    private void onSelectChanges (int button){
-        switch (button){
-            case 0:
-                DrawableCompat.setTint(btRecordNow.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .colorAccent));
-                tvButton1.setBackgroundResource(R.color.colorAccent);
-                DrawableCompat.setTint(btSchedule.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .textColorPrimary));
-                tvButton2.setBackgroundResource(R.color.transparent);
-                DrawableCompat.setTint(btFolder.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .textColorPrimary));
-                tvButton3.setBackgroundResource(R.color.transparent);
-                break;
-            case 1:
-                DrawableCompat.setTint(btRecordNow.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .textColorPrimary));
-                tvButton1.setBackgroundResource(R.color.transparent);
-                DrawableCompat.setTint(btSchedule.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .colorAccent));
-                tvButton2.setBackgroundResource(R.color.colorAccent);
-                DrawableCompat.setTint(btFolder.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .textColorPrimary));
-                tvButton3.setBackgroundResource(R.color.transparent);
-                break;
-            case 2:
-                DrawableCompat.setTint(btRecordNow.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .textColorPrimary));
-                tvButton1.setBackgroundResource(R.color.transparent);
-                DrawableCompat.setTint(btSchedule.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .textColorPrimary));
-                tvButton2.setBackgroundResource(R.color.transparent);
-                DrawableCompat.setTint(btFolder.getDrawable(), ContextCompat.getColor
-                        (RecordFragment.this.getContext(), R.color
-                                .colorAccent));
-                tvButton3.setBackgroundResource(R.color.colorAccent);
-                break;
-        }
-
-        btRecordNow.setEnabled(!(button==0));
-        btSchedule.setEnabled(!(button==1));
-        btFolder.setEnabled(!(button==2));
-    }
 }
