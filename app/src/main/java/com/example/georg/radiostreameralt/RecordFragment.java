@@ -24,6 +24,8 @@ import com.roughike.bottombar.OnTabSelectListener;
 public class RecordFragment extends Fragment {
 
     private RecordingNow recordingNow;
+    private SchRecord schRecord;
+    private FolderRecordings folderRecordings;
 	private BottomBarTab recNowTab;
     private int recordings = 0;
 
@@ -51,6 +53,9 @@ public class RecordFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         recordingNow = new RecordingNow();
+        schRecord = new SchRecord();
+        folderRecordings = new FolderRecordings();
+
 
         if (serviceReceiver != null) {
             getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_ADDED"));
@@ -81,13 +86,11 @@ public class RecordFragment extends Fragment {
                             .replace(R.id.record_layout_for_fragments, recordingNow).commit();
                 }
                 else if(tabId == R.id.tab_scheduled_recordings){
-                    SchRecord schRecord = new SchRecord();
                     manager.beginTransaction()
                             //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
                             .replace(R.id.record_layout_for_fragments, schRecord).commit();
                 }
                 else if(tabId == R.id.tab_folder_recordings){
-                    FolderRecordings folderRecordings = new FolderRecordings();
                     manager.beginTransaction()
                             //.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
                             .replace(R.id.record_layout_for_fragments, folderRecordings).commit();

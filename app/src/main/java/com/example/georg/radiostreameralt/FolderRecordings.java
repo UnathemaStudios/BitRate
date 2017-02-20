@@ -38,20 +38,19 @@ public class FolderRecordings extends Fragment {
 
     public FolderRecordings() {
         // Required empty public constructor
+
     }
 	
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());
     }
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-		Log.w(this.getClass().toString().substring(this.getClass().toString().lastIndexOf(".")+1), Thread.currentThread().getStackTrace()[2].getMethodName());	
 		return inflater.inflate(R.layout.fragment_folder_recordings, container, false);
     }
 	
