@@ -20,13 +20,8 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import java.util.ArrayList;
 import java.util.Locale;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class RecordingNow extends Fragment
 {
-	
 	private ArrayList<RecordingRadio> recordingNowRadios = new ArrayList<>();
 	private FunDapter adapter;
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
@@ -80,7 +75,6 @@ public class RecordingNow extends Fragment
 	{
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_recording_now, container, false);
-		
 	}
 	
 	@Override
@@ -104,7 +98,7 @@ public class RecordingNow extends Fragment
 			@Override
 			public String getStringValue(RecordingRadio item, int position)
 			{
-				return (Integer.toString(item.getSize()) + " KB ");
+				return prettySize(item.getSize());
 			}
 		});
 		dictionary.addStringField(R.id.tvRecordingNowTime, new StringExtractor<RecordingRadio>()
@@ -112,10 +106,9 @@ public class RecordingNow extends Fragment
 			@Override
 			public String getStringValue(RecordingRadio item, int position)
 			{
-				return timePretty(item.getTime());
+				return prettyTime(item.getTime());
 			}
 		});
-		
 		
 		adapter = new FunDapter<>(view.getContext(), recordingNowRadios, R.layout.recording_now_layout, dictionary);
 		
@@ -132,7 +125,6 @@ public class RecordingNow extends Fragment
 		});
 	}
 	
-	
 	public void send(String actionToSend, int key)
 	{
 		Intent serviceIntent = new Intent(getContext(), Recorder.class);
@@ -141,9 +133,21 @@ public class RecordingNow extends Fragment
 		getActivity().startService(serviceIntent);
 	}
 	
-	public String timePretty(long timeInSeconds)
+	public String prettyTime(long timeInSeconds)
 	{
 		return String.format(Locale.US,"%02d:%02d",timeInSeconds/60,timeInSeconds%60);
+	}
+	
+	public String prettySize(int sizeInKB)
+	{
+		if (sizeInKB<1024)
+		{
+			return (String.valueOf(sizeInKB)+" KB ");
+		}
+		else /*if (sizeInKB<1048576)*/
+		{
+			return String.format(Locale.US,"%.2f",(double)sizeInKB/1024)+" MB ";
+		}
 	}
 	
 //	//function to check if a service is running
