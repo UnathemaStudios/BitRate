@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         {
             send("REQUEST_STATUS"); //request mediaplayer service status
         }
+	
 	}
 	
 	

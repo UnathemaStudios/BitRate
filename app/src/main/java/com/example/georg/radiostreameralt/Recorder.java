@@ -37,93 +37,74 @@ public class Recorder extends Service
 	public final static int FIRSTRECORDING = 0;
 	public final static int LASTRECOEDING = 1;
 	public final static int FIRSTANDLASTRECORDING = 2;
-	
+	public static int activeRecordings = 0;
+	private static Integer key;
 	private NotificationManager notificationManager;
-	private void showNotification(boolean first)
-	{
-		Notification notification = new Notification.Builder(this)
-				.setOngoing(true)
-				.setSmallIcon(R.drawable.ic_launchersmall)  // the status icon
-				.setContentTitle("Recording now...   " + activeRecordings)  // the label of
-				// the entry
-				.build();
-		int notifID = 4321;
-		if (first)
-		{
-			startForeground(notifID, notification);
-		}
-		else
-		{
-			notificationManager.notify(notifID, notification);
-		}
-	}
-
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
-	private static Integer key;
-	public static int activeRecordings = 0;
-
-
 	private android.os.Handler myHandler = new android.os.Handler();
-
-	private Runnable BANANA = new Runnable() {
-		public void run() {
+	private Runnable BANANA = new Runnable()
+	{
+		public void run()
+		{
 			int j = 0;
-			for (int i=0;i<rec.size();i++)
+			for (int i = 0; i < rec.size(); i++)
 			{
 				if (rec.get(i) != null)
 				{
 					if (rec.get(i).getStatus() != STOPPED)
 					{
 						j++;
-						if (rec.get(i).getDuration() != -1)
+//						if (rec.get(i).getDuration() != -1)
+//						{
+//							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i) + " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s/" + rec.get(i).getDuration() + "s Size:" + rec.get(i).getCurrentSizeInKB() + "KB");
+//						} else
+//						{
+//							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i) + " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s Size:" + rec.get(i).getCurrentSizeInKB() + "KB");
+//						}
+						if (activeRecordings == 1)
 						{
-							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i)
-									+ " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s/"
-									+ rec.get(i).getDuration() + "s Size:"
-									+ rec.get(i).getCurrentSizeInKB() + "KB");
-						}
-						else
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), FIRSTANDLASTRECORDING);
+						} else if (j == 1)
 						{
-							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i)
-									+ " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s Size:"
-									+ rec.get(i).getCurrentSizeInKB() + "KB");
-						}
-						if(activeRecordings==1){
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
-									.getCurrentRecordingTimeInSeconds(), rec.get(i)
-									.getCurrentSizeInKB(), FIRSTANDLASTRECORDING);
-						}
-						else if(j==1){
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
-									.getCurrentRecordingTimeInSeconds(), rec.get(i)
-									.getCurrentSizeInKB(), FIRSTRECORDING);
-						}
-						else if(j==activeRecordings){
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
-									.getCurrentRecordingTimeInSeconds(), rec.get(i)
-									.getCurrentSizeInKB(), LASTRECOEDING);
-						}
-						else broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i)
-								.getCurrentRecordingTimeInSeconds(), rec.get(i)
-								.getCurrentSizeInKB(), 999);
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), FIRSTRECORDING);
+						} else if (j == activeRecordings)
+						{
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), LASTRECOEDING);
+						} else
+							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), -1);
 					}
 				}
 			}
-			myHandler.postDelayed(this, 200);
+			myHandler.postDelayed(this, 250);
 		}
 	};
-
+	
+	private void showNotification(boolean first)
+	{
+		Notification notification = new Notification.Builder(this).setOngoing(true).setSmallIcon(R.drawable.ic_launchersmall)
+				.setContentTitle("Recording now...   " + activeRecordings)
+				.build();
+		int notifID = 4321;
+		if (first)
+		{
+			startForeground(notifID, notification);
+		} else
+		{
+			notificationManager.notify(notifID, notification);
+		}
+	}
+	
 	@Override
 	public void onCreate()
 	{
-		myHandler.postDelayed(BANANA,100);
+		myHandler.postDelayed(BANANA, 250);
 		key = 0;
-		notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		showNotification(true);
 		Log.w("Recorder", "service created");
 	}
-
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
@@ -133,9 +114,8 @@ public class Recorder extends Service
 			case "RECORD":
 			{
 				String urlString = intent.getStringExtra("urlString");
-
-				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1)
-						,intent.getStringExtra("name")));
+				
+				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1), intent.getStringExtra("name")));
 				rec.get(key).start();
 				broadcastRecording("SIMPLE_RECORDING_ADDED"); //send  main the key for hash address
 				//Log.w("Recorder", "REC " + key + " START");
@@ -151,7 +131,7 @@ public class Recorder extends Service
 				rec.get(passedKey).stop();
 				broadcastRecording("RECORDING_STOPPED", passedKey);
 				//Log.w("Recorder", "REC " + passedKey + " END");
-				while (rec.get(passedKey).getStatus() != STOPPED);
+				while (rec.get(passedKey).getStatus() != STOPPED) ;
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				//rec.remove(passedKey);
 				showNotification(false);
@@ -167,7 +147,7 @@ public class Recorder extends Service
 		}
 		return START_STICKY;
 	}
-
+	
 	private String date()
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
@@ -175,25 +155,23 @@ public class Recorder extends Service
 			Calendar calendar = Calendar.getInstance();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd-kkmmss");
 			return sdf.format(calendar.getTime());
-		}
-		else
+		} else
 		{
 			Date d = new Date();
 			CharSequence s = DateFormat.format("yyMMdd-kkmmss", d.getTime());
-			return (String)s;
+			return (String) s;
 		}
 	}
-
+	
 	@Nullable
 	@Override
 	public IBinder onBind(Intent intent)
 	{
 		return null;
 	}
-
+	
 	//function to broadcast hash key of current Recording
-	public void broadcastRecording(String action, int key, String name, long currentTime, int
-			sizeInKb, int position)
+	public void broadcastRecording(String action, int key, String name, long currentTime, int sizeInKb, int position)
 	{
 		Intent intent = new Intent();
 		intent.setAction(action);
@@ -204,6 +182,7 @@ public class Recorder extends Service
 		intent.putExtra("position", position);
 		sendBroadcast(intent);
 	}
+	
 	public void broadcastRecording(String action, int key)
 	{
 		Intent intent = new Intent();
@@ -211,7 +190,9 @@ public class Recorder extends Service
 		intent.putExtra("key", key);
 		sendBroadcast(intent);
 	}
-	public void broadcastRecording(String action){
+	
+	public void broadcastRecording(String action)
+	{
 		Intent intent = new Intent();
 		intent.setAction(action);
 		sendBroadcast(intent);
@@ -228,8 +209,8 @@ class Recording
 	private int status;
 	private int bytesRead;
 	private long startTimeInSeconds;
-
-
+	
+	
 	Recording(String date, String urlString, long duration, String name)
 	{
 		this.date = date;
@@ -238,15 +219,17 @@ class Recording
 		this.name = name;
 		stopped = false;
 		bytesRead = 0;
-		startTimeInSeconds = System.currentTimeMillis()/1000;
+		startTimeInSeconds = System.currentTimeMillis() / 1000;
 	}
 	
 	void start()
 	{
 		status = RECORDING;
-		new Thread(new Runnable(){
+		new Thread(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				try
 				{
 					status = RECORDING;
@@ -261,7 +244,7 @@ class Recording
 							Log.w("Recorder", "Failed to create directory");
 						}
 					}
-					File outputSource = new File(streamsDir,name+date + ".mp3");
+					File outputSource = new File(streamsDir, name + date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
 					
 					//ICY 200 OK ERROR FIX FOR KITKAT
@@ -269,71 +252,72 @@ class Recording
 					{
 						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
 						OkHttpClient client = new OkHttpClient();
-						Request request = new Request.Builder()
-								.url(urlString)
-								.build();
+						Request request = new Request.Builder().url(urlString).build();
 						Response response = client.newCall(request).execute();
 						InputStream inputStream = response.body().byteStream();
 						
 						int c;
-						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
+						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
 						{
 							fileOutputStream.write(c);
 							bytesRead++;
 						}
-					}
-					else
+					} else
 					{
 						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
 						URL url = new URL(urlString);
 						InputStream inputStream = url.openStream();
 						
 						int c;
-						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis()/1000) < (startTimeInSeconds+duration))))
+						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
 						{
 							fileOutputStream.write(c);
 							bytesRead++;
 						}
 					}
 					
-					Log.w("Recorder", String.valueOf(bytesRead/1024) + " KBs downloaded.");
+					Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
 					
 					fileOutputStream.close();
 					
 					//Log.w("Recorder", "finished");
 					Recorder.activeRecordings--;
 					status = STOPPED;
-				} catch (IOException e){e.printStackTrace();}
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}).start();
 	}
-
+	
 	int getCurrentSizeInKB()
 	{
-		return (bytesRead/1024);
+		return (bytesRead / 1024);
 	}
-
+	
 	long getCurrentRecordingTimeInSeconds()
 	{
-		return (System.currentTimeMillis()/1000) - startTimeInSeconds;
+		return (System.currentTimeMillis() / 1000) - startTimeInSeconds;
 	}
-
+	
 	int getStatus()
 	{
 		return status;
 	}
-
+	
 	long getDuration()
 	{
 		return duration;
 	}
-
+	
 	void stop()
 	{
 		stopped = true;
 	}
-
-	public String getName() {
+	
+	public String getName()
+	{
 		return name;
 	}
 }

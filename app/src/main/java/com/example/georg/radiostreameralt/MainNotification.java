@@ -32,20 +32,14 @@ public class MainNotification extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		
 		//start listening for broadcasts
 		if (serviceReceiver != null)
 		{
-			IntentFilter stopFilter = new IntentFilter("0"); //STOPPED STATUS
-			IntentFilter loadingFilter = new IntentFilter("1"); //LOADING STATUS
-			IntentFilter playingFilter = new IntentFilter("2"); //PLAYING STATUS
-			IntentFilter pausedFilter = new IntentFilter("3"); //PAUSED STATUS
-			IntentFilter closeFilter = new IntentFilter("CLOSENOTIF");
-			registerReceiver(serviceReceiver, stopFilter);
-			registerReceiver(serviceReceiver, loadingFilter);
-			registerReceiver(serviceReceiver, playingFilter);
-			registerReceiver(serviceReceiver, pausedFilter);
-			registerReceiver(serviceReceiver, closeFilter);
+			registerReceiver(serviceReceiver, new IntentFilter("0")); //STOPPED STATUS
+			registerReceiver(serviceReceiver, new IntentFilter("1")); //LOADING STATUS
+			registerReceiver(serviceReceiver, new IntentFilter("2")); //PLAYING STATUS
+			registerReceiver(serviceReceiver, new IntentFilter("3")); //PAUSED STATUS
+			registerReceiver(serviceReceiver, new IntentFilter("CLOSENOTIF"));
 		}
 		
 		send("PLAY_STREAM");

@@ -60,12 +60,12 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
         radiosList = new ArrayList<>();
         Log.w("radiosFile.exists()", radiosFile.exists() + "");
         if (!radiosFile.exists()) {
-            radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.
-                    drawable.ic_radios_logo_1055));
-            radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R
-                    .drawable.ic_radio_infinitygreece));
-            radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream.mp3", R
-                    .drawable.ic_radio_nowhere));
+            radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", 
+					R.drawable.ic_radios_logo_1055));
+            radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", 
+					R.drawable.ic_radio_infinitygreece));
+            radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream.mp3", 
+					R.drawable.ic_radio_nowhere));
             try {
                 boolean fileCreated = radiosFile.createNewFile();
                 Log.w("fileCreated", "" + fileCreated);

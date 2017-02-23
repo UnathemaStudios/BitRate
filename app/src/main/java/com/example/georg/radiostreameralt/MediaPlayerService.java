@@ -133,7 +133,6 @@ public class MediaPlayerService extends Service
 		stopSelf(); //stop media player service
 	}
 	
-	
 	//handler for time update
 	private Runnable UpdateSongTime = new Runnable() {
 		public void run() {

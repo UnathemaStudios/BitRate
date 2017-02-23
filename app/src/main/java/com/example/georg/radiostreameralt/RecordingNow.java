@@ -142,7 +142,7 @@ public class RecordingNow extends Fragment
 	{
 		if (sizeInKB<1024)
 		{
-			return (String.valueOf(sizeInKB)+" KB ");
+			return String.valueOf(sizeInKB)+" KB ";
 		}
 		else /*if (sizeInKB<1048576)*/
 		{
@@ -151,7 +151,7 @@ public class RecordingNow extends Fragment
 	}
 	
 //	//function to check if a service is running
-	
+
 //	private boolean isMyServiceRunning(Class<?> serviceClass)
 //	{
 //		ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
