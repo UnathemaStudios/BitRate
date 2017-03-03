@@ -19,6 +19,23 @@ public class MediaPlayerService extends Service
 	private String url;
 	private MediaPlayer streamPlayer;
 	private int status = 0; //0 STOPPED, 1 LOADING, 2 PLAYING, 3 PAUSED
+	private int sleepMinutes = -1;
+
+	private android.os.Handler myTimeHandler = new android.os.Handler();
+	private Runnable PINEAPPLE = new Runnable()
+	{
+		public void run()
+		{
+			send("timeRemaining", sleepMinutes);
+			if(sleepMinutes==0){
+				close();
+			}
+			if(sleepMinutes!=-1){
+				sleepMinutes--;
+			}
+			myTimeHandler.postDelayed(this, 60000);
+		}
+	};
 	
 	//Broadcast Receiver
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
@@ -31,12 +48,15 @@ public class MediaPlayerService extends Service
 			else if (intent.getAction().equals("STOP_STREAM")) {stop();}
 			else if (intent.getAction().equals("CLOSE")) {close();}
 			else if (intent.getAction().equals("REQUEST_STATUS")) {send(Integer.toString(status));}
+			else if (intent.getAction().equals("SLEEPTIMER")) {sleepMinutes = intent.getIntExtra
+					("sleepTime", -1);}
 		}
 	};
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) //when service starts
 	{
+		myTimeHandler.postDelayed(PINEAPPLE, 0);
 		url = intent.getStringExtra("urlString");
 		
 		Intent notifIntent = new Intent(MediaPlayerService.this, MainNotification.class);
@@ -51,7 +71,9 @@ public class MediaPlayerService extends Service
 			registerReceiver(serviceReceiver, new IntentFilter("STOP_STREAM"));
 			registerReceiver(serviceReceiver, new IntentFilter("CLOSE"));
 			registerReceiver(serviceReceiver, new IntentFilter("REQUEST_STATUS"));
+			registerReceiver(serviceReceiver, new IntentFilter("SLEEPTIMER"));
 		}
+
 		return START_STICKY;
 	}
 	
@@ -87,8 +109,6 @@ public class MediaPlayerService extends Service
 				{
 					mediaPlayer.start();
 					
-					myHandler.postDelayed(UpdateSongTime,100); //start time updater
-					
 					status=2; //PLAYING
 					send(Integer.toString(status)); //broadcast media player status for main and notification
 				}
@@ -113,7 +133,6 @@ public class MediaPlayerService extends Service
 	
 	public void stop()
 	{
-		myHandler.removeCallbacks(UpdateSongTime); // stop time updater
 		streamPlayer.stop();//needed?
 		streamPlayer.reset();		
 		streamPlayer.release();
@@ -132,16 +151,7 @@ public class MediaPlayerService extends Service
 		send("CLOSENOTIF"); //broadcast CLOSENOTIF for notification to close
 		stopSelf(); //stop media player service
 	}
-	
-	//handler for time update
-	private Runnable UpdateSongTime = new Runnable() {
-		public void run() {
-			double time;
-			time = streamPlayer.getCurrentPosition();
-			sendTime(time);
-			myHandler.postDelayed(this, 100);
-		}
-	};
+
 	
 	//send function to broadcast an action
 	public void send(String actionToSend)
@@ -150,13 +160,10 @@ public class MediaPlayerService extends Service
 		intent.setAction(actionToSend);
 		sendBroadcast(intent);
 	}
-	
-	//sendTime function to broadcast string and time
-	public void sendTime(double time)
-	{
+	public void send(String actionToSend, int sleepTimeRemaining){
 		Intent intent = new Intent();
-		intent.setAction("TIME_UPDATE");
-		intent.putExtra("time", time);
+		intent.setAction(actionToSend);
+		intent.putExtra("timeRemainingInt", sleepTimeRemaining);
 		sendBroadcast(intent);
 	}
 	
@@ -168,5 +175,3 @@ public class MediaPlayerService extends Service
 	}
 }
 
-//Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)",
-//		Toast.LENGTH_LONG).show();

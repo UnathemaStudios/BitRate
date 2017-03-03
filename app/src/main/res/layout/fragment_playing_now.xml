@@ -4,77 +4,87 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
-                tools:context="com.example.georg.radiostreameralt.PlayingNowFragment"
-                android:background="@color/darkGrey">
+                android:background="@color/darkGrey"
+                tools:context="com.example.georg.radiostreameralt.PlayingNowFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/tvPlayingNowSecondaryDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvPlayingNowName"
         android:layout_centerHorizontal="true"
-        android:id="@+id/tvPlayingNowSecondaryDescription"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="75dp"
         android:layout_marginRight="75dp"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
         android:textAlignment="center"/>
 
     <ImageView
+        android:id="@+id/ivPlayingNowExtended"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:id="@+id/ivPlayingNowExtended"
-        android:elevation="1dp"
-        android:scaleType="centerInside"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="50dp"
+        android:elevation="1dp"
+        android:scaleType="centerInside"/>
 
     <ImageButton
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        app:srcCompat="@drawable/ic_watch_later_black"
         android:id="@+id/ibSleepTimer"
-        android:scaleType="fitXY"
-        android:background="@color/transparent"
-        android:layout_alignBottom="@+id/ibPPPLayingNow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/ibRecordCurrentRadio"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="20dp"
         android:layout_toStartOf="@+id/ibPPPLayingNow"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="20dp"/>
+        android:background="@color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_watch_later_black"/>
 
     <ImageButton
-        app:srcCompat="@drawable/ic_fiber_manual_record"
         android:id="@+id/ibRecordCurrentRadio"
-        android:scaleType="fitXY"
-        android:background="@color/transparent"
-        android:layout_alignBottom="@+id/ibPPPLayingNow"
-        android:layout_toEndOf="@+id/ibPPPLayingNow"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="20dp"
         android:layout_width="40dp"
-        android:layout_height="40dp"/>
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_fiber_manual_record"
+        android:layout_marginStart="27dp"
+        android:layout_marginTop="29dp"
+        android:layout_alignTop="@+id/ibPPPLayingNow"
+        android:layout_toEndOf="@+id/ibPPPLayingNow"/>
 
     <TextView
-        android:text="TextView"
         android:id="@+id/tvPlayingNowName"
-        android:textAlignment="center"
-        android:textStyle="normal|bold"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/ivPlayingNowExtended"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
         android:paddingTop="0dp"
-        android:layout_marginTop="20dp"/>
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textStyle="normal|bold"/>
 
     <ImageButton
-        app:srcCompat="@drawable/ic_play_circle_filled_blank_only"
         android:id="@+id/ibPPPLayingNow"
-        android:background="@color/transparent"
-        android:scaleType="fitXY"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_below="@+id/tvPlayingNowSecondaryDescription"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp"
-        android:layout_width="75dp"
-        android:layout_height="75dp"/>
+        android:background="@color/transparent"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_play_circle_filled_blank_only"/>
+
+    <TextView
+        android:id="@+id/tvTimeRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="11dp"
+        android:layout_alignEnd="@+id/ibSleepTimer"
+        android:layout_alignStart="@+id/ibSleepTimer"
+        android:layout_below="@+id/ibSleepTimer"
+        android:textSize="10sp"/>
 </RelativeLayout>

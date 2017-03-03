@@ -15,6 +15,7 @@ import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +28,27 @@ import android.widget.Toast;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayingNowFragment extends Fragment {
+public class PlayingNowFragment extends Fragment implements SleepTimerDialog.NoticeDialogListener  {
 
     private ImageButton recordCurrentRadio;
     private ImageButton ibPPButton;
     private ImageButton ibSleepTimer;
+    private TextView tvTimeRemaining;
     private ImageView ivRadio;
     private TextView tvRadioName;
+    private int timeRemainingTemp;
+
+    private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("timeRemaining")){
+                String tet = Integer.toString(intent.getIntExtra("timeRemainingInt", -1));
+                tvTimeRemaining.setText(tet);
+            }
+        }
+//        intent.getIntExtra("timeRemainingInt", -1)
+    };
 
     public PlayingNowFragment() {
         // Required empty public constructor
@@ -42,6 +57,9 @@ public class PlayingNowFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (serviceReceiver != null){
+            getActivity().registerReceiver(serviceReceiver, new IntentFilter("timeRemaining"));
+        }
     }
 
     @Override
@@ -62,6 +80,7 @@ public class PlayingNowFragment extends Fragment {
         recordCurrentRadio = (ImageButton)getActivity().findViewById(R.id.ibRecordCurrentRadio);
         ivRadio = (ImageView)getActivity().findViewById(R.id.ivPlayingNowExtended);
         tvRadioName = (TextView)getActivity().findViewById(R.id.tvPlayingNowName);
+        tvTimeRemaining = (TextView)getActivity().findViewById(R.id.tvTimeRemaining);
 
         ivRadio.setBackgroundResource(((MainActivity)getActivity()).getPlayerDrawable());
         tvRadioName.setText(((MainActivity)getActivity()).getPlayerName());
@@ -73,6 +92,19 @@ public class PlayingNowFragment extends Fragment {
             }
         });
 
+        ibSleepTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = tvTimeRemaining.getText().toString();
+                if(text.equals("")||text.equals("-1")||text.equals("0")) {
+                    SleepTimerDialog sleepTimerDialog = new SleepTimerDialog();
+                    sleepTimerDialog.setTargetFragment(PlayingNowFragment.this, 2);
+                    sleepTimerDialog.show(getFragmentManager(), "rockets");
+                }
+                else send("SLEEPTIMER", -1);
+            }
+        });
+
 
     }
 
@@ -80,6 +112,12 @@ public class PlayingNowFragment extends Fragment {
     public void send(String actionToSend) {
         Intent intent = new Intent();
         intent.setAction(actionToSend);
+        getActivity().sendBroadcast(intent);
+    }
+    public void send(String actionToSend, int time) {
+        Intent intent = new Intent();
+        intent.setAction(actionToSend);
+        intent.putExtra("sleepTime", time);
         getActivity().sendBroadcast(intent);
     }
 
@@ -100,13 +138,14 @@ public class PlayingNowFragment extends Fragment {
     private void setupPage(){
         ivRadio.setBackgroundResource(((MainActivity)getActivity()).getPlayerDrawable());
         tvRadioName.setText(((MainActivity)getActivity()).getPlayerName());
-       /* Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
+        /*Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
                 ((MainActivity)getActivity()).getPlayerDrawable());
         int h = getView().getHeight();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
         mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h, getDominantColor(icon),
                 Color.parseColor
                 ("#000000"), Shader.TileMode.REPEAT));
+        mDrawable.setAlpha(220);
         getView().setBackgroundDrawable(mDrawable);*/
     }
 
@@ -115,6 +154,13 @@ public class PlayingNowFragment extends Fragment {
         final int color = newBitmap.getPixel(0, 0);
         newBitmap.recycle();
         return color;
+    }
+
+    @Override
+    public void onDialogPositiveClick(int minutes) {
+        send("SLEEPTIMER",minutes);
+        tvTimeRemaining.setText(Integer.toString(minutes));
+        ibSleepTimer.setBackgroundColor(Color.RED);
     }
 }
 
