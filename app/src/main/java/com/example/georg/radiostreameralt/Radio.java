@@ -11,6 +11,7 @@ public class Radio {
     public Radio (String name, String url, int icon){
         this.name = name;
         this.url = url;
+        //Geiaaaaaaaa
         this.icon = icon;
     }
 
