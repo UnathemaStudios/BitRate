@@ -67,7 +67,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_playing_now, container, false);
-        send("PLAYING_NOW_UPDATE");
         return view;
     }
 
@@ -110,9 +109,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 
     //send function to broadcast an action
     public void send(String actionToSend) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(getContext(), Recorder.class);
         intent.setAction(actionToSend);
-        getActivity().sendBroadcast(intent);
+        getActivity().startService(intent);
     }
     public void send(String actionToSend, int time) {
         Intent intent = new Intent();
