@@ -33,7 +33,7 @@ public class Recorder extends Service
 {
 	public final static int RECORDING = 1;
 	public final static int STOPPED = 2;
-//	public final static int UNLISTED = 3;
+	//	public final static int UNLISTED = 3;
 	public final static int FIRSTRECORDING = 0;
 	public final static int LASTRECOEDING = 1;
 	public final static int FIRSTANDLASTRECORDING = 2;
@@ -82,9 +82,7 @@ public class Recorder extends Service
 	
 	private void showNotification(boolean first)
 	{
-		Notification notification = new Notification.Builder(this).setOngoing(true).setSmallIcon(R.drawable.ic_launchersmall)
-				.setContentTitle("Recording now...   " + activeRecordings)
-				.build();
+		Notification notification = new Notification.Builder(this).setOngoing(true).setSmallIcon(R.drawable.ic_launchersmall).setContentTitle("Recording now...   " + activeRecordings).build();
 		int notifID = 4321;
 		if (first)
 		{
@@ -199,7 +197,7 @@ public class Recorder extends Service
 	}
 }
 
-class Recording
+/*class Recording
 {
 	private String name;
 	private String date;
@@ -209,8 +207,8 @@ class Recording
 	private int status;
 	private int bytesRead;
 	private long startTimeInSeconds;
-	
-	
+
+
 	Recording(String date, String urlString, long duration, String name)
 	{
 		this.date = date;
@@ -221,7 +219,7 @@ class Recording
 		bytesRead = 0;
 		startTimeInSeconds = System.currentTimeMillis() / 1000;
 	}
-	
+
 	void start()
 	{
 		status = RECORDING;
@@ -246,7 +244,7 @@ class Recording
 					}
 					File outputSource = new File(streamsDir, name + date + ".mp3");
 					fileOutputStream = new FileOutputStream(outputSource);
-					
+
 					//ICY 200 OK ERROR FIX FOR KITKAT
 					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
 					{
@@ -255,7 +253,7 @@ class Recording
 						Request request = new Request.Builder().url(urlString).build();
 						Response response = client.newCall(request).execute();
 						InputStream inputStream = response.body().byteStream();
-						
+
 						int c;
 						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
 						{
@@ -267,7 +265,7 @@ class Recording
 						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
 						URL url = new URL(urlString);
 						InputStream inputStream = url.openStream();
-						
+
 						int c;
 						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
 						{
@@ -275,11 +273,11 @@ class Recording
 							bytesRead++;
 						}
 					}
-					
+
 					Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
-					
+
 					fileOutputStream.close();
-					
+
 					//Log.w("Recorder", "finished");
 					Recorder.activeRecordings--;
 					status = STOPPED;
@@ -290,34 +288,34 @@ class Recording
 			}
 		}).start();
 	}
-	
+
 	int getCurrentSizeInKB()
 	{
 		return (bytesRead / 1024);
 	}
-	
+
 	long getCurrentRecordingTimeInSeconds()
 	{
 		return (System.currentTimeMillis() / 1000) - startTimeInSeconds;
 	}
-	
+
 	int getStatus()
 	{
 		return status;
 	}
-	
+
 	long getDuration()
 	{
 		return duration;
 	}
-	
+
 	void stop()
 	{
 		stopped = true;
 	}
-	
+
 	public String getName()
 	{
 		return name;
 	}
-}
+}*/

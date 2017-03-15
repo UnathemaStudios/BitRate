@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvDescription;
     private int playing; //0=stopped 1=playing 2=paused
     private RelativeLayout playerLayout;
-    private String currentUrl;
+    private String currentUrl = "http://philae.shoutca.st:8307/stream";
     private String currentRadioName;
     private int currentRadioDrawable;
     private int durationtmp;
@@ -407,16 +407,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    public void recorder(String action, String urlString, long duration)
-    {
-            Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
-            serviceIntent.putExtra("Action", action);
-            serviceIntent.putExtra("urlString", urlString);
-            serviceIntent.putExtra("duration", duration);
-            serviceIntent.putExtra("name", currentRadioName);
-            MainActivity.this.startService(serviceIntent);
-    }
+//
+//    public void recorder(String action, String urlString, long duration)
+//    {
+//		Intent serviceIntent = new Intent(MainActivity.this, Recorder.class);
+//		serviceIntent.putExtra("Action", action);
+//		serviceIntent.putExtra("urlString", urlString);
+//		serviceIntent.putExtra("duration", duration);
+//		serviceIntent.putExtra("name", currentRadioName);
+//		MainActivity.this.startService(serviceIntent);
+//    }
+    
+    public void recorder(String action, String url, long duration)
+	{
+		Intent intent = new Intent(this,MainService.class);
+		intent.setAction(action);
+		intent.putExtra("urlString", url);
+		intent.putExtra("duration", duration);
+		intent.putExtra("name", currentRadioName);
+		startService(intent);
+	}
 	
 //    public void recorder(String action, int key)
 //    {
@@ -445,6 +455,15 @@ public class MainActivity extends AppCompatActivity {
         intent.setAction(actionToSend);
         sendBroadcast(intent);
     }
+	
+	public void tellService(String action, String url, int finger)
+	{
+		Intent intent = new Intent(this, MainService.class);
+		intent.setAction(action);
+		intent.putExtra("url", url);
+		intent.putExtra("finger", finger);
+		startService(intent);
+	}
 
     //function to check if a service is running
     private boolean isMyServiceRunning(Class<?> serviceClass)
