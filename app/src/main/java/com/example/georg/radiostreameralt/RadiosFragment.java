@@ -1,13 +1,10 @@
 package com.example.georg.radiostreameralt;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -17,21 +14,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 /**
@@ -59,9 +47,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
 
-		
-		ImageView ivLogo = (ImageView) view.findViewById(R.id.ivLogo);
-		TextView tvName = (TextView) view.findViewById(R.id.tvName);
+
 		fabAddRadio = (FloatingActionButton) view.findViewById(R.id.fabAddRadio);
 		
 		BindDictionary<Radio> dictionary = new BindDictionary<>();

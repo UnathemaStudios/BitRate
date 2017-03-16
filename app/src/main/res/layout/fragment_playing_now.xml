@@ -41,7 +41,7 @@
         android:layout_toStartOf="@+id/ibPPPLayingNow"
         android:background="@color/transparent"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_watch_later_black"/>
+        android:src="@drawable/ic_snooze"/>
 
     <ImageButton
         android:id="@+id/ibRecordCurrentRadio"
@@ -82,9 +82,12 @@
     <TextView
         android:id="@+id/tvTimeRemaining"
         android:layout_width="wrap_content"
-        android:layout_height="11dp"
+        android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/ibSleepTimer"
         android:layout_alignStart="@+id/ibSleepTimer"
         android:layout_below="@+id/ibSleepTimer"
-        android:textSize="10sp"/>
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
 </RelativeLayout>

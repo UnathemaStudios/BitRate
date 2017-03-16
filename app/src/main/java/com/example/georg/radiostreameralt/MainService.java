@@ -10,28 +10,15 @@ import android.icu.util.Calendar;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import static com.example.georg.radiostreameralt.MainService.RECORDING;
-import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
-
 public class MainService extends Service
 {
 //	  	  .oooooo.                                                       oooo
@@ -61,6 +48,7 @@ public class MainService extends Service
 	// 888          888           .88ooo8888.       `888'      888    "     888`88b.    
 	// 888          888       o  .8'     `888.       888       888       o  888  `88b.  
 	//o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
+
 	MediaPlayer streamPlayer = new MediaPlayer();
 	private int sleepMinutes = -1;
 	private android.os.Handler myTimeHandler = new android.os.Handler();
@@ -68,15 +56,15 @@ public class MainService extends Service
 	{
 		public void run()
 		{
-			send("timeRemaining", sleepMinutes);
-			if (sleepMinutes == 0)
-			{
-				close();
-			}
 			if (sleepMinutes != -1)
 			{
-				sleepMinutes--;
-			}
+                sleepMinutes--;
+                if (sleepMinutes == 0)
+                {
+                    stop();
+                }
+                send("timeRemaining", sleepMinutes);
+            }
 			myTimeHandler.postDelayed(this, 60000);
 		}
 	};
@@ -140,7 +128,9 @@ public class MainService extends Service
 	public void onCreate()
 	{
 		myHandler.postDelayed(BANANA, 250);
-		key = 0;
+        myTimeHandler.postDelayed(PINEAPPLE, 0);
+
+        key = 0;
 		
 		timeCreated = System.currentTimeMillis();
 		Log.w("timeCreated", Long.toString(timeCreated));
@@ -149,8 +139,6 @@ public class MainService extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-		myTimeHandler.postDelayed(PINEAPPLE, 0);
-		
 		switch (intent.getAction())
 		{
 			case "PLAYER_PLAY":
@@ -171,6 +159,7 @@ public class MainService extends Service
 			case "REQUEST_PLAYER_STATUS":
 			{
 				send(Integer.toString(playerStatus));
+                send("SET_FINGER", finger);
 				break;
 			}
 			case "CLOSE":
@@ -178,7 +167,7 @@ public class MainService extends Service
 				close();
 				break;
 			}
-			case "SLEEPERTIMER":
+			case "SLEEPTIMER":
 			{
 				sleepMinutes = intent.getIntExtra("sleepTime", -1);
 				break;
@@ -270,10 +259,10 @@ public class MainService extends Service
 		{
 			streamPlayer.stop();
 		}
-//		streamPlayer.release();
 		streamPlayer.reset();
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus)); //broadcast media player status for main and notification
+        sleepMinutes = -1;
 	}
 	
 	public void close()
@@ -309,7 +298,7 @@ public class MainService extends Service
 		NotificationCompat.Action closeAction = new NotificationCompat.Action(R.drawable.poweroff, "Exit", closePendingIntent);
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
-		notificationBuilder.setSmallIcon(R.drawable.ic_media_stop);
+		notificationBuilder.setSmallIcon(R.drawable.ic_stat_name);
 		notificationBuilder.setContentTitle("Stream Player"+" "+timeCreated+" "+activeRecordings);
 		
 		if (playerStatus == LOADING)
@@ -365,13 +354,24 @@ public class MainService extends Service
 		sendBroadcast(intent);
 	}
 	
-	public void send(String actionToSend, int sleepTimeRemaining)
+	public void send(String actionToSend, int variable)
 	{
-		Intent intent = new Intent();
-		intent.setAction(actionToSend);
-		intent.putExtra("timeRemainingInt", sleepTimeRemaining);
-		sendBroadcast(intent);
+        if(actionToSend.equals("timeRemaining")) {
+            Log.w("SLEEPTIER", "SEND FUNCTION");
+            Intent intent = new Intent();
+            intent.setAction(actionToSend);
+            intent.putExtra("timeRemainingInt", variable);
+            sendBroadcast(intent);
+        }
+        else{
+            Intent intent = new Intent();
+            intent.setAction(actionToSend);
+            intent.putExtra("finger", variable);
+            sendBroadcast(intent);
+        }
+
 	}
+
 	
 	public void broadcastRecording(String action, int key, String name, long currentTime, int sizeInKb, int position)
 	{

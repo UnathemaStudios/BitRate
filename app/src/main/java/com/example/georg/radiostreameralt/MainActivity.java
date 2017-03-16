@@ -150,8 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     disableButtons();
                     //start player
                     //start media player service
-                    tellServiceP("PLAYER_PLAY", "http://philae.shoutca.st:8307/stream", 1);
-                    finger = 1;
+                    tellServiceP("PLAYER_PLAY", radiosList.get(finger).getUrl(), finger);
                 }
             }
         });
@@ -162,15 +161,16 @@ public class MainActivity extends AppCompatActivity {
             registerReceiver(serviceReceiver, new IntentFilter("2"));
             registerReceiver(serviceReceiver, new IntentFilter("radioToPlay"));
             registerReceiver(serviceReceiver, new IntentFilter("REC_CURRENT"));
+            registerReceiver(serviceReceiver, new IntentFilter("SET_FINGER"));
         }
 
         if (isMyServiceRunning(MainService.class)) //IF mediaplayer service is running
         {
-            tellServiceP("REQUEST_STATUS"); //request mediaplayer service status
+            tellServiceP("REQUEST_PLAYER_STATUS"); //request mediaplayer service status
         }
+        else setFinger(1);
 
     }
-
 
     @Override
     public void onBackPressed() {
@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 //ui after Stopped
                 playerStop();
+                playingNowFragment.setSleepText(0);
             }
             else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
             {
@@ -245,6 +246,10 @@ public class MainActivity extends AppCompatActivity {
             else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
             {
                 playerPlay();
+
+            }
+            else if(intent.getAction().equals("SET_FINGER")){
+                setFinger(intent.getIntExtra("finger", -1));
             }
             else if (intent.getAction().equals("REC_CURRENT")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -346,6 +351,13 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, MainService.class);
         serviceIntent.setAction(action);
         serviceIntent.putExtra("key", key);
+        startService(serviceIntent);
+    }
+
+    public void tellServiceT(String action, int sleepTime){
+        Intent serviceIntent = new Intent(this, MainService.class);
+        serviceIntent.setAction(action);
+        serviceIntent.putExtra("sleepTime", sleepTime);
         startService(serviceIntent);
     }
 
@@ -481,6 +493,10 @@ public class MainActivity extends AppCompatActivity {
         this.finger = finger;
         ivImageSmall.setBackgroundResource(radiosList.get(finger).getIcon());
         tvDescription.setText(radiosList.get(finger).getName());
+    }
+
+    public int getPlaying() {
+        return playing;
     }
 
     /*@Override

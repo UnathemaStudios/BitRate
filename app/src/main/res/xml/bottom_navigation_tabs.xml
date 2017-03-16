@@ -6,7 +6,7 @@
         activeColor="@color/colorAccent"
         title="Recording Now"/>
     <tab
-        icon="@drawable/ic_watch_later_black"
+        icon="@drawable/ic_schedule_black"
         id="@+id/tab_scheduled_recordings"
         activeColor="@color/colorAccent"
         title="Scheduled"/>

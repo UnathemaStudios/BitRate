@@ -10,12 +10,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -30,8 +32,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private TextView tvTimeRemaining;
 	private ImageView ivRadio;
 	private TextView tvRadioName;
-	private int timeRemainingTemp;
-	
+
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -39,8 +40,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		{
 			if (intent.getAction().equals("timeRemaining"))
 			{
-				String tet = Integer.toString(intent.getIntExtra("timeRemainingInt", -1));
-				tvTimeRemaining.setText(tet);
+				setSleepText(intent.getIntExtra("timeRemainingInt", -999));
 			}
 		}
 //        intent.getIntExtra("timeRemainingInt", -1)
@@ -83,6 +83,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		
 		ivRadio.setBackgroundResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
+		ibSleepTimer.setBackgroundResource(R.drawable.ic_snooze);
 		
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener()
 		{
@@ -90,9 +91,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 			public void onClick(View v)
 			{
 				send("REC_CURRENT");
-				
-//				getActivity().startService(new Intent(getContext(), MainService.class));
-				
 			}
 		});
 		
@@ -107,7 +105,11 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 					SleepTimerDialog sleepTimerDialog = new SleepTimerDialog();
 					sleepTimerDialog.setTargetFragment(PlayingNowFragment.this, 2);
 					sleepTimerDialog.show(getFragmentManager(), "rockets");
-				} else send("SLEEPTIMER", -1);
+				}
+				else{
+					((MainActivity)getActivity()).tellServiceT("SLEEPTIMER", -1);
+					setSleepText(0);
+				}
 			}
 		});
 	}
@@ -119,14 +121,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		intent.setAction(actionToSend);
 		getActivity().sendBroadcast(intent);
 	}
-	
-	public void send(String actionToSend, int time)
-	{
-		Intent intent = new Intent();
-		intent.setAction(actionToSend);
-		intent.putExtra("sleepTime", time);
-		getActivity().sendBroadcast(intent);
-	}
+
 	
 	@Nullable
 	@Override
@@ -171,9 +166,19 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	@Override
 	public void onDialogPositiveClick(int minutes)
 	{
-		send("SLEEPTIMER", minutes);
-		tvTimeRemaining.setText(Integer.toString(minutes));
-		ibSleepTimer.setBackgroundColor(Color.RED);
+		if(((MainActivity)getActivity()).getPlaying()!=0) {
+			((MainActivity) getActivity()).tellServiceT("SLEEPTIMER", minutes);
+			setSleepText(minutes);
+		}
+		else Toast.makeText(getContext(), "Player is already stopped", Toast.LENGTH_SHORT)
+				.show();
+	}
+
+	public void setSleepText(int time){
+		if(time == 0||time == -1){
+			tvTimeRemaining.setText("");
+		}
+		else tvTimeRemaining.setText(time + " min");
 	}
 }
 
