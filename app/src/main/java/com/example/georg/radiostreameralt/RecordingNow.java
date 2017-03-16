@@ -120,19 +120,12 @@ public class RecordingNow extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				send("STOP", recordingNowRadios.get(position).getId());
+				((MainActivity) getActivity()).tellServiceR("STOP_RECORD", recordingNowRadios.get
+						(position).getId());
 			}
 		});
 	}
-	
-	public void send(String actionToSend, int key)
-	{
-		Intent serviceIntent = new Intent(getContext(), Recorder.class);
-		serviceIntent.putExtra("Action", actionToSend);
-		serviceIntent.putExtra("key", key);
-		getActivity().startService(serviceIntent);
-	}
-	
+
 	public String prettyTime(long timeInSeconds)
 	{
 		return String.format(Locale.US,"%02d:%02d",timeInSeconds/60,timeInSeconds%60);

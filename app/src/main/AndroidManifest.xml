@@ -26,9 +26,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".MediaPlayerService"/>
-        <service android:name=".MainNotification"/>
-        <service android:name=".Recorder"/>
         <service android:name=".MainService"/>
 
 

@@ -1,6 +1,6 @@
 package com.example.georg.radiostreameralt;
 
-class RecordingRadio {
+public class RecordingRadio {
 
     private String name;
     private int id;

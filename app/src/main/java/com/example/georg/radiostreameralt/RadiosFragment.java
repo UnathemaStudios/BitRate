@@ -8,7 +8,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,11 +39,6 @@ import java.util.ArrayList;
  */
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener
 {
-	
-	private ArrayList<Radio> radiosList;
-	private File radiosFile;
-	private File radiosFileEXTdir;
-	private File radiosFileEXT;
 	private FloatingActionButton fabAddRadio;
 	private FunDapter adapter;
 	
@@ -53,40 +51,6 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
-		radiosFile = new File(getContext().getFilesDir(), "RadiosList");
-		radiosFileEXTdir = new File(Environment.getExternalStorageDirectory() + "/Streams");
-		radiosFileEXT = new File(radiosFileEXTdir.getAbsolutePath(), "RadiosList.txt");
-		radiosList = new ArrayList<>();
-		Log.w("radiosFile.exists()", radiosFile.exists() + "");
-		if (!radiosFile.exists())
-		{
-			radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.drawable.ic_radios_logo_1055));
-			radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R.drawable.ic_radio_infinitygreece));
-			radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream.mp3", R.drawable.ic_radio_nowhere));
-			try
-			{
-				boolean fileCreated = radiosFile.createNewFile();
-				Log.w("fileCreated", "" + fileCreated);
-				if (!fileCreated)
-					Toast.makeText(getContext(), "FileNOTcreatedd", Toast.LENGTH_SHORT).show();
-				saveToFIle();
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		if (!radiosFileEXTdir.exists()) radiosFileEXTdir.mkdirs();
-		if (!radiosFileEXT.exists())
-		{
-			try
-			{
-				radiosFileEXT.createNewFile();
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 	
 	@Override
@@ -94,15 +58,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	{
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
-		
-		try
-		{
-			readRadiosFile();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		
+
 		
 		ImageView ivLogo = (ImageView) view.findViewById(R.id.ivLogo);
 		TextView tvName = (TextView) view.findViewById(R.id.tvName);
@@ -128,35 +84,26 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 		
-		adapter = new FunDapter(getContext(), radiosList, R.layout.grid_view_layout, dictionary);
+		adapter = new FunDapter(getContext(), ((MainActivity)getActivity()).radiosList, R.layout
+				.grid_view_layout,
+				dictionary);
 		
 		final ListView radiosGrid = (ListView) view.findViewById(R.id.gridView);
 		radiosGrid.setAdapter(adapter);
+		registerForContextMenu(radiosGrid);
 		
 		radiosGrid.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				Toast.makeText(RadiosFragment.this.getContext(), radiosList.get(position).getName() + " " + radiosList.get(position).getUrl(), Toast.LENGTH_SHORT).show();
-				
-				//send("radioToPlay", radiosList.get(position).getUrl(), radiosList.get(position).getIcon(), radiosList.get(position).getName());
-				((MainActivity)getActivity()).tellService("PLAYER_PLAY",radiosList.get(position).getUrl(),position);
+				((MainActivity)getActivity()).tellServiceP("PLAYER_PLAY",
+						((MainActivity) getActivity()).radiosList.get(position).getUrl(),position);
+				((MainActivity)getActivity()).disableButtons();
+				((MainActivity)getActivity()).setFinger(position);
 			}
 		});
-		
-		radiosGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
-		{
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-			{
-				radiosList.remove(position);
-				adapter.updateData(radiosList);
-				return false;
-			}
-		});
-		
-		
+
 		return view;
 	}
 	
@@ -175,72 +122,39 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if (v.getId()==R.id.gridView) {
+			MenuInflater inflater = getActivity().getMenuInflater();
+			inflater.inflate(R.menu.folder_context_menu, menu);
+		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		switch(item.getItemId()) {
+			case R.id.delete:
+				((MainActivity)getActivity()).radiosList.remove(info.position);
+				adapter.updateData(((MainActivity)getActivity()).radiosList);
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+		}
+	}
 	
 	@Override
 	public void onDestroy()
 	{
-		saveToFIle();
 		super.onDestroy();
 	}
-	
-	//send function to broadcast an action
-	public void send(String actionToSend, String url, int imageID, String radioName)
-	{
-		Intent intent = new Intent();
-		intent.setAction(actionToSend);
-		intent.putExtra("urlString", url);
-		intent.putExtra("imageID", imageID);
-		intent.putExtra("radioName", radioName);
-//        sendBroadcast(intent);
-		getActivity().sendBroadcast(intent);
-	}
-	
-	private void saveToFIle()
-	{
-		try
-		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(radiosFile));
-			//BufferedWriter writerEXT = new BufferedWriter(new FileWriter(radiosFileEXT));
-			for (int i = 0; i < radiosList.size(); i++)
-			{
-				writer.write(radiosList.get(i).getName());
-				writer.newLine();
-				//writerEXT.write(radiosList.get(i).getName() + " ");
-				writer.write(radiosList.get(i).getUrl());
-				writer.newLine();
-				//writerEXT.write(radiosList.get(i).getUrl() + " ");
-				writer.write(Integer.toString(radiosList.get(i).getIcon()));
-				writer.newLine();
-				//writerEXT.write(Integer.toString(radiosList.get(i).getIcon()));
-			}
-			writer.close();
-			//writerEXT.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void readRadiosFile() throws IOException
-	{
-		BufferedReader reader = new BufferedReader(new FileReader(radiosFile));
-		radiosList.clear();
-		String name, url;
-		int icon;
-		while ((name = reader.readLine()) != null)
-		{
-			url = reader.readLine();
-			icon = Integer.parseInt(reader.readLine());
-			radiosList.add(new Radio(name, url, icon));
-			System.out.println(name + url + icon);
-		}
-		reader.close();
-	}
-	
+
 	@Override
 	public void onDialogPositiveClick(String name, String url)
 	{
-		radiosList.add(new Radio(name, url, R.drawable.ic_radio));
-		adapter.updateData(radiosList);
+		((MainActivity)getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_radio));
+		adapter.updateData(((MainActivity)getActivity()).radiosList);
 	}
 }

@@ -34,7 +34,14 @@ import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
 
 public class MainService extends Service
 {
-	//GENERAL
+//	  	  .oooooo.                                                       oooo
+//		 d8P'  `Y8b                                                      `888
+//		888            .ooooo.  ooo. .oo.    .ooooo.  oooo d8b  .oooo.    888
+//		888           d88' `88b `888P"Y88b  d88' `88b `888""8P `P  )88b   888
+//		888     ooooo 888ooo888  888   888  888ooo888  888      .oP"888   888
+//		`88.    .88'  888    .o  888   888  888    .o  888     d8(  888   888
+//		`Y8bood8P'   `Y8bod8P' o888o o888o `Y8bod8P' d888b    `Y888""8o o888o
+
 	private static final int notificationID = 8888;
 	private static final int STOPPED = 0;
 	private static final int LOADING = 1;
@@ -154,13 +161,11 @@ public class MainService extends Service
 					finger = intent.getIntExtra("finger", -1);
 				}
 				play(playerUrl);
-				buildNotification();
 				break;
 			}
 			case "PLAYER_STOP":
 			{
 				stop();
-				buildNotification();
 				break;
 			}
 			case "REQUEST_PLAYER_STATUS":
@@ -185,33 +190,28 @@ public class MainService extends Service
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1), intent.getStringExtra("name")));
 				rec.get(key).start();
 				broadcastRecording("SIMPLE_RECORDING_ADDED"); //send  main the key for hash address
-				//Log.w("Recorder", "REC " + key + " START");
 				key++;
 				activeRecordings++;
-//				showNotification(false);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				break;
 			}
-			case "STOP":
+			case "STOP_RECORD":
 			{
 				int passedKey = intent.getIntExtra("key", -1);
 				rec.get(passedKey).stop();
 				broadcastRecording("RECORDING_STOPPED", passedKey);
-				//Log.w("Recorder", "REC " + passedKey + " END");
 				while (rec.get(passedKey).getStatus() != NOTRECORDING) ;
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
-				//rec.remove(passedKey);
-//				showNotification(false);
 				if (activeRecordings == 0)
 				{
 					myHandler.removeCallbacks(BANANA);
 					rec.clear();
-					Log.w("Recorder", "service destroyed");
-					stopSelf();
+					Log.w("Recorder", "No Recordings");
 				}
 				break;
 			}
 		}
+		buildNotification();
 		return START_STICKY;
 	}
 	
@@ -310,7 +310,7 @@ public class MainService extends Service
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		notificationBuilder.setSmallIcon(R.drawable.ic_media_stop);
-		notificationBuilder.setContentTitle("Stream Player"+" "+timeCreated);
+		notificationBuilder.setContentTitle("Stream Player"+" "+timeCreated+" "+activeRecordings);
 		
 		if (playerStatus == LOADING)
 		{
@@ -407,134 +407,3 @@ public class MainService extends Service
 		return null;
 	}
 }
-
-class Recording
-{
-	private String name;
-	private String date;
-	private String urlString;
-	private long duration;
-	private boolean stopped;
-	private int status;
-	private int bytesRead;
-	private long startTimeInSeconds;
-	
-	
-	Recording(String date, String urlString, long duration, String name)
-	{
-		this.date = date;
-		this.urlString = urlString;
-		this.duration = duration;
-		this.name = name;
-		stopped = false;
-		bytesRead = 0;
-		startTimeInSeconds = System.currentTimeMillis() / 1000;
-	}
-	
-	void start()
-	{
-		status = RECORDING;
-		new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					status = RECORDING;
-					FileOutputStream fileOutputStream;
-					File streamsDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
-					if (!streamsDir.exists())
-					{
-						boolean directoryCreated = streamsDir.mkdirs();
-						Log.w("Recorder", "Created directory");
-						if (!directoryCreated)
-						{
-							Log.w("Recorder", "Failed to create directory");
-						}
-					}
-					File outputSource = new File(streamsDir, name + date + ".mp3");
-					fileOutputStream = new FileOutputStream(outputSource);
-					
-					//ICY 200 OK ERROR FIX FOR KITKAT
-					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
-					{
-						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
-						OkHttpClient client = new OkHttpClient();
-						Request request = new Request.Builder().url(urlString).build();
-						Response response = client.newCall(request).execute();
-						InputStream inputStream = response.body().byteStream();
-						
-						int c;
-						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
-						{
-							fileOutputStream.write(c);
-							bytesRead++;
-						}
-					} else
-					{
-						Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
-						URL url = new URL(urlString);
-						InputStream inputStream = url.openStream();
-						
-						int c;
-						while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
-						{
-							fileOutputStream.write(c);
-							bytesRead++;
-						}
-					}
-					
-					Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
-					
-					fileOutputStream.close();
-					
-					//Log.w("Recorder", "finished");
-					Recorder.activeRecordings--;
-					status = NOTRECORDING;
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}).start();
-	}
-	
-	int getCurrentSizeInKB()
-	{
-		return (bytesRead / 1024);
-	}
-	
-	long getCurrentRecordingTimeInSeconds()
-	{
-		return (System.currentTimeMillis() / 1000) - startTimeInSeconds;
-	}
-	
-	int getStatus()
-	{
-		return status;
-	}
-	
-	long getDuration()
-	{
-		return duration;
-	}
-	
-	void stop()
-	{
-		stopped = true;
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
-}
-
-//	Notification notification = new Notification.Builder(this)
-//			.setOngoing(true)
-//			.setSmallIcon(R.drawable.ic_launchersmall)
-//			.setContentTitle(Long.toString(timeCreated))
-//			.build();
-//	
-//	startForeground(notificationID, notification);
