@@ -37,7 +37,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -83,6 +85,29 @@ public class MainActivity extends AppCompatActivity
 			} else if (intent.getAction().equals("SET_FINGER"))
 			{
 				setFinger(intent.getIntExtra("finger", -1));
+			}
+			else if (intent.getAction().equals("recList"))
+			{
+				HashMap<Integer, Recording> rec = new HashMap<>();
+				rec = (HashMap<Integer, Recording>) intent.getSerializableExtra("recHashMap");
+				if (rec != null)
+				{
+					for (Map.Entry<Integer, Recording> entry : rec.entrySet())
+					{
+						if (entry != null)
+						{
+							Log.w(""+entry.getValue().getName(), ""+entry.getValue().getCurrentRecordingTimeInSeconds());
+						}
+						else
+						{
+							Log.w("MainActivity", "HashMap entry is null");
+						}
+					}
+				}
+				else
+				{
+					Log.w("MainActivity", "HashMap is null");
+				}
 			}
 		}
 	};
@@ -169,15 +194,12 @@ public class MainActivity extends AppCompatActivity
 				if (playing == PLAYING)
 				{
 					disableButtons();
-					//STOP player
 					Log.d("STOP BUTTON", "STOPPED PRESSED");
-					tellServiceP("PLAYER_STOP"); //broadcast STOP (for media player)
+					tellServiceP("PLAYER_STOP");
 					playing = STOPPED;
 				} else if (playing == STOPPED)
 				{
 					disableButtons();
-					//start player
-					//start media player service
 					tellServiceP("PLAYER_PLAY", radiosList.get(finger).getUrl(), finger);
 				}
 			}
@@ -190,11 +212,12 @@ public class MainActivity extends AppCompatActivity
 			registerReceiver(serviceReceiver, new IntentFilter("2"));
 			registerReceiver(serviceReceiver, new IntentFilter("radioToPlay"));
 			registerReceiver(serviceReceiver, new IntentFilter("SET_FINGER"));
+			registerReceiver(serviceReceiver, new IntentFilter("recList"));
 		}
 		
-		if (isMyServiceRunning(MainService.class)) //IF mediaplayer service is running
+		if (isMyServiceRunning(MainService.class))
 		{
-			tellServiceP("REQUEST_PLAYER_STATUS"); //request mediaplayer service status
+			tellServiceP("REQUEST_PLAYER_STATUS");
 		} else setFinger(1);
 	}
 	
@@ -265,9 +288,9 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	protected void onRestart()
 	{
-		if (isMyServiceRunning(MainService.class)) //if media player service is running
+		if (isMyServiceRunning(MainService.class))
 		{
-			tellServiceP("REQUEST_STATUS"); //request media player status
+			tellServiceP("REQUEST_STATUS");
 		}
 		super.onRestart();
 	}
@@ -275,7 +298,7 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	protected void onDestroy()
 	{
-		unregisterReceiver(serviceReceiver); //stop listening for broadcasts
+		unregisterReceiver(serviceReceiver);
 		saveToFIle();
 		super.onDestroy();
 	}
@@ -328,7 +351,6 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 	
-	
 	public void tellServiceP(String action, String url, int finger)
 	{
 		Intent intent = new Intent(this, MainService.class);
@@ -344,7 +366,6 @@ public class MainActivity extends AppCompatActivity
 		intent.setAction(action);
 		startService(intent);
 	}
-	
 	
 	public void tellServiceR(String action, String url, int duration)
 	{
@@ -388,7 +409,7 @@ public class MainActivity extends AppCompatActivity
 			{
 				boolean fileCreated = radiosFile.createNewFile();
 				Log.w("fileCreated", "" + fileCreated);
-				if (!fileCreated) Log.w("FILE ERROR", "FileNOTcreatedd");
+				if (!fileCreated) Log.w("FILE ERROR", "File NOTcreated");
 				saveToFIle();
 			} catch (IOException e)
 			{
@@ -487,7 +508,7 @@ public class MainActivity extends AppCompatActivity
 		animate.setDuration(250);
 		animate.setFillAfter(true);
 		playerLayout.startAnimation(animate);
-		//playerLayout.setVisibility(View.GONE);
+//		playerLayout.setVisibility(View.GONE);
 	}
 	
 	public void slideToTop()
@@ -591,7 +612,6 @@ public class MainActivity extends AppCompatActivity
 //
 //TODO: Recording broadcasts to one broadcast/second
 //TODO: Playing Now
-//TODO: SleepTimer start stop on demand
 //TODO: Notification Custom
 //TODO: FolderRecordings format
 //TODO:

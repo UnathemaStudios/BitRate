@@ -142,7 +142,7 @@ public class RecordingNow extends Fragment
 			return String.format(Locale.US,"%.2f",(double)sizeInKB/1024)+" MB ";
 		}
 	}
-	
+}
 //	//function to check if a service is running
 
 //	private boolean isMyServiceRunning(Class<?> serviceClass)
@@ -157,4 +157,3 @@ public class RecordingNow extends Fragment
 //		}
 //		return false;
 //	}
-}

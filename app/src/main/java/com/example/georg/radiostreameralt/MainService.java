@@ -10,6 +10,7 @@ import android.icu.util.Calendar;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
@@ -19,6 +20,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MainService extends Service
 {
@@ -68,7 +70,6 @@ public class MainService extends Service
 	private int sleepMinutes = -1;
 	private boolean isTimerActive;
 	private String playerUrl;
-	private boolean isRecording;
 	private android.os.Handler sleepTimerHandler = new android.os.Handler();
 	private Runnable sleepTimerRunnable = new Runnable()
 	{
@@ -127,24 +128,12 @@ public class MainService extends Service
 		}
 	};
 	
-	public void startSleepTimer()
-	{
-		sleepTimerHandler.postDelayed(sleepTimerRunnable, 60000);
-	}
-	
-	public void stopSleepTimer()
-	{
-		sleepTimerHandler.removeCallbacks(sleepTimerRunnable);
-	}
-	
-	
 	@Override
 	public void onCreate()
 	{
 		recordingsHandler.postDelayed(recordingsRunnable, 250);
 		key = 0;
 		timeCreated = System.currentTimeMillis();
-		Log.w("timeCreated", Long.toString(timeCreated));
 	}
 	
 	@Override
@@ -190,7 +179,10 @@ public class MainService extends Service
 				
 				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1), intent.getStringExtra("name")));
 				rec.get(key).start();
-				broadcastRecording("SIMPLE_RECORDING_ADDED"); //send  main the key for hash address
+				if (activeRecordings == 0)
+				{
+					startRecordingBroadcast();
+				}
 				key++;
 				activeRecordings++;
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
@@ -200,12 +192,13 @@ public class MainService extends Service
 			{
 				int passedKey = intent.getIntExtra("key", -1);
 				rec.get(passedKey).stop();
-				broadcastRecording("RECORDING_STOPPED", passedKey);
 				while (rec.get(passedKey).getStatus() != NOTRECORDING) ;
+				rec.remove(passedKey);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				if (activeRecordings == 0)
 				{
-					recordingsHandler.removeCallbacks(recordingsRunnable);
+					stopRecordingBroadcast();
+//					recordingsHandler.removeCallbacks(recordingsRunnable);
 					rec.clear();
 					Log.w("Recorder", "No Recordings");
 				}
@@ -282,7 +275,42 @@ public class MainService extends Service
 	{
 		stop();
 		streamPlayer.release();
+		stopForeground(true);
 		stopSelf(); //stop media player service
+	}
+	
+	public void startSleepTimer()
+	{
+		sleepTimerHandler.postDelayed(sleepTimerRunnable, 60000);
+	}
+	
+	public void stopSleepTimer()
+	{
+		sleepTimerHandler.removeCallbacks(sleepTimerRunnable);
+	}
+	
+	private android.os.Handler BANANAHandler = new android.os.Handler();
+	private Runnable BANANA = new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Intent intent = new Intent();
+			intent.setAction("recList");
+			intent.putExtra("recHashMap", rec);
+			sendBroadcast(intent);
+			BANANAHandler.postDelayed(this, 10);
+		}
+	};
+
+	public void startRecordingBroadcast()
+	{
+		BANANAHandler.postDelayed(BANANA, 0);
+	}
+
+	public void stopRecordingBroadcast()
+	{
+		BANANAHandler.removeCallbacks(BANANA);
 	}
 	
 	private void buildNotification()
@@ -312,24 +340,29 @@ public class MainService extends Service
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		notificationBuilder.setSmallIcon(R.drawable.ic_stat_name);
-		notificationBuilder.setContentTitle("Stream Player" + " " + timeCreated + " " + activeRecordings);
+		notificationBuilder.setContentTitle("Stream Player" + " " + timeCreated);
 		
 		if (playerStatus == LOADING)
 		{
-			notificationBuilder.setContentText("Loading");
-		} else if (playerStatus == PLAYING)
+			notificationBuilder.setContentText("Loading"+ "   /   " + activeRecordings + " Recordings Running");
+		}
+		else if (playerStatus == PLAYING)
 		{
-			notificationBuilder.setContentText("Playing");
+			notificationBuilder.setContentText("Playing"+ "   /   " + activeRecordings + " Recordings Running");
 			notificationBuilder.addAction(stopAction);
-		} else if (playerStatus == STOPPED)
+		}
+		else if (playerStatus == STOPPED)
 		{
-			notificationBuilder.setContentText("Stopped");
+			notificationBuilder.setContentText("Stopped"+ "   /   " + activeRecordings + " Recordings Running");
 			notificationBuilder.addAction(playAction);
 		}
 		
 		notificationBuilder.setOngoing(true);
 		notificationBuilder.setContentIntent(pendingIntent);
-		notificationBuilder.addAction(closeAction);
+		if (activeRecordings == 0)
+		{
+			notificationBuilder.addAction(closeAction);
+		}
 		
 		if (notificationExists)
 		{
@@ -368,21 +401,19 @@ public class MainService extends Service
 	{
 		if (actionToSend.equals("timeRemaining"))
 		{
-			Log.w("SLEEPTIER", "SEND FUNCTION");
 			Intent intent = new Intent();
 			intent.setAction(actionToSend);
 			intent.putExtra("timeRemainingInt", variable);
 			sendBroadcast(intent);
-		} else
+		}
+		else
 		{
 			Intent intent = new Intent();
 			intent.setAction(actionToSend);
 			intent.putExtra("finger", variable);
 			sendBroadcast(intent);
 		}
-		
 	}
-	
 	
 	public void broadcastRecording(String action, int key, String name, long currentTime, int sizeInKb, int position)
 	{

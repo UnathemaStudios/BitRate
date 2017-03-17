@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 
 import okhttp3.OkHttpClient;
@@ -17,11 +18,7 @@ import okhttp3.Response;
 import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
 import static com.example.georg.radiostreameralt.MainService.RECORDING;
 
-/**
- * Created by georg on 16/3/2017.
- */
-
-public class Recording {
+class Recording implements Serializable{
     private String name;
     private String date;
     private String urlString;
@@ -134,6 +131,7 @@ public class Recording {
 
     void stop()
     {
+		
         stopped = true;
     }
 
