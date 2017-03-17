@@ -90,7 +90,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 			@Override
 			public void onClick(View v)
 			{
-				send("REC_CURRENT");
+				((MainActivity)getActivity()).recordCurrentRadio(0);
 			}
 		});
 		

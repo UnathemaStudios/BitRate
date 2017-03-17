@@ -19,27 +19,22 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+
 public class MainService extends Service
 {
-//	  	  .oooooo.                                                       oooo
-//		 d8P'  `Y8b                                                      `888
-//		888            .ooooo.  ooo. .oo.    .ooooo.  oooo d8b  .oooo.    888
-//		888           d88' `88b `888P"Y88b  d88' `88b `888""8P `P  )88b   888
-//		888     ooooo 888ooo888  888   888  888ooo888  888      .oP"888   888
-//		`88.    .88'  888    .o  888   888  888    .o  888     d8(  888   888
-//		`Y8bood8P'   `Y8bod8P' o888o o888o `Y8bod8P' d888b    `Y888""8o o888o
-
-	private static final int notificationID = 8888;
-	private static final int STOPPED = 0;
-	private static final int LOADING = 1;
-	private static final int PLAYING = 2;
-	private int finger;
-	private int playerStatus;
-	private String playerUrl;
-	private boolean isRecording;
+	//  .oooooo.    oooooooooooo ooooo      ooo oooooooooooo ooooooooo.         .o.       ooooo        
+	// d8P'  `Y8b   `888'     `8 `888b.     `8' `888'     `8 `888   `Y88.      .888.      `888'        
+	//888            888          8 `88b.    8   888          888   .d88'     .8"888.      888         
+	//888            888oooo8     8   `88b.  8   888oooo8     888ooo88P'     .8' `888.     888         
+	//888     ooooo  888    "     8     `88b.8   888    "     888`88b.      .88ooo8888.    888         
+	//`88.    .88'   888       o  8       `888   888       o  888  `88b.   .8'     `888.   888       o 
+	// `Y8bood8P'   o888ooooood8 o8o        `8  o888ooooood8 o888o  o888o o88o     o8888o o888ooooood8
+	//
+	public final static int RECORDING = 0;
+	public final static int NOTRECORDING = 1;
+	//	public final static int UNLISTED = 3;
+	public final static int FIRSTRECORDING = 0;
 	private boolean notificationExists = false;
-	private long timeCreated;
-	
 	
 	//ooooooooo.   ooooo              .o.       oooooo   oooo oooooooooooo ooooooooo.   
 	//`888   `Y88. `888'             .888.       `888.   .8'  `888'     `8 `888   `Y88. 
@@ -48,46 +43,54 @@ public class MainService extends Service
 	// 888          888           .88ooo8888.       `888'      888    "     888`88b.    
 	// 888          888       o  .8'     `888.       888       888       o  888  `88b.  
 	//o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
-
+	//
+	public final static int LASTRECOEDING = 1;
+	public final static int FIRSTANDLASTRECORDING = 2;
+	private static final int notificationID = 8888;
+	private static final int STOPPED = 0;
+	private static final int LOADING = 1;
+	private static final int PLAYING = 2;
+	public static int activeRecordings = 0;
+	private static Integer key;
 	MediaPlayer streamPlayer = new MediaPlayer();
+	
+	//ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.   
+	//`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88. 
+	// 888   .d88'  888         888          888      888  888   .d88'  888      888  888          888   .d88' 
+	// 888ooo88P'   888oooo8    888          888      888  888ooo88P'   888      888  888oooo8     888ooo88P'  
+	// 888`88b.     888    "    888          888      888  888`88b.     888      888  888    "     888`88b.    
+	// 888  `88b.   888       o `88b    ooo  `88b    d88'  888  `88b.   888     d88'  888       o  888  `88b.  
+	//o888o  o888o o888ooooood8  `Y8bood8P'   `Y8bood8P'  o888o  o888o o888bood8P'   o888ooooood8 o888o  o888o
+	//
+	private long timeCreated;
+	private int finger;
+	private int playerStatus;
 	private int sleepMinutes = -1;
-	private android.os.Handler myTimeHandler = new android.os.Handler();
-	private Runnable PINEAPPLE = new Runnable()
+	private boolean isTimerActive;
+	private String playerUrl;
+	private boolean isRecording;
+	private android.os.Handler sleepTimerHandler = new android.os.Handler();
+	private Runnable sleepTimerRunnable = new Runnable()
 	{
 		public void run()
 		{
 			if (sleepMinutes != -1)
 			{
-                sleepMinutes--;
-                if (sleepMinutes == 0)
-                {
-                    stop();
-                }
-                send("timeRemaining", sleepMinutes);
-            }
-			myTimeHandler.postDelayed(this, 60000);
+				sleepMinutes--;
+				if (sleepMinutes == 0)
+				{
+					stop();
+					buildNotification();
+				}
+				send("timeRemaining", sleepMinutes);
+			}
+			sleepTimerHandler.postDelayed(this, 60000);
 		}
 	};
-	
-//	ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.   
-// 	`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88. 
-//	 888   .d88'  888         888          888      888  888   .d88'  888      888  888          888   .d88' 
-//	 888ooo88P'   888oooo8    888          888      888  888ooo88P'   888      888  888oooo8     888ooo88P'  
-//	 888`88b.     888    "    888          888      888  888`88b.     888      888  888    "     888`88b.    
-//	 888  `88b.   888       o `88b    ooo  `88b    d88'  888  `88b.   888     d88'  888       o  888  `88b.  
-//	o888o  o888o o888ooooood8  `Y8bood8P'   `Y8bood8P'  o888o  o888o o888bood8P'   o888ooooood8 o888o  o888o
-	public final static int RECORDING = 0;
-	public final static int NOTRECORDING = 1;
-	//	public final static int UNLISTED = 3;
-	public final static int FIRSTRECORDING = 0;
-	public final static int LASTRECOEDING = 1;
-	public final static int FIRSTANDLASTRECORDING = 2;
-	public static int activeRecordings = 0;
-	private static Integer key;
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
-	private android.os.Handler myHandler = new android.os.Handler();
-	private Runnable BANANA = new Runnable()
+	private android.os.Handler recordingsHandler = new android.os.Handler();
+	private Runnable recordingsRunnable = new Runnable()
 	{
 		public void run()
 		{
@@ -120,18 +123,26 @@ public class MainService extends Service
 					}
 				}
 			}
-			myHandler.postDelayed(this, 250);
+			recordingsHandler.postDelayed(this, 250);
 		}
 	};
+	
+	public void startSleepTimer()
+	{
+		sleepTimerHandler.postDelayed(sleepTimerRunnable, 60000);
+	}
+	
+	public void stopSleepTimer()
+	{
+		sleepTimerHandler.removeCallbacks(sleepTimerRunnable);
+	}
+	
 	
 	@Override
 	public void onCreate()
 	{
-		myHandler.postDelayed(BANANA, 250);
-        myTimeHandler.postDelayed(PINEAPPLE, 0);
-
-        key = 0;
-		
+		recordingsHandler.postDelayed(recordingsRunnable, 250);
+		key = 0;
 		timeCreated = System.currentTimeMillis();
 		Log.w("timeCreated", Long.toString(timeCreated));
 	}
@@ -159,7 +170,7 @@ public class MainService extends Service
 			case "REQUEST_PLAYER_STATUS":
 			{
 				send(Integer.toString(playerStatus));
-                send("SET_FINGER", finger);
+				send("SET_FINGER", finger);
 				break;
 			}
 			case "CLOSE":
@@ -170,6 +181,7 @@ public class MainService extends Service
 			case "SLEEPTIMER":
 			{
 				sleepMinutes = intent.getIntExtra("sleepTime", -1);
+				startSleepTimer();
 				break;
 			}
 			case "RECORD":
@@ -193,7 +205,7 @@ public class MainService extends Service
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				if (activeRecordings == 0)
 				{
-					myHandler.removeCallbacks(BANANA);
+					recordingsHandler.removeCallbacks(recordingsRunnable);
 					rec.clear();
 					Log.w("Recorder", "No Recordings");
 				}
@@ -262,7 +274,8 @@ public class MainService extends Service
 		streamPlayer.reset();
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus)); //broadcast media player status for main and notification
-        sleepMinutes = -1;
+		sleepMinutes = -1;
+		stopSleepTimer();
 	}
 	
 	public void close()
@@ -279,38 +292,36 @@ public class MainService extends Service
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		//notification PLAY button
-		Intent playIntent = new Intent(getApplicationContext(),MainService.class);
+		Intent playIntent = new Intent(getApplicationContext(), MainService.class);
 		playIntent.setAction("PLAYER_PLAY");
 		PendingIntent playPendingIntent = PendingIntent.getService(this, 0, playIntent, 0);
 		NotificationCompat.Action playAction = new NotificationCompat.Action(R.drawable.ic_play, "Play", playPendingIntent);
 //		Notification.Action playAction = new Notification.Action.Builder(Icon.createWithResource(getApplicationContext(), R.drawable.ic_play), "Play", playPendingIntent).build();
 		
 		//notification STOP button
-		Intent stopIntent = new Intent(getApplicationContext(),MainService.class);
+		Intent stopIntent = new Intent(getApplicationContext(), MainService.class);
 		stopIntent.setAction("PLAYER_STOP");
 		PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
 		NotificationCompat.Action stopAction = new NotificationCompat.Action(R.drawable.ic_media_stop, "Stop", stopPendingIntent);
 		
 		//notification EXIT button
-		Intent closeIntent = new Intent(getApplicationContext(),MainService.class);
+		Intent closeIntent = new Intent(getApplicationContext(), MainService.class);
 		closeIntent.setAction("CLOSE");
 		PendingIntent closePendingIntent = PendingIntent.getService(this, 0, closeIntent, 0);
 		NotificationCompat.Action closeAction = new NotificationCompat.Action(R.drawable.poweroff, "Exit", closePendingIntent);
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		notificationBuilder.setSmallIcon(R.drawable.ic_stat_name);
-		notificationBuilder.setContentTitle("Stream Player"+" "+timeCreated+" "+activeRecordings);
+		notificationBuilder.setContentTitle("Stream Player" + " " + timeCreated + " " + activeRecordings);
 		
 		if (playerStatus == LOADING)
 		{
 			notificationBuilder.setContentText("Loading");
-		}
-		else if (playerStatus == PLAYING)
+		} else if (playerStatus == PLAYING)
 		{
 			notificationBuilder.setContentText("Playing");
 			notificationBuilder.addAction(stopAction);
-		}
-		else if (playerStatus == STOPPED)
+		} else if (playerStatus == STOPPED)
 		{
 			notificationBuilder.setContentText("Stopped");
 			notificationBuilder.addAction(playAction);
@@ -324,10 +335,9 @@ public class MainService extends Service
 		{
 			NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			notificationManager.notify(notificationID, notificationBuilder.build());
-		}
-		else 
+		} else
 		{
-			startForeground(notificationID,notificationBuilder.build());
+			startForeground(notificationID, notificationBuilder.build());
 		}
 	}
 	
@@ -356,22 +366,23 @@ public class MainService extends Service
 	
 	public void send(String actionToSend, int variable)
 	{
-        if(actionToSend.equals("timeRemaining")) {
-            Log.w("SLEEPTIER", "SEND FUNCTION");
-            Intent intent = new Intent();
-            intent.setAction(actionToSend);
-            intent.putExtra("timeRemainingInt", variable);
-            sendBroadcast(intent);
-        }
-        else{
-            Intent intent = new Intent();
-            intent.setAction(actionToSend);
-            intent.putExtra("finger", variable);
-            sendBroadcast(intent);
-        }
-
+		if (actionToSend.equals("timeRemaining"))
+		{
+			Log.w("SLEEPTIER", "SEND FUNCTION");
+			Intent intent = new Intent();
+			intent.setAction(actionToSend);
+			intent.putExtra("timeRemainingInt", variable);
+			sendBroadcast(intent);
+		} else
+		{
+			Intent intent = new Intent();
+			intent.setAction(actionToSend);
+			intent.putExtra("finger", variable);
+			sendBroadcast(intent);
+		}
+		
 	}
-
+	
 	
 	public void broadcastRecording(String action, int key, String name, long currentTime, int sizeInKb, int position)
 	{
