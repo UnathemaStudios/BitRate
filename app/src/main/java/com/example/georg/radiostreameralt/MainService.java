@@ -30,9 +30,10 @@ public class MainService extends Service
 	//`88.    .88'   888       o  8       `888   888       o  888  `88b.   .8'     `888.   888       o 
 	// `Y8bood8P'   o888ooooood8 o8o        `8  o888ooooood8 o888o  o888o o88o     o8888o o888ooooood8
 	//
-	public final static int RECORDING = 0;
-	public final static int NOTRECORDING = 1;
-	//	public final static int UNLISTED = 3;
+	private static final int notificationID = 8888;
+	private long timeCreated;
+	private boolean notificationExists = false;
+
 	//ooooooooo.   ooooo              .o.       oooooo   oooo oooooooooooo ooooooooo.   
 	//`888   `Y88. `888'             .888.       `888.   .8'  `888'     `8 `888   `Y88. 
 	// 888   .d88'  888             .8"888.       `888. .8'    888          888   .d88' 
@@ -41,23 +42,9 @@ public class MainService extends Service
 	// 888          888       o  .8'     `888.       888       888       o  888  `88b.  
 	//o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
 	//
-	private static final int notificationID = 8888;
 	private static final int STOPPED = 0;
 	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
-	public static int activeRecordings = 0;
-	private static Integer key;
-	MediaPlayer streamPlayer = new MediaPlayer();
-	private boolean notificationExists = false;
-	//ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.   
-	//`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88. 
-	// 888   .d88'  888         888          888      888  888   .d88'  888      888  888          888   .d88' 
-	// 888ooo88P'   888oooo8    888          888      888  888ooo88P'   888      888  888oooo8     888ooo88P'  
-	// 888`88b.     888    "    888          888      888  888`88b.     888      888  888    "     888`88b.    
-	// 888  `88b.   888       o `88b    ooo  `88b    d88'  888  `88b.   888     d88'  888       o  888  `88b.  
-	//o888o  o888o o888ooooood8  `Y8bood8P'   `Y8bood8P'  o888o  o888o o888bood8P'   o888ooooood8 o888o  o888o
-	//
-	private long timeCreated;
 	private int finger;
 	private int playerStatus;
 	private int sleepMinutes = -1;
@@ -80,6 +67,21 @@ public class MainService extends Service
 			sleepTimerHandler.postDelayed(this, 60000);
 		}
 	};
+	MediaPlayer streamPlayer = new MediaPlayer();
+	//ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.   
+	//`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88. 
+	// 888   .d88'  888         888          888      888  888   .d88'  888      888  888          888   .d88' 
+	// 888ooo88P'   888oooo8    888          888      888  888ooo88P'   888      888  888oooo8     888ooo88P'  
+	// 888`88b.     888    "    888          888      888  888`88b.     888      888  888    "     888`88b.    
+	// 888  `88b.   888       o `88b    ooo  `88b    d88'  888  `88b.   888     d88'  888       o  888  `88b.  
+	//o888o  o888o o888ooooood8  `Y8bood8P'   `Y8bood8P'  o888o  o888o o888bood8P'   o888ooooood8 o888o  o888o
+	//
+	
+	public final static int RECORDING = 0;
+	public final static int NOTRECORDING = 1;
+	//	public final static int UNLISTED = 3;
+	public static int activeRecordings = 0;
+	private static Integer key;
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
 	private android.os.Handler recordingHandler = new android.os.Handler();
