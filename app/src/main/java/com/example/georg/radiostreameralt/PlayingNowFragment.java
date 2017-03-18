@@ -52,6 +52,13 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	}
 	
 	@Override
+	public void onDestroy()
+	{
+		getActivity().unregisterReceiver(serviceReceiver);
+		super.onDestroy();
+	}
+	
+	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -90,7 +97,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 			@Override
 			public void onClick(View v)
 			{
-				((MainActivity)getActivity()).recordCurrentRadio(0);
+				((MainActivity)getActivity()).recordCurrentRadio(-1);
 			}
 		});
 		

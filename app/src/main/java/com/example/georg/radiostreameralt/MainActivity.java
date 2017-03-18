@@ -86,29 +86,6 @@ public class MainActivity extends AppCompatActivity
 			{
 				setFinger(intent.getIntExtra("finger", -1));
 			}
-			else if (intent.getAction().equals("recList"))
-			{
-				HashMap<Integer, Recording> rec = new HashMap<>();
-				rec = (HashMap<Integer, Recording>) intent.getSerializableExtra("recHashMap");
-				if (rec != null)
-				{
-					for (Map.Entry<Integer, Recording> entry : rec.entrySet())
-					{
-						if (entry != null)
-						{
-							Log.w(""+entry.getValue().getName(), ""+entry.getValue().getCurrentRecordingTimeInSeconds());
-						}
-						else
-						{
-							Log.w("MainActivity", "HashMap entry is null");
-						}
-					}
-				}
-				else
-				{
-					Log.w("MainActivity", "HashMap is null");
-				}
-			}
 		}
 	};
 	
@@ -212,7 +189,6 @@ public class MainActivity extends AppCompatActivity
 			registerReceiver(serviceReceiver, new IntentFilter("2"));
 			registerReceiver(serviceReceiver, new IntentFilter("radioToPlay"));
 			registerReceiver(serviceReceiver, new IntentFilter("SET_FINGER"));
-			registerReceiver(serviceReceiver, new IntentFilter("recList"));
 		}
 		
 		if (isMyServiceRunning(MainService.class))

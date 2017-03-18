@@ -27,9 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class FolderRecordings extends Fragment {
 
     private ArrayList<String> recFiles;

@@ -10,7 +10,6 @@ import android.icu.util.Calendar;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
@@ -20,7 +19,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MainService extends Service
 {
@@ -35,9 +33,6 @@ public class MainService extends Service
 	public final static int RECORDING = 0;
 	public final static int NOTRECORDING = 1;
 	//	public final static int UNLISTED = 3;
-	public final static int FIRSTRECORDING = 0;
-	private boolean notificationExists = false;
-	
 	//ooooooooo.   ooooo              .o.       oooooo   oooo oooooooooooo ooooooooo.   
 	//`888   `Y88. `888'             .888.       `888.   .8'  `888'     `8 `888   `Y88. 
 	// 888   .d88'  888             .8"888.       `888. .8'    888          888   .d88' 
@@ -46,8 +41,6 @@ public class MainService extends Service
 	// 888          888       o  .8'     `888.       888       888       o  888  `88b.  
 	//o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
 	//
-	public final static int LASTRECOEDING = 1;
-	public final static int FIRSTANDLASTRECORDING = 2;
 	private static final int notificationID = 8888;
 	private static final int STOPPED = 0;
 	private static final int LOADING = 1;
@@ -55,7 +48,7 @@ public class MainService extends Service
 	public static int activeRecordings = 0;
 	private static Integer key;
 	MediaPlayer streamPlayer = new MediaPlayer();
-	
+	private boolean notificationExists = false;
 	//ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.   
 	//`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88. 
 	// 888   .d88'  888         888          888      888  888   .d88'  888      888  888          888   .d88' 
@@ -68,7 +61,6 @@ public class MainService extends Service
 	private int finger;
 	private int playerStatus;
 	private int sleepMinutes = -1;
-	private boolean isTimerActive;
 	private String playerUrl;
 	private android.os.Handler sleepTimerHandler = new android.os.Handler();
 	private Runnable sleepTimerRunnable = new Runnable()
@@ -90,48 +82,23 @@ public class MainService extends Service
 	};
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
-	private android.os.Handler recordingsHandler = new android.os.Handler();
-	private Runnable recordingsRunnable = new Runnable()
+	private android.os.Handler recordingHandler = new android.os.Handler();
+	private Runnable recordingRunnable = new Runnable()
 	{
+		@Override
 		public void run()
 		{
-			int j = 0;
-			for (int i = 0; i < rec.size(); i++)
-			{
-				if (rec.get(i) != null)
-				{
-					if (rec.get(i).getStatus() != NOTRECORDING)
-					{
-						j++;
-//						if (rec.get(i).getDuration() != -1)
-//						{
-//							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i) + " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s/" + rec.get(i).getDuration() + "s Size:" + rec.get(i).getCurrentSizeInKB() + "KB");
-//						} else
-//						{
-//							Log.w(Long.toString(System.currentTimeMillis()), "ID:" + Integer.toString(i) + " Time:" + rec.get(i).getCurrentRecordingTimeInSeconds() + "s Size:" + rec.get(i).getCurrentSizeInKB() + "KB");
-//						}
-						if (activeRecordings == 1)
-						{
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), FIRSTANDLASTRECORDING);
-						} else if (j == 1)
-						{
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), FIRSTRECORDING);
-						} else if (j == activeRecordings)
-						{
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), LASTRECOEDING);
-						} else
-							broadcastRecording("RECORDING_ADDED", i, rec.get(i).getName(), rec.get(i).getCurrentRecordingTimeInSeconds(), rec.get(i).getCurrentSizeInKB(), -1);
-					}
-				}
-			}
-			recordingsHandler.postDelayed(this, 250);
+			Intent intent = new Intent();
+			intent.setAction("recList");
+			intent.putExtra("recHashMap", rec);
+			sendBroadcast(intent);
+			recordingHandler.postDelayed(this, 500);
 		}
 	};
 	
 	@Override
 	public void onCreate()
 	{
-		recordingsHandler.postDelayed(recordingsRunnable, 250);
 		key = 0;
 		timeCreated = System.currentTimeMillis();
 	}
@@ -177,7 +144,7 @@ public class MainService extends Service
 			{
 				String urlString = intent.getStringExtra("urlString");
 				
-				rec.put(key, new Recording(date(), urlString, intent.getLongExtra("duration", -1), intent.getStringExtra("name")));
+				rec.put(key, new Recording(date(), urlString, intent.getIntExtra("duration", -1), intent.getStringExtra("name")));
 				rec.get(key).start();
 				if (activeRecordings == 0)
 				{
@@ -198,7 +165,7 @@ public class MainService extends Service
 				if (activeRecordings == 0)
 				{
 					stopRecordingBroadcast();
-//					recordingsHandler.removeCallbacks(recordingsRunnable);
+					zeroRecordingBroadcast();
 					rec.clear();
 					Log.w("Recorder", "No Recordings");
 				}
@@ -283,34 +250,28 @@ public class MainService extends Service
 	{
 		sleepTimerHandler.postDelayed(sleepTimerRunnable, 60000);
 	}
-	
+
 	public void stopSleepTimer()
 	{
 		sleepTimerHandler.removeCallbacks(sleepTimerRunnable);
 	}
 	
-	private android.os.Handler BANANAHandler = new android.os.Handler();
-	private Runnable BANANA = new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			Intent intent = new Intent();
-			intent.setAction("recList");
-			intent.putExtra("recHashMap", rec);
-			sendBroadcast(intent);
-			BANANAHandler.postDelayed(this, 10);
-		}
-	};
-
 	public void startRecordingBroadcast()
 	{
-		BANANAHandler.postDelayed(BANANA, 0);
+		recordingHandler.postDelayed(recordingRunnable, 0);
 	}
-
+	
 	public void stopRecordingBroadcast()
 	{
-		BANANAHandler.removeCallbacks(BANANA);
+		recordingHandler.removeCallbacks(recordingRunnable);
+	}
+	
+	public void zeroRecordingBroadcast()
+	{
+		Intent intent = new Intent();
+		intent.setAction("recList");
+		intent.putExtra("recHashMap", rec);
+		sendBroadcast(intent);
 	}
 	
 	private void buildNotification()
@@ -344,16 +305,14 @@ public class MainService extends Service
 		
 		if (playerStatus == LOADING)
 		{
-			notificationBuilder.setContentText("Loading"+ "   /   " + activeRecordings + " Recordings Running");
-		}
-		else if (playerStatus == PLAYING)
+			notificationBuilder.setContentText("Loading" + "   /   " + activeRecordings + " Recordings Running");
+		} else if (playerStatus == PLAYING)
 		{
-			notificationBuilder.setContentText("Playing"+ "   /   " + activeRecordings + " Recordings Running");
+			notificationBuilder.setContentText("Playing" + "   /   " + activeRecordings + " Recordings Running");
 			notificationBuilder.addAction(stopAction);
-		}
-		else if (playerStatus == STOPPED)
+		} else if (playerStatus == STOPPED)
 		{
-			notificationBuilder.setContentText("Stopped"+ "   /   " + activeRecordings + " Recordings Running");
+			notificationBuilder.setContentText("Stopped" + "   /   " + activeRecordings + " Recordings Running");
 			notificationBuilder.addAction(playAction);
 		}
 		
@@ -371,6 +330,7 @@ public class MainService extends Service
 		} else
 		{
 			startForeground(notificationID, notificationBuilder.build());
+			notificationExists = true;
 		}
 	}
 	
@@ -405,41 +365,13 @@ public class MainService extends Service
 			intent.setAction(actionToSend);
 			intent.putExtra("timeRemainingInt", variable);
 			sendBroadcast(intent);
-		}
-		else
+		} else
 		{
 			Intent intent = new Intent();
 			intent.setAction(actionToSend);
 			intent.putExtra("finger", variable);
 			sendBroadcast(intent);
 		}
-	}
-	
-	public void broadcastRecording(String action, int key, String name, long currentTime, int sizeInKb, int position)
-	{
-		Intent intent = new Intent();
-		intent.setAction(action);
-		intent.putExtra("key", key);
-		intent.putExtra("name", name);
-		intent.putExtra("time", currentTime);
-		intent.putExtra("size", sizeInKb);
-		intent.putExtra("position", position);
-		sendBroadcast(intent);
-	}
-	
-	public void broadcastRecording(String action, int key)
-	{
-		Intent intent = new Intent();
-		intent.setAction(action);
-		intent.putExtra("key", key);
-		sendBroadcast(intent);
-	}
-	
-	public void broadcastRecording(String action)
-	{
-		Intent intent = new Intent();
-		intent.setAction(action);
-		sendBroadcast(intent);
 	}
 	
 	@Nullable
