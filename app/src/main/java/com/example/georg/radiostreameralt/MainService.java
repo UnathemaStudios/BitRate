@@ -31,7 +31,6 @@ public class MainService extends Service
 	// `Y8bood8P'   o888ooooood8 o8o        `8  o888ooooood8 o888o  o888o o88o     o8888o o888ooooood8
 	//
 	private static final int notificationID = 8888;
-	private long timeCreated;
 	private boolean notificationExists = false;
 
 	//ooooooooo.   ooooo              .o.       oooooo   oooo oooooooooooo ooooooooo.   
@@ -102,7 +101,6 @@ public class MainService extends Service
 	public void onCreate()
 	{
 		key = 0;
-		timeCreated = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -147,7 +145,6 @@ public class MainService extends Service
 			case "RECORD":
 			{
 				String urlString = intent.getStringExtra("urlString");
-				
 				rec.put(key, new Recording(date(), urlString, intent.getIntExtra("duration", -1), intent.getStringExtra("name")));
 				rec.get(key).start();
 				if (activeRecordings == 0)
@@ -306,18 +303,36 @@ public class MainService extends Service
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		notificationBuilder.setSmallIcon(R.drawable.ic_stat_name);
-		notificationBuilder.setContentTitle("Stream Player" + " " + timeCreated);
+		notificationBuilder.setContentTitle("Stream Player");
+		
+		String recordingNotificationText;
+		
+		if (activeRecordings != 0)
+		{
+			if (activeRecordings == 1)
+			{
+				recordingNotificationText = "   /   " + activeRecordings + " Recording";
+			}
+			else
+			{
+				recordingNotificationText = "   /   " + activeRecordings + " Recordings";
+			}
+		}
+		else
+		{
+			recordingNotificationText = "";
+		}
 		
 		if (playerStatus == LOADING)
 		{
-			notificationBuilder.setContentText("Loading" + "   /   " + activeRecordings + " Recordings");
+			notificationBuilder.setContentText("Loading" + recordingNotificationText);
 		} else if (playerStatus == PLAYING)
 		{
-			notificationBuilder.setContentText("Playing" + "   /   " + activeRecordings + " Recordings");
+			notificationBuilder.setContentText("Playing" + recordingNotificationText);
 			notificationBuilder.addAction(stopAction);
 		} else if (playerStatus == STOPPED)
 		{
-			notificationBuilder.setContentText("Stopped" + "   /   " + activeRecordings + " Recordings");
+			notificationBuilder.setContentText("Stopped" + recordingNotificationText);
 			notificationBuilder.addAction(playAction);
 		}
 		
