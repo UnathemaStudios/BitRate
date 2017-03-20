@@ -67,6 +67,7 @@ public class MainService extends Service
 		}
 	};
 	MediaPlayer streamPlayer = new MediaPlayer();
+	
 	//ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.   
 	//`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88. 
 	// 888   .d88'  888         888          888      888  888   .d88'  888      888  888          888   .d88' 
@@ -161,7 +162,7 @@ public class MainService extends Service
 			{
 				int passedKey = intent.getIntExtra("key", -1);
 				rec.get(passedKey).stop();
-				while (rec.get(passedKey).getStatus() != NOTRECORDING) ;
+				while (rec.get(passedKey).getStatus() != NOTRECORDING);
 				rec.remove(passedKey);
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				if (activeRecordings == 0)
@@ -178,7 +179,6 @@ public class MainService extends Service
 		return START_STICKY;
 	}
 	
-	//play pause resume stop close swap functions
 	public void play(String urlString)
 	{
 		if (playerStatus != STOPPED)
@@ -186,9 +186,7 @@ public class MainService extends Service
 			stop();
 		}
 		playerStatus = LOADING;
-		send(Integer.toString(playerStatus)); //broadcast media player status for main and notification
-		
-		//mediaplayer
+		send(Integer.toString(playerStatus));
 		streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 //		streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
 //		{
@@ -218,10 +216,9 @@ public class MainService extends Service
 			public void onPrepared(MediaPlayer mediaPlayer)
 			{
 				mediaPlayer.start();
-				
 				playerStatus = PLAYING;
 				buildNotification();
-				send(Integer.toString(playerStatus)); //broadcast media player status for main and notification
+				send(Integer.toString(playerStatus));
 			}
 		});
 		streamPlayer.prepareAsync();
@@ -235,17 +232,20 @@ public class MainService extends Service
 		}
 		streamPlayer.reset();
 		playerStatus = STOPPED;
-		send(Integer.toString(playerStatus)); //broadcast media player status for main and notification
+		send(Integer.toString(playerStatus));
 		sleepMinutes = -1;
 		stopSleepTimer();
 	}
 	
 	public void close()
 	{
-		stop();
-		streamPlayer.release();
-		stopForeground(true);
-		stopSelf(); //stop media player service
+		if (activeRecordings == 0)
+		{
+			stop();
+			streamPlayer.release();
+			stopForeground(true);
+			stopSelf();
+		}
 	}
 	
 	public void startSleepTimer()
@@ -369,7 +369,6 @@ public class MainService extends Service
 		}
 	}
 	
-	//send function to broadcast an action
 	public void send(String actionToSend)
 	{
 		Intent intent = new Intent();
