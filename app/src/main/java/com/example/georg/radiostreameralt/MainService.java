@@ -118,11 +118,13 @@ public class MainService extends Service
 					finger = intent.getIntExtra("finger", -1);
 				}
 				play(playerUrl);
+				buildNotification();
 				break;
 			}
 			case "PLAYER_STOP":
 			{
 				stop();
+				buildNotification();
 				break;
 			}
 			case "REQUEST_PLAYER_STATUS":
@@ -155,6 +157,7 @@ public class MainService extends Service
 				key++;
 				activeRecordings++;
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
+				buildNotification();
 				break;
 			}
 			case "STOP_RECORD":
@@ -171,10 +174,10 @@ public class MainService extends Service
 					rec.clear();
 					Log.w("Recorder", "No Recordings");
 				}
+				buildNotification();
 				break;
 			}
 		}
-		buildNotification();
 		return START_STICKY;
 	}
 	
@@ -285,20 +288,20 @@ public class MainService extends Service
 		//notification PLAY button
 		Intent playIntent = new Intent(getApplicationContext(), MainService.class);
 		playIntent.setAction("PLAYER_PLAY");
-		PendingIntent playPendingIntent = PendingIntent.getService(this, 0, playIntent, 0);
+		PendingIntent playPendingIntent = PendingIntent.getService(this, 0, playIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		NotificationCompat.Action playAction = new NotificationCompat.Action(R.drawable.ic_play, "Play", playPendingIntent);
 //		Notification.Action playAction = new Notification.Action.Builder(Icon.createWithResource(getApplicationContext(), R.drawable.ic_play), "Play", playPendingIntent).build();
 		
 		//notification STOP button
 		Intent stopIntent = new Intent(getApplicationContext(), MainService.class);
 		stopIntent.setAction("PLAYER_STOP");
-		PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
+		PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		NotificationCompat.Action stopAction = new NotificationCompat.Action(R.drawable.ic_media_stop, "Stop", stopPendingIntent);
 		
 		//notification EXIT button
 		Intent closeIntent = new Intent(getApplicationContext(), MainService.class);
 		closeIntent.setAction("CLOSE");
-		PendingIntent closePendingIntent = PendingIntent.getService(this, 0, closeIntent, 0);
+		PendingIntent closePendingIntent = PendingIntent.getService(this, 0, closeIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		NotificationCompat.Action closeAction = new NotificationCompat.Action(R.drawable.poweroff, "Exit", closePendingIntent);
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
@@ -307,14 +310,14 @@ public class MainService extends Service
 		
 		if (playerStatus == LOADING)
 		{
-			notificationBuilder.setContentText("Loading" + "   /   " + activeRecordings + " Recordings Running");
+			notificationBuilder.setContentText("Loading" + "   /   " + activeRecordings + " Recordings");
 		} else if (playerStatus == PLAYING)
 		{
-			notificationBuilder.setContentText("Playing" + "   /   " + activeRecordings + " Recordings Running");
+			notificationBuilder.setContentText("Playing" + "   /   " + activeRecordings + " Recordings");
 			notificationBuilder.addAction(stopAction);
 		} else if (playerStatus == STOPPED)
 		{
-			notificationBuilder.setContentText("Stopped" + "   /   " + activeRecordings + " Recordings Running");
+			notificationBuilder.setContentText("Stopped" + "   /   " + activeRecordings + " Recordings");
 			notificationBuilder.addAction(playAction);
 		}
 		
