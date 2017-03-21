@@ -37,13 +37,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
 {
-	
 	private static final int STOPPED = 0;
 	private static final int PLAYING = 2;
 	public ArrayList<Radio> radiosList;
@@ -242,7 +239,7 @@ public class MainActivity extends AppCompatActivity
 	protected void onStart()
 	{
 		super.onStart();
-		Toast.makeText(this, "start", Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, "start", Toast.LENGTH_SHORT).show();
 	}
 	
 	private void setupViewPager(ViewPager viewPager)
@@ -523,7 +520,7 @@ public class MainActivity extends AppCompatActivity
 	{
 		return playing;
 	}
-
+	
     /*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -571,7 +568,6 @@ public class MainActivity extends AppCompatActivity
 		@Override
 		public CharSequence getPageTitle(int position)
 		{
-			
 			//return fragmentTitleList.get(position);
 			return null;
 		}
@@ -586,11 +582,9 @@ public class MainActivity extends AppCompatActivity
 
 //TODO LIST
 //
-//TODO: Recording broadcasts to one broadcast/second
 //TODO: Playing Now
 //TODO: Notification Custom
 //TODO: FolderRecordings format
-//TODO:
 //
 //
 //
