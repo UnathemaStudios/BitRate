@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity
 			registerReceiver(serviceReceiver, new IntentFilter("0"));
 			registerReceiver(serviceReceiver, new IntentFilter("1"));
 			registerReceiver(serviceReceiver, new IntentFilter("2"));
-			registerReceiver(serviceReceiver, new IntentFilter("radioToPlay"));
 			registerReceiver(serviceReceiver, new IntentFilter("SET_FINGER"));
 		}
 		
@@ -585,7 +584,7 @@ public class MainActivity extends AppCompatActivity
 //TODO: Playing Now
 //TODO: Notification Custom
 //TODO: FolderRecordings format
-//
+//TODO: Sleeper Timer onRestart MainActivity fix
 //
 //
 //TODO: RecordingNow fragment onView FIX
