@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:autofit="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:background="@color/darkerGrey"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:elevation="1dp"
                 android:layout_marginTop="0dp"
-                android:layout_height="wrap_content"
-    >
-
+                android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="100dp"
         android:scaleType="centerInside"
-        android:layout_alignWithParentIfMissing="false"
+        android:adjustViewBounds="true"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
@@ -35,7 +32,7 @@
         android:textColor="@color/textColorPrimary"
         android:textSize="40sp"
         android:textStyle="normal|bold"
-        autofit:minTextSize="10sp"
+        autofit:minTextSize="40sp"
         android:elevation="1dp"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"

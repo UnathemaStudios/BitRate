@@ -6,9 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,18 +33,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private TextView tvTimeRemaining;
 	private ImageView ivRadio;
 	private TextView tvRadioName;
-	
-	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (intent.getAction().equals("timeRemaining"))
-			{
-				setSleepText(intent.getIntExtra("timeRemainingInt", -999));
-			}
-		}
-	};
+
 	
 	public PlayingNowFragment()
 	{
@@ -47,7 +43,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	@Override
 	public void onDestroy()
 	{
-		getActivity().unregisterReceiver(serviceReceiver);
 		super.onDestroy();
 	}
 	
@@ -55,10 +50,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		if (serviceReceiver != null)
-		{
-			getActivity().registerReceiver(serviceReceiver, new IntentFilter("timeRemaining"));
-		}
 	}
 	
 	@Override
@@ -81,9 +72,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		tvRadioName = (TextView) getActivity().findViewById(R.id.tvPlayingNowName);
 		tvTimeRemaining = (TextView) getActivity().findViewById(R.id.tvTimeRemaining);
 		
-		ivRadio.setBackgroundResource(((MainActivity) getActivity()).getPlayerDrawable());
+		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
-		ibSleepTimer.setBackgroundResource(R.drawable.ic_snooze);
+		ibSleepTimer.setImageResource(R.drawable.ic_snooze);
 		
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener()
 		{
@@ -143,23 +134,23 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	
 	private void setupPage()
 	{
-		ivRadio.setBackgroundResource(((MainActivity) getActivity()).getPlayerDrawable());
+		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
-		/*Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
+		Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
 				((MainActivity)getActivity()).getPlayerDrawable());
         int h = getView().getHeight();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
-        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h, getDominantColor(icon),
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h-400, getDominantColor(icon),
                 Color.parseColor
-                ("#000000"), Shader.TileMode.REPEAT));
-        mDrawable.setAlpha(220);
-        getView().setBackgroundDrawable(mDrawable);*/
+                ("#0f191e"), Shader.TileMode.CLAMP));
+        mDrawable.setAlpha(250);
+        getView().setBackgroundDrawable(mDrawable);
 	}
 	
 	public int getDominantColor(Bitmap bitmap)
 	{
-		Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, 1, 1, true);
-		final int color = newBitmap.getPixel(0, 0);
+		Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, 3, 3, true);
+		final int color = newBitmap.getPixel(1, 1);
 		newBitmap.recycle();
 		return color;
 	}

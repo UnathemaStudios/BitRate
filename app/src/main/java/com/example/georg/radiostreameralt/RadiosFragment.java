@@ -66,7 +66,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			@Override
 			public void loadImage(Radio item, ImageView imageView, int position)
 			{
-				imageView.setBackgroundResource(item.getIcon());
+				imageView.setImageResource(item.getIcon());
 			}
 		});
 		
