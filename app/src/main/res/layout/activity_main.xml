@@ -81,7 +81,6 @@
             android:textSize="24sp"
             android:fontFamily="monospace"
             android:textColor="@color/textColorPrimary"
-            android:textAlignment="textStart"
             android:paddingLeft="4dp"
             android:gravity="center"/>
 

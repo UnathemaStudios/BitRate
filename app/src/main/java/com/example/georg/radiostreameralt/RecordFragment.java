@@ -29,22 +29,6 @@ public class RecordFragment extends Fragment {
 	private BottomBarTab recNowTab;
     private int recordings = 0;
 
-    private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("SIMPLE_RECORDING_ADDED")){
-                recNowTab.setBadgeCount(recordings++);
-            }
-            else if(intent.getAction().equals("RECORDING_STOPPED")){
-                recordings--;
-                if(recordings==0){
-                    recNowTab.removeBadge();
-                }
-                else recNowTab.setBadgeCount(recordings);
-            }
-        }
-    };
-
     public RecordFragment() {
         // Required empty public constructor
     }
@@ -55,12 +39,7 @@ public class RecordFragment extends Fragment {
         recordingNow = new RecordingNow();
         schRecord = new SchRecord();
         folderRecordings = new FolderRecordings();
-
-
-        if (serviceReceiver != null) {
-            getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_ADDED"));
-            getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_STOPPED"));
-        }
+		
     }
 
     @Override

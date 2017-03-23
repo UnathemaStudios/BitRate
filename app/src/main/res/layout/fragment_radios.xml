@@ -5,7 +5,7 @@
                 android:layout_height="match_parent"
                 tools:context="com.example.georg.radiostreameralt.RadiosFragment"
                 android:animateLayoutChanges="true"
-                android:background="@color/darkGrey"
+                android:background="@color/colorPrimary"
     >
 
     <!-- TODO: Update blank fragment layout -->
@@ -20,10 +20,10 @@
         android:elevation="4dp"
         android:layout_marginBottom="50dp"
         android:paddingBottom="10dp"
-        android:dividerHeight="1dp"
-        android:divider="@color/colorAccent"
+        android:dividerHeight="2dp"
+        android:divider="@color/transparent"
         android:clipToPadding="false"
-        android:paddingTop="8dp"/>
+        android:paddingTop="2dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_alignParentBottom="true"

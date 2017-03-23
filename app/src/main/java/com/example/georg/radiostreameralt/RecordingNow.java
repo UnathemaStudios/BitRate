@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,19 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class RecordingNow extends Fragment
 {
+	@Override
+	public void onDestroy()
+	{
+		getActivity().unregisterReceiver(serviceReceiver);
+		super.onDestroy();
+	}
+	
 	private ArrayList<RecordingRadio> recordingNowRadios = new ArrayList<>();
 	private FunDapter adapter;
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
@@ -29,27 +39,30 @@ public class RecordingNow extends Fragment
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (intent.getAction().equals("RECORDING_ADDED"))
+			if (intent.getAction().equals("recList"))
 			{
-				if (intent.getIntExtra("position", 998) == 0 || (intent.getIntExtra("position", 747) == 2))
+				HashMap<Integer, Recording> rec = new HashMap<>();
+				rec = (HashMap<Integer, Recording>) intent.getSerializableExtra("recHashMap");
+				if (rec != null)
 				{
 					recordingNowRadios.clear();
-				}
-				recordingNowRadios.add(new RecordingRadio(intent.getStringExtra("name"), intent.getIntExtra("key", 200), intent.getLongExtra("time", -1), intent.getIntExtra("size", -1)));
-				if ((intent.getIntExtra("position", 747) == 1) || (intent.getIntExtra("position", 747) == 2))
-				{
+					for (Map.Entry<Integer, Recording> entry : rec.entrySet())
+					{
+						if (entry != null)
+						{
+							recordingNowRadios.add(new RecordingRadio(entry.getValue().getName(),entry.getKey(),entry.getValue().getCurrentRecordingTimeInSeconds(),entry.getValue().getCurrentSizeInKB()));
+						}
+						else
+						{
+							Log.w("MainActivity", "HashMap entry is null");
+						}
+					}
 					adapter.updateData(recordingNowRadios);
 				}
-			} 
-			else if (intent.getAction().equals("RECORDING_STOPPED"))
-			{
-				int keyToDelete = intent.getIntExtra("key", -1);
-				for (int i = 0; i < recordingNowRadios.size(); i++)
+				else
 				{
-					if (recordingNowRadios.get(i).getId() == keyToDelete)
-						recordingNowRadios.remove(i);
+					Log.w("MainActivity", "HashMap is null");
 				}
-				adapter.updateData(recordingNowRadios);
 			}
 		}
 	};
@@ -65,8 +78,7 @@ public class RecordingNow extends Fragment
 		super.onCreate(savedInstanceState);
 		if (serviceReceiver != null)
 		{
-			getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_ADDED"));
-			getActivity().registerReceiver(serviceReceiver, new IntentFilter("RECORDING_STOPPED"));
+			getActivity().registerReceiver(serviceReceiver, new IntentFilter("recList"));			
 		}
 	}
 	
@@ -81,7 +93,7 @@ public class RecordingNow extends Fragment
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
-		
+
 //		TextView tvrecordingNowRadio = (TextView) getActivity().findViewById(R.id.tvRecordingNow);
 		
 		BindDictionary<RecordingRadio> dictionary = new BindDictionary<>();
@@ -120,36 +132,28 @@ public class RecordingNow extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				send("STOP", recordingNowRadios.get(position).getId());
+				((MainActivity) getActivity()).tellServiceR("STOP_RECORD", recordingNowRadios.get(position).getId());
 			}
 		});
 	}
 	
-	public void send(String actionToSend, int key)
-	{
-		Intent serviceIntent = new Intent(getContext(), Recorder.class);
-		serviceIntent.putExtra("Action", actionToSend);
-		serviceIntent.putExtra("key", key);
-		getActivity().startService(serviceIntent);
-	}
-	
 	public String prettyTime(long timeInSeconds)
 	{
-		return String.format(Locale.US,"%02d:%02d",timeInSeconds/60,timeInSeconds%60);
+		return String.format(Locale.US, "%02d:%02d", timeInSeconds / 60, timeInSeconds % 60);
 	}
 	
 	public String prettySize(int sizeInKB)
 	{
-		if (sizeInKB<1024)
+		if (sizeInKB < 1024)
 		{
-			return String.valueOf(sizeInKB)+" KB ";
-		}
-		else /*if (sizeInKB<1048576)*/
+			return String.valueOf(sizeInKB) + " KB ";
+		} else /*if (sizeInKB<1048576)*/
 		{
-			return String.format(Locale.US,"%.2f",(double)sizeInKB/1024)+" MB ";
+			return String.format(Locale.US, "%.2f", (double) sizeInKB / 1024) + " MB ";
 		}
 	}
-	
+}
+
 //	//function to check if a service is running
 
 //	private boolean isMyServiceRunning(Class<?> serviceClass)
@@ -164,4 +168,3 @@ public class RecordingNow extends Fragment
 //		}
 //		return false;
 //	}
-}

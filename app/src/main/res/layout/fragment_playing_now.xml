@@ -1,34 +1,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
+                xmlns:autofit="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
-                android:background="@color/darkGrey"
+                android:background="@color/BLACK"
                 tools:context="com.example.georg.radiostreameralt.PlayingNowFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-
-    <TextView
-        android:id="@+id/tvPlayingNowSecondaryDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvPlayingNowName"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="75dp"
-        android:layout_marginRight="75dp"
-        android:layout_marginTop="10dp"
-        android:text="TextView"
-        android:textAlignment="center"/>
 
     <ImageView
         android:id="@+id/ivPlayingNowExtended"
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:elevation="1dp"
+        android:elevation="4dp"
         android:scaleType="centerInside"/>
 
     <ImageButton
@@ -41,7 +29,7 @@
         android:layout_toStartOf="@+id/ibPPPLayingNow"
         android:background="@color/transparent"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_watch_later_black"/>
+        android:src="@drawable/ic_snooze"/>
 
     <ImageButton
         android:id="@+id/ibRecordCurrentRadio"
@@ -56,35 +44,42 @@
         android:layout_alignTop="@+id/ibPPPLayingNow"
         android:layout_toEndOf="@+id/ibPPPLayingNow"/>
 
-    <TextView
+    <me.grantland.widget.AutofitTextView
         android:id="@+id/tvPlayingNowName"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivPlayingNowExtended"
+        android:layout_above="@+id/ibPPPLayingNow"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:paddingTop="0dp"
-        android:text="TextView"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:fontFamily="monospace"
         android:textAlignment="center"
-        android:textStyle="normal|bold"/>
+        android:textColor="@color/textColorPrimary"
+        android:textSize="40sp"
+        autofit:minTextSize="15sp"/>
 
     <ImageButton
         android:id="@+id/ibPPPLayingNow"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_below="@+id/tvPlayingNowSecondaryDescription"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
+        android:layout_marginBottom="30dp"
         android:background="@color/transparent"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_play_circle_filled_blank_only"/>
+        android:src="@drawable/ic_play_circle_outline"/>
 
     <TextView
         android:id="@+id/tvTimeRemaining"
         android:layout_width="wrap_content"
-        android:layout_height="11dp"
+        android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/ibSleepTimer"
         android:layout_alignStart="@+id/ibSleepTimer"
         android:layout_below="@+id/ibSleepTimer"
-        android:textSize="10sp"/>
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
 </RelativeLayout>

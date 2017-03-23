@@ -27,10 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class FolderRecordings extends Fragment {
 
     private ArrayList<String> recFiles;
@@ -44,7 +40,6 @@ public class FolderRecordings extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 	
     @Override
@@ -72,8 +67,7 @@ public class FolderRecordings extends Fragment {
 			}
 		});
 		
-		adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout,
-                dictionary);
+		adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout, dictionary);
 		lvFolderRecordings.setAdapter(adapter);
 		
 		//Setting onItemClickListener
