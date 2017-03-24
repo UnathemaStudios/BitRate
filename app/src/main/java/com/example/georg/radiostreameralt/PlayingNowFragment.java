@@ -56,8 +56,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_playing_now, container, false);
-		return view;
+		return inflater.inflate(R.layout.fragment_playing_now, container, false);
 	}
 	
 	@Override
@@ -140,11 +139,23 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 				((MainActivity)getActivity()).getPlayerDrawable());
         int h = getView().getHeight();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
-        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 0, h-400, getDominantColor(icon),
-                Color.parseColor
-                ("#0f191e"), Shader.TileMode.CLAMP));
-        mDrawable.setAlpha(250);
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 200, h-600,
+				manipulateColor(getDominantColor(icon),0.5f),
+				Color.parseColor("#0f191e"),
+				Shader.TileMode.CLAMP));
+        mDrawable.setAlpha(255);
         getView().setBackgroundDrawable(mDrawable);
+	}
+	
+	public static int manipulateColor(int color, float factor) {
+		int a = Color.alpha(color);
+		int r = Math.round(Color.red(color) * factor);
+		int g = Math.round(Color.green(color) * factor);
+		int b = Math.round(Color.blue(color) * factor);
+		return Color.argb(a,
+				Math.min(r,255),
+				Math.min(g,255),
+				Math.min(b,255));
 	}
 	
 	public int getDominantColor(Bitmap bitmap)
