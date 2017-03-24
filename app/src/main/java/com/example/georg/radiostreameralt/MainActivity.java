@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 super.onTabReselected(tab);
-//
             }
         });
         viewPager.setOffscreenPageLimit(2);
@@ -160,14 +159,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (playing == PLAYING) {
-                    disableButtons();
-                    Log.d("STOP BUTTON", "STOPPED PRESSED");
-                    tellServiceP("PLAYER_STOP");
-                    playing = STOPPED;
+                    stop();
                 }
                 else if (playing == STOPPED) {
-                    disableButtons();
-                    tellServiceP("PLAYER_PLAY", radiosList.get(finger).getUrl(), finger);
+                    play();
                 }
             }
         });
@@ -203,10 +198,24 @@ public class MainActivity extends AppCompatActivity {
         else super.onBackPressed();
     }
 
+    public void play(){
+        disableButtons();
+        playingNowFragment.disableButtons(true);
+        tellServiceP("PLAYER_PLAY", radiosList.get(finger).getUrl(), finger);
+    }
+
+    public void stop(){
+        disableButtons();
+        playingNowFragment.disableButtons(true);
+        Log.d("STOP BUTTON", "STOPPED PRESSED");
+        tellServiceP("PLAYER_STOP");
+    }
+
     private void playerStop() {
         ibPPbutton.setImageResource(R.drawable.ic_play);
         ibPPbutton.setEnabled(true);
         playing = STOPPED;
+        playingNowFragment.setPPButtonStatus(STOPPED);
     }
 
     private void playerPlay() {
@@ -214,17 +223,16 @@ public class MainActivity extends AppCompatActivity {
         ibPPbutton.setEnabled(true);
         findViewById(R.id.loadingLayout).setVisibility(View.GONE);
         playing = PLAYING;
+        playingNowFragment.setPPButtonStatus(PLAYING);
     }
 
     public void disableButtons() {
         ibPPbutton.setEnabled(false);
-//        findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//		Toast.makeText(this, "start", Toast.LENGTH_SHORT).show();
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -450,6 +458,10 @@ public class MainActivity extends AppCompatActivity {
         return radiosList.get(finger).getName();
     }
 
+    public int getPlayerStatus(){
+        return playing;
+    }
+
     public void setFinger(int finger) {
         this.finger = finger;
         ivImageSmall.setImageResource(radiosList.get(finger).getIcon());
@@ -520,6 +532,9 @@ public class MainActivity extends AppCompatActivity {
 //TODO: FolderRecordings format
 //TODO: Http raspberry file for the radios(not locally saved file)
 //TODO: Record by duration dialog in PlayingNow and RadiosFragment
+//TODO: MUST! MUST! Media Player states! !MUST !MUST
+//TODO: WIFI/Mobile data Checker!
+//TODO: If earphones unplug -> Stop the player! (?)
 //
 //TODO: Recording stop by duration FIX + while(true) + broadcast current recording time/size?
 //TODO: PlayingNow Controls + color??
