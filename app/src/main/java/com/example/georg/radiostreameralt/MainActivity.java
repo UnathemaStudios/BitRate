@@ -532,6 +532,7 @@ public class MainActivity extends AppCompatActivity {
 //TODO: MUST! MUST! Media Player states! !MUST !MUST
 //TODO: WIFI/Mobile data Checker!
 //TODO: If earphones unplug -> Stop the player! (?)
+//TODO: PLAYER VISIBLE BUG
 //
 //TODO: Recording stop by duration FIX + while(true) + broadcast current recording time/size?
 //TODO: PlayingNow Controls + color??
