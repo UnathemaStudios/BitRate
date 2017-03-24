@@ -1,6 +1,5 @@
 package com.example.georg.radiostreameralt;
 
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,6 +10,7 @@ import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +18,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class PlayingNowFragment extends Fragment implements SleepTimerDialog.NoticeDialogListener
 {
@@ -32,7 +37,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private ImageView ivRadio;
 	private TextView tvRadioName;
 
-	
 	public PlayingNowFragment()
 	{
 		// Required empty public constructor
@@ -142,8 +146,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
 				((MainActivity)getActivity()).getPlayerDrawable());
         int h = getView().getHeight();
+		int w = getView().getWidth();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
-        mDrawable.getPaint().setShader(new LinearGradient(0, 0, 200, h-600,
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, w/5, h,
 				manipulateColor(getDominantColor(icon),0.5f),
 				Color.parseColor("#0f191e"),
 				Shader.TileMode.CLAMP));
@@ -162,12 +167,16 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 				Math.min(b,255));
 	}
 	
-	public int getDominantColor(Bitmap bitmap)
-	{
-		Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, 3, 3, true);
-		final int color = newBitmap.getPixel(1, 1);
-		newBitmap.recycle();
-		return color;
+	public static int getDominantColor(Bitmap bitmap) {
+		List<Palette.Swatch> swatchesTemp = Palette.from(bitmap).generate().getSwatches();
+		List<Palette.Swatch> swatches = new ArrayList<Palette.Swatch>(swatchesTemp);
+		Collections.sort(swatches, new Comparator<Palette.Swatch>() {
+			@Override
+			public int compare(Palette.Swatch swatch1, Palette.Swatch swatch2) {
+				return swatch2.getPopulation() - swatch1.getPopulation();
+			}
+		});
+		return swatches.size() > 0 ? swatches.get(0).getRgb() : 1;
 	}
 	
 	@Override
