@@ -458,9 +458,6 @@ public class MainActivity extends AppCompatActivity {
         return radiosList.get(finger).getName();
     }
 
-    public int getPlayerStatus(){
-        return playing;
-    }
 
     public void setFinger(int finger) {
         this.finger = finger;

@@ -148,7 +148,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
         int h = getView().getHeight();
 		int w = getView().getWidth();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
-        mDrawable.getPaint().setShader(new LinearGradient(0, 0, w/5, h,
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, w/5, h*2/3,
 				manipulateColor(getDominantColor(icon),0.5f),
 				Color.parseColor("#0f191e"),
 				Shader.TileMode.CLAMP));

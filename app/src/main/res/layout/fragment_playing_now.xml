@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:elevation="4dp"
         android:scaleType="centerInside"/>
 
@@ -29,6 +29,7 @@
         android:layout_toStartOf="@+id/ibPPPLayingNow"
         android:background="@color/transparent"
         android:scaleType="fitXY"
+        android:elevation="4dp"
         android:src="@drawable/ic_snooze"/>
 
     <ImageButton
@@ -41,6 +42,7 @@
         app:srcCompat="@drawable/ic_fiber_manual_record"
         android:layout_marginStart="27dp"
         android:layout_marginTop="29dp"
+        android:elevation="4dp"
         android:layout_alignTop="@+id/ibPPPLayingNow"
         android:layout_toEndOf="@+id/ibPPPLayingNow"/>
 
@@ -55,6 +57,7 @@
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
         android:fontFamily="monospace"
+        android:elevation="4dp"
         android:textAlignment="center"
         android:textColor="@color/textColorPrimary"
         android:textSize="40sp"
@@ -68,7 +71,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:background="@color/transparent"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
+        android:elevation="4dp"
         android:src="@drawable/ic_play_circle_outline"/>
 
     <TextView
@@ -81,5 +85,6 @@
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
+        android:elevation="4dp"
         android:textStyle="bold"/>
 </RelativeLayout>
