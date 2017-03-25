@@ -8,9 +8,11 @@ import android.graphics.Shader;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,7 +40,14 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private TextView tvTimeRemaining;
 	private ImageView ivRadio;
 	private TextView tvRadioName;
-
+	private TextView tvRadioMetadata;
+	
+	private IcyStreamMeta streamMeta;	
+	private String streamTitle = "";
+	private final Handler h = new Handler();
+	
+	
+	
 	public PlayingNowFragment()
 	{
 		// Required empty public constructor
@@ -72,10 +83,51 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		ivRadio = (ImageView) getActivity().findViewById(R.id.ivPlayingNowExtended);
 		tvRadioName = (TextView) getActivity().findViewById(R.id.tvPlayingNowName);
 		tvTimeRemaining = (TextView) getActivity().findViewById(R.id.tvTimeRemaining);
+		tvRadioMetadata = (TextView) getActivity().findViewById(R.id.tvRadioMetadata);
 		
 		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		ibSleepTimer.setImageResource(R.drawable.ic_snooze);
+		
+		
+		
+		streamMeta = new IcyStreamMeta();
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				while(true)
+				{
+					try
+					{
+						Thread.sleep(5000);
+//						Log.i("METADATA", "START");
+						streamMeta.setStreamUrl(new URL("http://philae.shoutca.st:8307/stream"));
+						streamMeta.refreshMeta();
+//						Log.i("METADATA", streamMeta.getStreamTitle());
+						streamTitle = streamMeta.getStreamTitle();
+//						Log.i("METADATA", streamMeta.getArtist());
+//						Log.i("METADATA", streamMeta.getTitle());
+//						Log.i("METADATA", String.valueOf(streamMeta.getMetadata()));
+//						Log.i("METADATA", String.valueOf(streamMeta.getStreamUrl()));
+//						Log.i("METADATA", "END");
+					} catch (IOException | InterruptedException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+		
+		h.post(new Runnable() {
+			@Override
+			public void run() {
+				
+				tvRadioMetadata.setText(streamTitle);
+				h.postDelayed(this, 1000);
+			}
+		});
 		
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener()
 		{
@@ -148,7 +200,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
         int h = getView().getHeight();
 		int w = getView().getWidth();
         ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());
-        mDrawable.getPaint().setShader(new LinearGradient(0, 0, w/5, h*7/9,
+        mDrawable.getPaint().setShader(new LinearGradient(0, 0, w/2, h*8/9,
 				manipulateColor(getDominantColor(icon),0.4f),
 				Color.parseColor("#0f191e"),
 				Shader.TileMode.CLAMP));
