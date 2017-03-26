@@ -24,13 +24,13 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:design:25.3.0'
+    compile 'com.android.support:support-v4:25.3.0'
     compile 'com.github.amigold.fundapter:library:1.0'
-    compile 'me.grantland:autofittextview:0.2.+'
+    compile 'me.grantland:autofittextview:0.2.1'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.roughike:bottom-bar:2.1.1'
-    compile 'com.android.support:palette-v7:+'
+    compile 'com.android.support:palette-v7:25.3.0'
     testCompile 'junit:junit:4.12'
 }

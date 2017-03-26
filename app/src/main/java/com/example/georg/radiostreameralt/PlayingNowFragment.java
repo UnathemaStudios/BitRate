@@ -103,9 +103,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 					{
 						Thread.sleep(5000);
 //						Log.i("METADATA", "START");
-						streamMeta.setStreamUrl(new URL("http://philae.shoutca.st:8307/stream"));
+						streamMeta.setStreamUrl(new URL("http://s10.voscast.com:9940"));
 						streamMeta.refreshMeta();
-//						Log.i("METADATA", streamMeta.getStreamTitle());
+						Log.i("METADATA", streamMeta.getStreamTitle());
 						streamTitle = streamMeta.getStreamTitle();
 //						Log.i("METADATA", streamMeta.getArtist());
 //						Log.i("METADATA", streamMeta.getTitle());
