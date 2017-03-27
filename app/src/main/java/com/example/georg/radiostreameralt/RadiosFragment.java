@@ -20,11 +20,6 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 
-
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener
 {
 	private FloatingActionButton fabAddRadio;
@@ -46,8 +41,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	{
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
-
-
+		
+		
 		fabAddRadio = (FloatingActionButton) view.findViewById(R.id.fabAddRadio);
 		
 		BindDictionary<Radio> dictionary = new BindDictionary<>();
@@ -70,9 +65,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 		
-		adapter = new FunDapter(getContext(), ((MainActivity)getActivity()).radiosList, R.layout
-				.grid_view_layout,
-				dictionary);
+		adapter = new FunDapter(getContext(), ((MainActivity) getActivity()).radiosList, R.layout.grid_view_layout, dictionary);
 		
 		final ListView radiosGrid = (ListView) view.findViewById(R.id.gridView);
 		radiosGrid.setAdapter(adapter);
@@ -83,13 +76,12 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				((MainActivity)getActivity()).tellServiceP("PLAYER_PLAY",
-						((MainActivity) getActivity()).radiosList.get(position).getUrl(),position);
-				((MainActivity)getActivity()).disableButtons();
-				((MainActivity)getActivity()).setFinger(position);
+				((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", ((MainActivity) getActivity()).radiosList.get(position).getUrl(), position);
+				((MainActivity) getActivity()).disableButtons();
+				((MainActivity) getActivity()).setFinger(position);
 			}
 		});
-
+		
 		return view;
 	}
 	
@@ -108,23 +100,27 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 	}
-
+	
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
+	{
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if (v.getId()==R.id.gridView) {
+		if (v.getId() == R.id.gridView)
+		{
 			MenuInflater inflater = getActivity().getMenuInflater();
-			inflater.inflate(R.menu.folder_context_menu, menu);
+			inflater.inflate(R.menu.radios_context_menu, menu);
 		}
 	}
-
+	
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(MenuItem item)
+	{
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-		switch(item.getItemId()) {
-			case R.id.delete:
-				((MainActivity)getActivity()).radiosList.remove(info.position);
-				adapter.updateData(((MainActivity)getActivity()).radiosList);
+		switch (item.getItemId())
+		{
+			case R.id.delete_radios:
+				((MainActivity) getActivity()).radiosList.remove(info.position);
+				adapter.updateData(((MainActivity) getActivity()).radiosList);
 				return true;
 			default:
 				return super.onContextItemSelected(item);
@@ -136,11 +132,11 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	{
 		super.onDestroy();
 	}
-
+	
 	@Override
 	public void onDialogPositiveClick(String name, String url)
 	{
-		((MainActivity)getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_radio));
-		adapter.updateData(((MainActivity)getActivity()).radiosList);
+		((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_radio));
+		adapter.updateData(((MainActivity) getActivity()).radiosList);
 	}
 }

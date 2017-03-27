@@ -2,7 +2,7 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/delete_folder_recording"
+    <item android:id="@+id/delete_radios"
           android:icon="@android:drawable/ic_menu_add"
           android:title="Delete" />
 

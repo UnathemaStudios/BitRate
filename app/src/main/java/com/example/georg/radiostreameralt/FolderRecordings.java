@@ -138,7 +138,7 @@ public class FolderRecordings extends Fragment {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
-			case R.id.delete:
+			case R.id.delete_folder_recording:
 				new File(Environment.getExternalStorageDirectory().toString()+"/Streams",recFiles.get(info.position)).delete();
 				recFiles.remove(info.position);
 				adapter.updateData(recFiles);
