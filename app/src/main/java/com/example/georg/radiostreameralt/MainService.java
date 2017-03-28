@@ -1,5 +1,6 @@
 package com.example.georg.radiostreameralt;
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,6 +12,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.IBinder;
+import android.renderscript.RenderScript;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.text.format.DateFormat;
@@ -340,7 +342,7 @@ public class MainService extends Service
 			notificationBuilder.setContentText("Stopped" + recordingNotificationText);
 			notificationBuilder.addAction(playAction);
 		}
-		
+		notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
 		notificationBuilder.setOngoing(true);
 		notificationBuilder.setOnlyAlertOnce(true);
 		notificationBuilder.setContentIntent(pendingIntent);
@@ -366,13 +368,13 @@ public class MainService extends Service
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
 		{
 			Calendar calendar = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd-kkmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyMMddkkmmss");
 			return sdf.format(calendar.getTime());
 		}
 		else
 		{
 			Date d = new Date();
-			CharSequence s = DateFormat.format("yyMMdd-kkmmss", d.getTime());
+			CharSequence s = DateFormat.format("yyMMddkkmmss", d.getTime());
 			return (String) s;
 		}
 	}

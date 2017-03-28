@@ -25,6 +25,7 @@ import com.amigold.fundapter.extractors.StringExtractor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 public class FolderRecordings extends Fragment {
@@ -121,9 +122,15 @@ public class FolderRecordings extends Fragment {
 			if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3"))
 			{
 				recFiles.add(file.getName());
+				Log.w("Recording Name", recordingNameFromFileName(file.getName()));
+				Log.w("Recording Date", recordingDateFromFilename(file.getName()));
+				Log.w("Recording Time", recordingTimeFromFilename(file.getName()));
+				Log.w("File Size", prettySize(file.length()/1024));
 			}
 		adapter.updateData(recFiles);
 	}
+	
+	
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -156,5 +163,31 @@ public class FolderRecordings extends Fragment {
 			return fileName.substring(index+1);
 		}
 		else return null;
+	}
+	
+	public String prettySize(long sizeInKB)
+	{
+		if (sizeInKB < 1024)
+		{
+			return String.valueOf(sizeInKB) + " KB ";
+		} else /*if (sizeInKB<1048576)*/
+		{
+			return String.format(Locale.US, "%.2f", (double) sizeInKB / 1024) + " MB ";
+		}
+	}
+	
+	String recordingNameFromFileName(String fileName){
+		
+		return fileName.substring(0, fileName.length()-4).substring(0, fileName.substring(0, fileName.length()-4).length()-12);
+	}
+	
+	String recordingDateFromFilename(String fileName){
+		String dateUnformatted = fileName.substring(0, fileName.length()-4).substring(fileName.substring(0, fileName.length()-4).length()-12);
+		return dateUnformatted.substring(4, 6) + "/" + dateUnformatted.substring(2, 4) +"/" + 20 + dateUnformatted.substring(0, 2);
+	}
+	
+	String recordingTimeFromFilename(String fileName){
+		String dateUnformatted = fileName.substring(0, fileName.length()-4).substring(fileName.substring(0, fileName.length()-4).length()-12);
+		return dateUnformatted.substring(6, 8) + ":" + dateUnformatted.substring(8, 10) +":" + dateUnformatted.substring(10, 12);
 	}
 }

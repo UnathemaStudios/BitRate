@@ -1,6 +1,5 @@
 package com.example.georg.radiostreameralt;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -42,9 +41,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
 		
-		
 		fabAddRadio = (FloatingActionButton) view.findViewById(R.id.fabAddRadio);
-		
 		BindDictionary<Radio> dictionary = new BindDictionary<>();
 		
 		dictionary.addStringField(R.id.tvName, new StringExtractor<Radio>()
