@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -133,7 +134,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	@Override
 	public void onDialogPositiveClick(String name, String url)
 	{
-		((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_radio));
+		((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
 		adapter.updateData(((MainActivity) getActivity()).radiosList);
+		Log.w("ΡαδιοσΦραγμεντ", "Radio added to list");
 	}
 }

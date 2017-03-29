@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Created by georg on 18/2/2017.
@@ -42,9 +43,13 @@ public class AddRadioDialog extends DialogFragment {
                 .setView(textEntryView)
                 .setPositiveButton(R.string.add_radio_dialog_add, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogPositiveClick(etName.getText().toString(), etUrl
-                                .getText().toString());
-                        AddRadioDialog.this.dismiss();
+                        if(!(etName.getText().toString().equals("")||etUrl
+                                .getText().toString().equals(""))) {
+                            mListener.onDialogPositiveClick(etName.getText().toString(), etUrl
+                                    .getText().toString());
+                            AddRadioDialog.this.dismiss();
+                        }
+                        else Toast.makeText(getContext(), "Name and URL can not be empty", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton(R.string.add_radio_dialog_cancel, new DialogInterface.OnClickListener() {

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -42,6 +43,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
 {
 	private static final int STOPPED = 0;
+	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
 	public ArrayList<Radio> radiosList;
 	private ViewPager viewPager;
@@ -76,11 +78,13 @@ public class MainActivity extends AppCompatActivity
 			else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
 			{
 				findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
+				ibPPbutton.setVisibility(View.GONE);
+				playing = LOADING;
+				playingNowFragment.setPPButtonStatus(LOADING);
 			}
 			else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
 			{
 				playerPlay();
-				
 			}
 			else if (intent.getAction().equals("SET_FINGER"))
 			{
@@ -240,14 +244,17 @@ public class MainActivity extends AppCompatActivity
 	
 	private void playerStop()
 	{
+		ibPPbutton.setVisibility(View.VISIBLE);
 		ibPPbutton.setImageResource(R.drawable.ic_play);
 		ibPPbutton.setEnabled(true);
 		playing = STOPPED;
+		findViewById(R.id.loadingLayout).setVisibility(View.GONE);
 		playingNowFragment.setPPButtonStatus(STOPPED);
 	}
 	
 	private void playerPlay()
 	{
+		ibPPbutton.setVisibility(View.VISIBLE);
 		ibPPbutton.setImageResource(R.drawable.ic_stop);
 		ibPPbutton.setEnabled(true);
 		findViewById(R.id.loadingLayout).setVisibility(View.GONE);
@@ -258,6 +265,7 @@ public class MainActivity extends AppCompatActivity
 	public void disableButtons()
 	{
 		ibPPbutton.setEnabled(false);
+		ibPPbutton.setVisibility(View.GONE);
 	}
 	
 	@Override

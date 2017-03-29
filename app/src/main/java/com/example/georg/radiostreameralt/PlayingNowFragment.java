@@ -31,6 +31,7 @@ import java.util.List;
 public class PlayingNowFragment extends Fragment implements SleepTimerDialog.NoticeDialogListener
 {
 	private static final int STOPPED = 0;
+	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
 	private int playerStatus = STOPPED;
 	private boolean visible;
@@ -182,7 +183,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		super.setMenuVisibility(visible);
 		if (visible)
 		{
-			this.visible = visible;
+			this.visible = true;
 			setupPage();
 		}
 		else this.visible = false;
@@ -267,10 +268,19 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 
 	private void setPPButtonDrawable(){
 		if(playerStatus==PLAYING){
+			getActivity().findViewById(R.id.loadingLayoutBig).setVisibility(View.GONE);
+			ibPPButton.setVisibility(View.VISIBLE);
 			ibPPButton.setImageResource(R.drawable.ic_stop);
 		}
-		else ibPPButton.setImageResource(R.drawable.ic_play_circle_outline);
-
+		else if(playerStatus==STOPPED){
+			getActivity().findViewById(R.id.loadingLayoutBig).setVisibility(View.GONE);
+			ibPPButton.setVisibility(View.VISIBLE);
+			ibPPButton.setImageResource(R.drawable.ic_play_circle_outline);
+		}
+		else{
+			ibPPButton.setVisibility(View.GONE);
+			getActivity().findViewById(R.id.loadingLayoutBig).setVisibility(View.VISIBLE);
+		}
 	}
 }
 

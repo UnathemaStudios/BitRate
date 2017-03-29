@@ -24,11 +24,9 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignTop="@+id/ibRecordCurrentRadio"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="20dp"
-        android:layout_toStartOf="@+id/ibPPPLayingNow"
         android:background="@color/transparent"
         android:scaleType="fitXY"
+        android:layout_alignStart="@+id/ivPlayingNowExtended"
         android:elevation="4dp"
         android:src="@drawable/ic_snooze"/>
 
@@ -36,28 +34,27 @@
         android:id="@+id/ibRecordCurrentRadio"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
+        android:layout_alignEnd="@+id/ivPlayingNowExtended"
+        android:layout_below="@+id/tvPlayingNowName"
+        android:layout_marginTop="20dp"
         android:background="@color/transparent"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_fiber_manual_record"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="29dp"
         android:elevation="4dp"
-        android:layout_alignTop="@+id/ibPPPLayingNow"
-        android:layout_toEndOf="@+id/ibPPPLayingNow"/>
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_fiber_manual_record"/>
 
     <me.grantland.widget.AutofitTextView
         android:id="@+id/tvPlayingNowName"
-        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ibPPPLayingNow"
+        android:layout_below="@+id/tvRadioMetadata"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
-        android:fontFamily="monospace"
+        android:layout_marginTop="20dp"
         android:elevation="4dp"
+        android:fontFamily="monospace"
+        android:maxLines="1"
         android:textAlignment="center"
         android:textColor="@color/textColorPrimary"
         android:textSize="40sp"
@@ -71,8 +68,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:background="@color/transparent"
-        android:scaleType="fitCenter"
         android:elevation="4dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_play_circle_outline"/>
 
     <TextView
@@ -92,8 +89,25 @@
         android:id="@+id/tvRadioMetadata"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tvPlayingNowName"
+        android:layout_below="@id/ivPlayingNowExtended"
         android:layout_centerHorizontal="true"
-        android:text="TextView"
+        android:layout_marginTop="20dp"
         android:textColor="@color/textColorPrimary"/>
+
+    <RelativeLayout
+
+        android:id="@+id/loadingLayoutBig"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp">
+
+        <ProgressBar
+            android:id="@+id/progressBarBig"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="true"/>
+    </RelativeLayout>
 </RelativeLayout>
