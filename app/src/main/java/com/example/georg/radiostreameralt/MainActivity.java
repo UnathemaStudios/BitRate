@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -106,9 +105,6 @@ public class MainActivity extends AppCompatActivity
 		//setSupportActionBar(toolbar);
 		
 		//-#_#_#_#_#_#_#_#_#_#_#_#_#_#_#-//
-		
-		
-		
 		
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
@@ -226,9 +222,8 @@ public class MainActivity extends AppCompatActivity
 		}
 		else super.onBackPressed();
 	}
-	
-	public void play()
-	{
+
+	public void play() {
 		disableButtons();
 		playingNowFragment.disableButtons(true);
 		tellServiceP("PLAYER_PLAY", radiosList.get(finger).getUrl(), finger);
@@ -411,9 +406,12 @@ public class MainActivity extends AppCompatActivity
 		Log.w("radiosFile.exists()", radiosFile.exists() + "");
 		if (!radiosFile.exists())
 		{
-			radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.drawable.rock1055));
-			radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R.drawable.ic_radio_infinitygreece));
-			radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream.mp3", R.drawable.ic_radio_nowhere));
+			radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.drawable
+					.rock1055));
+			radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R
+					.drawable.ic_radio_infinitygreece));
+			radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream" +
+					".mp3", R.drawable.ic_radio_nowhere));
 			try
 			{
 				boolean fileCreated = radiosFile.createNewFile();
@@ -558,6 +556,11 @@ public class MainActivity extends AppCompatActivity
 		return playing;
 	}
 
+	public void setIsRecordedStatus(boolean status){
+		radiosList.get(finger).setRecorded(status);
+	}
+
+
     /*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -619,16 +622,16 @@ public class MainActivity extends AppCompatActivity
 
 //TODO LIST
 //
-//TODO: Playing Now
+//TODO: Playing Now UI Fixes Buttons relative position fix with View.Invisible
 //TODO: Notification Custom
-//TODO: FolderRecordings format
+//TODO: FolderRecordings Permissions
 //TODO: Http raspberry file for the radios(not locally saved file)
 //TODO: Record by duration dialog in PlayingNow and RadiosFragment
-//TODO: MUST! MUST! Media Player states! !MUST !MUST
-//TODO: WIFI/Mobile data Checker!
+//TODO: WIFI/Mobile data status Change
 //TODO: If earphones unplug -> Stop the player! (?)
 //TODO: PLAYER VISIBLE BUG
 //
+//TODO: Landscape mode fixes
 //TODO: Recording stop by duration FIX + while(true) + broadcast current recording time/size?
 //TODO: PlayingNow Controls + color??
 //TODO: Log file

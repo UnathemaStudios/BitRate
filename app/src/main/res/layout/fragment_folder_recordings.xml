@@ -8,7 +8,8 @@
     <!-- TODO: Update blank fragment layout -->
 
     <ListView
+        android:id="@+id/lvFolderRecordings"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lvFolderRecordings"/>
+        android:divider="@color/windowBackground"/>
 </RelativeLayout>

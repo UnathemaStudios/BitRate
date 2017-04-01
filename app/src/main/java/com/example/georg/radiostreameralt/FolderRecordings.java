@@ -65,7 +65,7 @@ public class FolderRecordings extends Fragment {
         dictionary.addStringField(R.id.tvFolderRecordingsName, new StringExtractor<String>() {
             @Override
             public String getStringValue(String item, int position) {
-                return item;
+                return recordingNameFromFileName(item);
             }
         });
         dictionary.addStringField(R.id.tvFolderRecordingsDate, new StringExtractor<String>() {
@@ -83,7 +83,8 @@ public class FolderRecordings extends Fragment {
         dictionary.addStringField(R.id.tvFolderRecordingsSize, new StringExtractor<String>() {
             @Override
             public String getStringValue(String item, int position) {
-                return null;
+                return (prettySize((new File(Environment.getExternalStorageDirectory().toString() +
+                        "/Streams/" + item).length()) / 1024));
             }
         });
 

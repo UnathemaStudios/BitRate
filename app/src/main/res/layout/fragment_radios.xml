@@ -12,17 +12,19 @@
 
 
     <ListView
+        android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:gravity="clip_horizontal"
-        android:id="@+id/gridView"
-        android:elevation="4dp"
         android:layout_marginBottom="50dp"
-        android:paddingBottom="10dp"
-        android:dividerHeight="2dp"
-        android:divider="@color/transparent"
         android:clipToPadding="false"
+        android:divider="@color/windowBackground"
+        android:dividerHeight="1dp"
+        android:elevation="4dp"
+        android:footerDividersEnabled="true"
+        android:gravity="clip_horizontal"
+        android:headerDividersEnabled="true"
+        android:paddingBottom="10dp"
         android:paddingTop="2dp"/>
 
     <android.support.design.widget.FloatingActionButton

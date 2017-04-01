@@ -1,18 +1,16 @@
 package com.example.georg.radiostreameralt;
 
-/**
- * Created by georg on 23/1/2017.
- */
 
 public class Radio {
     private String name, url;
     private int icon;
+    private boolean isRecorded;
 
     public Radio (String name, String url, int icon){
         this.name = name;
         this.url = url;
-        //Geiaaaaaaaa
         this.icon = icon;
+        this.isRecorded = false;
     }
 
     public String getName() {
@@ -25,5 +23,13 @@ public class Radio {
 
     public int getIcon() {
         return icon;
+    }
+
+    public boolean isRecorded() {
+        return isRecorded;
+    }
+
+    public void setRecorded(boolean recorded) {
+        isRecorded = recorded;
     }
 }

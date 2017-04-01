@@ -46,8 +46,12 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private IcyStreamMeta streamMeta;	
 	private String streamTitle = "";
 	private final Handler h = new Handler();
-	
-	
+	private Runnable r;
+
+	//Metadata //
+
+	private Thread METATHREAD ;
+
 	
 	public PlayingNowFragment()
 	{
@@ -89,19 +93,13 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		ibSleepTimer.setImageResource(R.drawable.ic_snooze);
-		
-		
-		
 		streamMeta = new IcyStreamMeta();
-		new Thread(new Runnable()
-		{
+
+		METATHREAD = new Thread(new Runnable() {
 			@Override
-			public void run()
-			{
-				while(true)
-				{
-					try
-					{
+			public void run() {
+				while (true) {
+					try {
 						Thread.sleep(5000);
 //						Log.i("METADATA", "START");
 						streamMeta.setStreamUrl(new URL("http://s10.voscast.com:9940"));
@@ -113,23 +111,19 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 //						Log.i("METADATA", String.valueOf(streamMeta.getMetadata()));
 //						Log.i("METADATA", String.valueOf(streamMeta.getStreamUrl()));
 //						Log.i("METADATA", "END");
-					} catch (IOException | InterruptedException e)
-					{
+					} catch (IOException | InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
-		}).start();
-		
-		h.post(new Runnable() {
-			@Override
-			public void run() {
-				
-				tvRadioMetadata.setText(streamTitle);
-				h.postDelayed(this, 1000);
-			}
 		});
-		
+		r = new Runnable() {
+		@Override
+		public void run() {
+			tvRadioMetadata.setText(streamTitle);
+			h.postDelayed(this, 1000);
+		}
+	};
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -184,9 +178,30 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		if (visible)
 		{
 			this.visible = true;
+			/*if(METATHREAD==null) {
+				METATHREAD.start();
+			}
+			else{
+				synchronized (METATHREAD){
+					METATHREAD.notify();
+				}
+			}
+			h.post(r);*/
 			setupPage();
 		}
-		else this.visible = false;
+		else {
+			/*h.removeCallbacks(r);
+			if(METATHREAD!=null) {
+				synchronized (METATHREAD){
+					try {
+						METATHREAD.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}*/
+			this.visible = false;
+		}
 	}
 	
 	private void setupPage()
