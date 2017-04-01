@@ -624,10 +624,11 @@ public class MainActivity extends AppCompatActivity
 //
 //TODO: Playing Now UI Fixes Buttons relative position fix with View.Invisible
 //TODO: Notification Custom
-//TODO: FolderRecordings Permissions
+//TODO: FolderRecordings Permissions THANOS
 //TODO: Http raspberry file for the radios(not locally saved file)
 //TODO: Record by duration dialog in PlayingNow and RadiosFragment
-//TODO: WIFI/Mobile data status Change
+//TODO: WIFI/Mobile data status Change THANOS
+//TODO: Metadata start stop THANOS
 //TODO: If earphones unplug -> Stop the player! (?)
 //TODO: PLAYER VISIBLE BUG
 //
