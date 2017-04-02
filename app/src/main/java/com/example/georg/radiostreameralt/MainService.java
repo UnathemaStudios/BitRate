@@ -33,9 +33,8 @@ public class MainService extends Service {
     private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("ConnectivityManager.CONNECTIVITY_ACTION")) {
+            if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
                 Log.w("CONNECTION CHANGED", "RECEIVER");
-                if (!checkNetworkConnection()) stop();
             }
         }
     };
@@ -149,7 +148,7 @@ public class MainService extends Service {
     public void onCreate() {
         key = 0;
         if (serviceReceiver != null) {
-            registerReceiver(serviceReceiver, new IntentFilter("ConnectivityManager.CONNECTIVITY_ACTION"));
+            registerReceiver(serviceReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }

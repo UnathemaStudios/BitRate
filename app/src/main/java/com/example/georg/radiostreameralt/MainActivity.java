@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 			else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
 			{
 				findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
-				ibPPbutton.setVisibility(View.GONE);
+				ibPPbutton.setVisibility(View.INVISIBLE);
 				playing = LOADING;
 				playingNowFragment.setPPButtonStatus(LOADING);
 			}
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
 		ibPPbutton = (ImageButton) findViewById(R.id.ibPPbutton);
 		ivImageSmall = (ImageView) findViewById(R.id.ivImagePlayBar);
 		tvDescription = (TextView) findViewById(R.id.tvDescription);
-		findViewById(R.id.loadingLayout).setVisibility(View.GONE);
+		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
 		playing = STOPPED;
 		ibPPbutton.setImageResource(R.drawable.ic_play);
 		
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity
 		ibPPbutton.setImageResource(R.drawable.ic_play);
 		ibPPbutton.setEnabled(true);
 		playing = STOPPED;
-		findViewById(R.id.loadingLayout).setVisibility(View.GONE);
+		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
 		playingNowFragment.setPPButtonStatus(STOPPED);
 	}
 	
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity
 		ibPPbutton.setVisibility(View.VISIBLE);
 		ibPPbutton.setImageResource(R.drawable.ic_stop);
 		ibPPbutton.setEnabled(true);
-		findViewById(R.id.loadingLayout).setVisibility(View.GONE);
+		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
 		playing = PLAYING;
 		playingNowFragment.setPPButtonStatus(PLAYING);
 	}
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity
 	public void disableButtons()
 	{
 		ibPPbutton.setEnabled(false);
-		ibPPbutton.setVisibility(View.GONE);
+		ibPPbutton.setVisibility(View.INVISIBLE);
 	}
 	
 	@Override
@@ -515,7 +515,7 @@ public class MainActivity extends AppCompatActivity
 		animate.setDuration(250);
 		animate.setFillAfter(true);
 		playerLayout.startAnimation(animate);
-//		playerLayout.setVisibility(View.GONE);
+//		playerLayout.setVisibility(View.INVISIBLE);
 	}
 	
 	public void slideToTop()
