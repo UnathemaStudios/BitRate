@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity
 	{
 		disableButtons();
 		playingNowFragment.disableButtons(true);
-		Log.d("STOP BUTTON", "STOPPED PRESSED");
 		tellServiceP("PLAYER_STOP");
 	}
 	
@@ -543,6 +542,10 @@ public class MainActivity extends AppCompatActivity
 		return radiosList.get(finger).getName();
 	}
 	
+	public String getPlayerUrl()
+	{
+		return radiosList.get(finger).getUrl();
+	}
 	
 	public void setFinger(int finger)
 	{

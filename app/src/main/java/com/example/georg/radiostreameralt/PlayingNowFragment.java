@@ -1,5 +1,9 @@
 package com.example.georg.radiostreameralt;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -12,7 +16,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +24,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,7 +32,7 @@ import java.util.List;
 public class PlayingNowFragment extends Fragment implements SleepTimerDialog.NoticeDialogListener
 {
 	private static final int STOPPED = 0;
-	private static final int LOADING = 1;
+//	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
 	private int playerStatus = STOPPED;
 	private boolean visible;
@@ -43,15 +44,20 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private TextView tvRadioName;
 	private TextView tvRadioMetadata;
 	
-	private IcyStreamMeta streamMeta;	
-	private String streamTitle = "";
-	private final Handler h = new Handler();
-	private Runnable r;
-
-	//Metadata //
-
-	private Thread METATHREAD ;
-
+	private final Handler metadataHandler = new Handler();
+	private Runnable metadataRunnable;
+	
+	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			if (intent.getAction().equals("metadataBroadcast"))
+			{
+				tvRadioMetadata.setText(intent.getStringExtra("streamTitle"));
+			}
+		}
+	};
 	
 	public PlayingNowFragment()
 	{
@@ -61,6 +67,8 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	@Override
 	public void onDestroy()
 	{
+		getActivity().unregisterReceiver(serviceReceiver);
+		metadataHandler.removeCallbacks(metadataRunnable);
 		super.onDestroy();
 	}
 	
@@ -93,37 +101,21 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		ibSleepTimer.setImageResource(R.drawable.ic_snooze);
-		streamMeta = new IcyStreamMeta();
-
-		METATHREAD = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(5000);
-//						Log.i("METADATA", "START");
-						streamMeta.setStreamUrl(new URL("http://s10.voscast.com:9940"));
-						streamMeta.refreshMeta();
-						Log.i("METADATA", streamMeta.getStreamTitle());
-						streamTitle = streamMeta.getStreamTitle();
-//						Log.i("METADATA", streamMeta.getArtist());
-//						Log.i("METADATA", streamMeta.getTitle());
-//						Log.i("METADATA", String.valueOf(streamMeta.getMetadata()));
-//						Log.i("METADATA", String.valueOf(streamMeta.getStreamUrl()));
-//						Log.i("METADATA", "END");
-					} catch (IOException | InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		r = new Runnable() {
-		@Override
-		public void run() {
-			tvRadioMetadata.setText(streamTitle);
-			h.postDelayed(this, 1000);
+		
+		if (serviceReceiver != null)
+		{
+			getActivity().registerReceiver(serviceReceiver, new IntentFilter("metadataBroadcast"));
 		}
-	};
+		
+		metadataRunnable = new Runnable() {
+			@Override
+			public void run()
+			{
+				new MetadataThread(((MainActivity)getActivity()).getPlayerUrl(),getContext()).start();
+				metadataHandler.postDelayed(this, 10000);
+			}
+		};
+		
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -178,28 +170,11 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		if (visible)
 		{
 			this.visible = true;
-			/*if(METATHREAD==null) {
-				METATHREAD.start();
-			}
-			else{
-				synchronized (METATHREAD){
-					METATHREAD.notify();
-				}
-			}
-			h.post(r);*/
+			metadataHandler.postDelayed(metadataRunnable,1000);
 			setupPage();
 		}
 		else {
-			/*h.removeCallbacks(r);
-			if(METATHREAD!=null) {
-				synchronized (METATHREAD){
-					try {
-						METATHREAD.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}*/
+			metadataHandler.removeCallbacks(metadataRunnable);
 			this.visible = false;
 		}
 	}

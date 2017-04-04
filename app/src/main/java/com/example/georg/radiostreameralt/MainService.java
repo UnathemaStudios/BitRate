@@ -17,7 +17,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.IBinder;
-import android.renderscript.RenderScript;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.text.format.DateFormat;
@@ -29,15 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class MainService extends Service {
-
-    private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                Log.w("CONNECTION CHANGED", "RECEIVER");
-            }
-        }
-    };
+    
     //  .oooooo.    oooooooooooo ooooo      ooo oooooooooooo ooooooooo.         .o.       ooooo
     // d8P'  `Y8b   `888'     `8 `888b.     `8' `888'     `8 `888   `Y88.      .888.      `888'
     //888            888          8 `88b.    8   888          888   .d88'     .8"888.      888
@@ -45,10 +36,68 @@ public class MainService extends Service {
     //888     ooooo  888    "     8     `88b.8   888    "     888`88b.      .88ooo8888.    888
     //`88.    .88'   888       o  8       `888   888       o  888  `88b.   .8'     `888.   888       o
     // `Y8bood8P'   o888ooooood8 o8o        `8  o888ooooood8 o888o  o888o o88o     o8888o o888ooooood8
-    //
 
     private static final int notificationID = 8888;
     private boolean notificationExists = false;
+	public final static int NO_NETWORK = 0;
+	public final static int WIFI = 1;
+	public final static int MOBILE = 2;
+	public final static int ERROR = -1;
+	private boolean stoppedByUser = false;
+	
+	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				if (checkNetworkConnection() == NO_NETWORK)
+				{
+					Log.w("Network", "No Network");
+					if (playerStatus != STOPPED)
+					{
+						stop();
+					}
+				}
+				else if (checkNetworkConnection() == WIFI)
+				{
+					Log.w("Network", "WIFI");
+				}
+				else if (checkNetworkConnection() == MOBILE)
+				{
+					Log.w("Network", "MOBILE");
+				}
+				else if (checkNetworkConnection() == ERROR)
+				{
+					Log.w("Network", "ERROR");
+				}
+			}
+			else if (intent.getAction().equals(AudioManager.ACTION_HEADSET_PLUG))
+			{
+				if (intent.hasExtra("state"))
+				{
+					if (intent.getExtras().get("state").toString().equals("0"))
+					{
+						Log.w("HEADSET", "UNPLUGGED");
+						if (playerStatus != STOPPED)
+						{
+							stop();
+						}
+					}
+					else if (intent.getExtras().get("state").toString().equals("1"))
+					{
+						Log.w("HEADSET", "PLUGGED");
+						if (playerStatus == STOPPED && !stoppedByUser)
+						{
+							play(playerUrl);
+						}
+					}
+					else
+					{
+						Log.w("HEADSET", "DAFUQ");
+					}
+				}
+			}
+		}
+	};
 
     //ooooooooo.   oooooooooooo   .oooooo.     .oooooo.   ooooooooo.   oooooooooo.   oooooooooooo ooooooooo.
     //`888   `Y88. `888'     `8  d8P'  `Y8b   d8P'  `Y8b  `888   `Y88. `888'   `Y8b  `888'     `8 `888   `Y88.
@@ -57,10 +106,10 @@ public class MainService extends Service {
     // 888`88b.     888    "    888          888      888  888`88b.     888      888  888    "     888`88b.
     // 888  `88b.   888       o `88b    ooo  `88b    d88'  888  `88b.   888     d88'  888       o  888  `88b.
     //o888o  o888o o888ooooood8  `Y8bood8P'   `Y8bood8P'  o888o  o888o o888bood8P'   o888ooooood8 o888o  o888o
-    //
+	
     public final static int RECORDING = 0;
     public final static int NOTRECORDING = 1;
-    //	public final static int UNLISTED = 3;
+//	public final static int UNLISTED = 3;
     public static int activeRecordings = 0;
     private static Integer key;
     @SuppressLint("UseSparseArrays")
@@ -84,14 +133,13 @@ public class MainService extends Service {
     // 888          888           .88ooo8888.       `888'      888    "     888`88b.
     // 888          888       o  .8'     `888.       888       888       o  888  `88b.
     //o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
-    //
 
     private static final int STOPPED = 0;
     private static final int LOADING = 1;
     private static final int PLAYING = 2;
     private MediaPlayer streamPlayer = new MediaPlayer();
     private int finger;
-    private int playerStatus;
+    private int playerStatus = STOPPED;
     private int sleepMinutes = -1;
     private String playerUrl;
     private android.os.Handler sleepTimerHandler = new android.os.Handler();
@@ -102,22 +150,26 @@ public class MainService extends Service {
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_GAIN:
                     // resume playback
-                    if(playerStatus==STOPPED) {
-                        play(playerUrl);
-                        buildNotification();
-                    }
+                    if(playerStatus==STOPPED)
+					{
+						if (!stoppedByUser)
+						{
+							play(playerUrl);
+						}
+					}
                     streamPlayer.setVolume(1.0f, 1.0f);
                     break;
 
                 case AudioManager.AUDIOFOCUS_LOSS:
                     // Lost focus for an unbounded amount of time: stop playback and release media player
-                    stop();
-                    buildNotification();
+                    if (playerStatus != STOPPED)
+					{
+						stop();
+					}
                     break;
 
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                     stop();
-                    buildNotification();
                     break;
 
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -125,18 +177,18 @@ public class MainService extends Service {
                     // at an attenuated level
                     if (playerStatus==PLAYING) streamPlayer.setVolume(0.1f, 0.1f);
                     break;
+				default:
+					break;
             }
         }
     };
-
-
+	
     private Runnable sleepTimerRunnable = new Runnable() {
         public void run() {
             if (sleepMinutes != -1) {
                 sleepMinutes--;
                 if (sleepMinutes == 0) {
                     stop();
-                    buildNotification();
                 }
                 send("timeRemaining", sleepMinutes);
             }
@@ -149,6 +201,7 @@ public class MainService extends Service {
         key = 0;
         if (serviceReceiver != null) {
             registerReceiver(serviceReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+			registerReceiver(serviceReceiver, new IntentFilter(AudioManager.ACTION_HEADSET_PLUG));
         }
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
@@ -162,12 +215,12 @@ public class MainService extends Service {
                     finger = intent.getIntExtra("finger", -1);
                 }
                 play(playerUrl);
-                buildNotification();
+				stoppedByUser = false;
                 break;
             }
             case "PLAYER_STOP": {
                 stop();
-                buildNotification();
+				stoppedByUser = true;
                 break;
             }
             case "REQUEST_PLAYER_STATUS": {
@@ -218,29 +271,33 @@ public class MainService extends Service {
     }
 
     public void play(String urlString) {
-        int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        if (playerStatus != STOPPED) {
-            stop();
-        }
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            if (this.checkNetworkConnection()) {
-                playerStatus = LOADING;
-                send(Integer.toString(playerStatus));
+		if (playerStatus != STOPPED)
+		{
+			stop();
+		}
+		playerStatus = LOADING;
+		send(Integer.toString(playerStatus));
+		buildNotification();
+		int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+		if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+        {
+            if (checkNetworkConnection() == WIFI || checkNetworkConnection() == MOBILE)
+            {
                 streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//		streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
-//		{
-//			@Override
-//			public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
-//				Log.w("media", "Buffering: " + percent);
-//			}
-//		});
-//		streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-//			@Override
-//			public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
-//				Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
-//				return false;
-//			}
-//		});
+		/*streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
+		{
+			@Override
+			public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
+				Log.w("media", "Buffering: " + percent);
+			}
+		});
+		streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+			@Override
+			public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
+				Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
+				return false;
+			}
+		});*/
                 try {
 //			streamPlayer.setDataSource(this,Uri.parse(urlString));
                     streamPlayer.setDataSource(urlString);
@@ -252,19 +309,18 @@ public class MainService extends Service {
                     public void onPrepared(MediaPlayer mediaPlayer) {
                         mediaPlayer.start();
                         playerStatus = PLAYING;
-                        buildNotification();
-                        send(Integer.toString(playerStatus));
+						send(Integer.toString(playerStatus));
+						buildNotification();	
                     }
                 });
                 streamPlayer.prepareAsync();
+			}
+            else
+			{
+                Toast.makeText(getApplicationContext(), "Enable Wifi or Mobile Data access first",Toast.LENGTH_SHORT).show();
             }
-            else {
-                Toast.makeText(getApplicationContext(), "Enable wifi/Mobile data access first",
-                        Toast.LENGTH_SHORT).show();
-                this.stop();
-            }
-        }
-    }
+		}
+	}
 
     public void stop() {
         if (streamPlayer.isPlaying()) {
@@ -275,7 +331,8 @@ public class MainService extends Service {
         send(Integer.toString(playerStatus));
         sleepMinutes = -1;
         stopSleepTimer();
-    }
+		buildNotification();
+	}
 
     public void close() {
         if (activeRecordings == 0) {
@@ -416,7 +473,7 @@ public class MainService extends Service {
         }
     }
 
-    private boolean checkNetworkConnection() {
+    private int checkNetworkConnection() {
         boolean wifiConnected;
         boolean mobileConnected;
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -425,16 +482,16 @@ public class MainService extends Service {
             wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
             mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
             if (wifiConnected) {
-                return true;
+                return 1;
             }
             else if (mobileConnected) {
-                return true;
+                return 2;
             }
         }
         else {
-            return false;
+            return 0;
         }
-        return false;
+        return -1;
     }
 
     @Nullable

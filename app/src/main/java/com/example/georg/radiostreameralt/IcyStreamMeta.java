@@ -10,19 +10,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class IcyStreamMeta
+class IcyStreamMeta
 {
-	protected URL streamUrl;
+	private URL streamUrl;
 	private Map<String, String> metadata;
 	private boolean isError;
 	private Map<String, String> data;
 	
-	public IcyStreamMeta()
+	IcyStreamMeta()
 	{
 		isError = false;
 	}
 	
-	public static Map<String, String> parseMetadata(String metaString)
+	private static Map<String, String> parseMetadata(String metaString)
 	{
 		Map<String, String> metadata = new HashMap();
 		String[] metaParts = metaString.split(";");
@@ -63,7 +63,7 @@ public class IcyStreamMeta
 	 * @return String
 	 * @throws IOException
 	 */
-	public String getStreamTitle() throws IOException
+	String getStreamTitle() throws IOException
 	{
 		data = getMetadata();
 		
