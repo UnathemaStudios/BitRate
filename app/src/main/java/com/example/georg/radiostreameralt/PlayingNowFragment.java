@@ -15,10 +15,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,13 +32,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class PlayingNowFragment extends Fragment implements SleepTimerDialog.NoticeDialogListener
+public class PlayingNowFragment extends Fragment implements SleepTimerDialog
+		.NoticeDialogListener, RecordRadioDialog.NoticeDialogListener
 {
 	private static final int STOPPED = 0;
 //	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
 	private int playerStatus = STOPPED;
 	private boolean visible;
+	private boolean isRecorded;
 	private ImageButton recordCurrentRadio;
 	private ImageButton ibPPButton;
 	private ImageButton ibSleepTimer;
@@ -43,6 +48,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 	private ImageView ivRadio;
 	private TextView tvRadioName;
 	private TextView tvRadioMetadata;
+	private TextView tvIsRecorded;
 	
 	private final Handler metadataHandler = new Handler();
 	private Runnable metadataRunnable;
@@ -96,11 +102,13 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		ivRadio = (ImageView) getActivity().findViewById(R.id.ivPlayingNowExtended);
 		tvRadioName = (TextView) getActivity().findViewById(R.id.tvPlayingNowName);
 		tvTimeRemaining = (TextView) getActivity().findViewById(R.id.tvTimeRemaining);
+		tvIsRecorded = (TextView) getActivity().findViewById(R.id.tvIsRecorded);
 		tvRadioMetadata = (TextView) getActivity().findViewById(R.id.tvRadioMetadata);
 		
 		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		ibSleepTimer.setImageResource(R.drawable.ic_snooze);
+
 		
 		if (serviceReceiver != null)
 		{
@@ -121,7 +129,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 			@Override
 			public void onClick(View v)
 			{
-				((MainActivity) getActivity()).recordCurrentRadio(-1);
+				RecordRadioDialog recordRadioDialog = new RecordRadioDialog();
+				recordRadioDialog.setTargetFragment(PlayingNowFragment.this, 3);
+				recordRadioDialog.show(getFragmentManager(), "torpido");
 			}
 		});
 		
@@ -170,7 +180,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		if (visible)
 		{
 			this.visible = true;
-			metadataHandler.postDelayed(metadataRunnable,1000);
+			metadataHandler.postDelayed(metadataRunnable,300);
 			setupPage();
 		}
 		else {
@@ -184,6 +194,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		setPPButtonDrawable();
+		setRecCurrentRadioUI();
 
 		//-//--/--/--/--/BackGround/--/--/--/--//-//
 		Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),
@@ -242,11 +253,13 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 		else tvTimeRemaining.setText(time + " min");
 	}
 
-	public void setPPButtonStatus(int playerStatus){
+	public void setPPButtonStatus(int playerStatus, boolean isRecorded){
 		this.playerStatus = playerStatus;
+		this.isRecorded = isRecorded;
 		this.disableButtons(false);
 		if(visible) {
 			this.setPPButtonDrawable();
+			this.setRecCurrentRadioUI();
 		}
 	}
 
@@ -268,9 +281,36 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog.Not
 			ibPPButton.setImageResource(R.drawable.ic_play_circle_outline);
 		}
 		else{
-			ibPPButton.setVisibility(View.GONE);
+			ibPPButton.setVisibility(View.INVISIBLE);
 			getActivity().findViewById(R.id.loadingLayoutBig).setVisibility(View.VISIBLE);
 		}
+	}
+
+	private void setRecCurrentRadioUI(){
+		if(isRecorded){
+			recordCurrentRadio.setEnabled(false);
+			recordCurrentRadio.setColorFilter(ContextCompat.getColor(getContext(), R.color.textColorPrimary));
+			tvIsRecorded.setText("Rec");
+		}
+		else{
+			recordCurrentRadio.setEnabled(true);
+			recordCurrentRadio.setColorFilter(ContextCompat.getColor(getContext(), R.color.RED));
+			tvIsRecorded.setText("");
+		}
+	}
+
+	@Override
+	public void onDialogPositiveClick(int hour, int minute) {
+		if(hour==-1){
+			((MainActivity) getActivity()).recordCurrentRadio(0);
+		}
+		else {
+			int duration = (hour * 60) + minute;
+			((MainActivity) getActivity()).recordCurrentRadio(duration);
+		}
+		((MainActivity) getActivity()).setIsRecordedStatus(true);
+		isRecorded = true;
+		setRecCurrentRadioUI();
 	}
 }
 

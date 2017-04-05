@@ -11,4 +11,5 @@
     <color name="lightPrimaryColor">#9e9e9e</color>
     <color name="darkerGrey">#263238</color>
     <color name="BLACK">#0f191e</color>
+    <color name="RED">#b71c1c</color>
 </resources>

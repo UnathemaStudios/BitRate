@@ -12,20 +12,22 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.RadioButton;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 /**
  * Created by georg on 18/2/2017.
  */
 
-public class AddRadioDialog extends DialogFragment {
+public class RecordRadioDialog extends DialogFragment {
 
     public interface NoticeDialogListener {
-        public void onDialogPositiveClick(String name, String url);
+        public void onDialogPositiveClick(int hour, int minute);
     }
     private NoticeDialogListener mListener;
-    private EditText etName, etUrl;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -33,26 +35,42 @@ public class AddRadioDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         LayoutInflater factory = LayoutInflater.from(getContext());
-        final View textEntryView = factory.inflate(R.layout.add_radio_dialog_layout, null);
-        etName = (EditText)textEntryView.findViewById(R.id.etName);
-        etUrl = (EditText)textEntryView.findViewById(R.id.etUrl);
+        final View textEntryView = factory.inflate(R.layout.record_radio_dialog_layout, null);
+        final NumberPicker npHour = (NumberPicker)textEntryView.findViewById(R.id.npHour);
+        final NumberPicker npMinute = (NumberPicker)textEntryView.findViewById(R.id.npMinute);
+        final RadioButton rbUnlimited = (RadioButton)textEntryView.findViewById(R.id.rbUnlimitedTime);
+        RadioButton rbLimitedTime = (RadioButton)textEntryView.findViewById(R.id.rbLimitedTime);
+        npHour.setMaxValue(23);
+        npHour.setMinValue(0);
+        npHour.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int i) {
+                return String.format(Locale.US, "%02d", i);
+            }
+        });
+        npMinute.setMaxValue(59);
+        npMinute.setMinValue(1);
+        npMinute.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int i) {
+                return String.format(Locale.US, "%02d", i);
+            }
+        });
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.add_radio_dialog_title)
+        builder.setMessage("Choose Record Type")
                 .setView(textEntryView)
                 .setPositiveButton(R.string.add_radio_dialog_add, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if(!(etName.getText().toString().equals("")||etUrl
-                                .getText().toString().equals(""))) {
-                            mListener.onDialogPositiveClick(etName.getText().toString(), etUrl
-                                    .getText().toString());
-                            AddRadioDialog.this.dismiss();
+                        if(rbUnlimited.isChecked()){
+                            mListener.onDialogPositiveClick(-1, -1);
                         }
-                        else Toast.makeText(getContext(), "Name and URL can not be empty", Toast.LENGTH_SHORT).show();
+                        else mListener.onDialogPositiveClick(npHour.getValue(), npMinute.getValue());
+                        RecordRadioDialog.this.dismiss();
                     }
                 })
                 .setNegativeButton(R.string.add_radio_dialog_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        AddRadioDialog.this.getDialog().cancel();
+                        RecordRadioDialog.this.getDialog().cancel();
                     }
                 });
         // Create the AlertDialog object and return it
@@ -82,3 +100,4 @@ public class AddRadioDialog extends DialogFragment {
         super.show(manager, tag);
     }
 }
+

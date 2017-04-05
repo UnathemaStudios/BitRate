@@ -238,7 +238,8 @@ public class MainService extends Service {
             }
             case "RECORD": {
                 String urlString = intent.getStringExtra("urlString");
-                rec.put(key, new Recording(date(), urlString, intent.getIntExtra("duration", -1), intent.getStringExtra("name")));
+                rec.put(key, new Recording(date(), urlString, (long)intent.getIntExtra
+                        ("duration", -1)*60, intent.getStringExtra("name")));
                 rec.get(key).start();
                 if (activeRecordings == 0) {
                     startRecordingBroadcast();

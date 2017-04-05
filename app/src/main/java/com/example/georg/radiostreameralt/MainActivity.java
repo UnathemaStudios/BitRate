@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 				findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
 				ibPPbutton.setVisibility(View.INVISIBLE);
 				playing = LOADING;
-				playingNowFragment.setPPButtonStatus(LOADING);
+				playingNowFragment.setPPButtonStatus(LOADING, radiosList.get(finger).isRecorded());
 			}
 			else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
 			{
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity
 		ibPPbutton.setEnabled(true);
 		playing = STOPPED;
 		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
-		playingNowFragment.setPPButtonStatus(STOPPED);
+		playingNowFragment.setPPButtonStatus(STOPPED, radiosList.get(finger).isRecorded());
 	}
 	
 	private void playerPlay()
@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity
 		ibPPbutton.setEnabled(true);
 		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
 		playing = PLAYING;
-		playingNowFragment.setPPButtonStatus(PLAYING);
+		playingNowFragment.setPPButtonStatus(PLAYING, radiosList.get(finger).isRecorded());
 	}
 	
 	public void disableButtons()
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity
 		}
 		else
 		{
-			rec(radiosList.get(finger).getUrl(), 0);
+			rec(radiosList.get(finger).getUrl(), duration);
 		}
 	}
 	
@@ -561,8 +561,28 @@ public class MainActivity extends AppCompatActivity
 
 	public void setIsRecordedStatus(boolean status){
 		radiosList.get(finger).setRecorded(status);
+		setPlayingNowIsRecorded();
 	}
 
+	public void setIsRecordedStatus(boolean status, String Name){
+		for(int i=0;i<radiosList.size();i++){
+			if(radiosList.get(i).getName().equals(Name)){
+				radiosList.get(i).setRecorded(status);
+			}
+		}
+		setPlayingNowIsRecorded();
+	}
+
+	public void isRecordedStatusFalseAll(){
+		for(Radio entry : radiosList){
+			entry.setRecorded(false);
+		}
+		setPlayingNowIsRecorded();
+	}
+
+	public void setPlayingNowIsRecorded(){
+		playingNowFragment.setPPButtonStatus(playing, radiosList.get(finger).isRecorded());
+	}
 
     /*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -624,18 +644,19 @@ public class MainActivity extends AppCompatActivity
 }
 
 //TODO LIST
-//
-//TODO: Playing Now UI Fixes Buttons relative position fix with View.Invisible
+//TODO: Permissions in choosing Radio Name
 //TODO: Notification Custom
-//TODO: isRecorded !!!! GIORGOS
+//TODO: Fix ui issues with RecordRadioDialog GIORGOS
+//TODO: Fix Radio Images with Image Asset GIORGOS
 //TODO: FolderRecordings Permissions THANOS
+//TODO: UNICODE METADATA THANOS
 //TODO: Http raspberry file for the radios(not locally saved file)
 //TODO: Record by duration dialog in PlayingNow and RadiosFragment
-//TODO: If earphones unplug -> Stop the player! (?)
+//
 //TODO: PLAYER VISIBLE BUG
 //
-//TODO: Landscape mode fixes
-//TODO: Recording stop by duration FIX + while(true) + broadcast current recording time/size?
+//TODO: Landscape mode fixes GIORGOS
+//TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!while(true)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <- <- <- THANOS
 //TODO: PlayingNow Controls + color??
 //TODO: Log file
 //TODO: Alarm (Schedule)

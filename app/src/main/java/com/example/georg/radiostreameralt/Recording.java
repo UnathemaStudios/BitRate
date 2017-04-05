@@ -75,8 +75,10 @@ class Recording implements Serializable{
                         InputStream inputStream = response.body().byteStream();
 
                         int c;
-                        while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
+                        while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 ||
+                                ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
                         {
+                            Log.w("inputstream", Integer.toString(c));
                             fileOutputStream.write(c);
                             bytesRead++;
                         }
@@ -87,10 +89,13 @@ class Recording implements Serializable{
                         InputStream inputStream = url.openStream();
 
                         int c;
-                        while (((c = inputStream.read()) != -1) && !stopped && (duration == -1 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
+                        Log.w("duration", (Long.toString(duration)));
+                        while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 ||
+                                ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
                         {
                             fileOutputStream.write(c);
                             bytesRead++;
+                            Log.w("inputstream", Integer.toString(c));
                         }
                     }
 
@@ -138,6 +143,10 @@ class Recording implements Serializable{
     public String getName()
     {
         return name;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
 

@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
+import static com.example.georg.radiostreameralt.MainService.RECORDING;
+
+
 public class RecordingNow extends Fragment
 {
 	@Override
@@ -34,6 +38,7 @@ public class RecordingNow extends Fragment
 	
 	private ArrayList<RecordingRadio> recordingNowRadios = new ArrayList<>();
 	private FunDapter adapter;
+	private boolean first = true;
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -43,6 +48,7 @@ public class RecordingNow extends Fragment
 			{
 				HashMap<Integer, Recording> rec = new HashMap<>();
 				rec = (HashMap<Integer, Recording>) intent.getSerializableExtra("recHashMap");
+				((MainActivity)getActivity()).isRecordedStatusFalseAll();
 				if (rec != null)
 				{
 					recordingNowRadios.clear();
@@ -50,7 +56,12 @@ public class RecordingNow extends Fragment
 					{
 						if (entry != null)
 						{
-							recordingNowRadios.add(new RecordingRadio(entry.getValue().getName(),entry.getKey(),entry.getValue().getCurrentRecordingTimeInSeconds(),entry.getValue().getCurrentSizeInKB()));
+
+							if(entry.getValue().getStatus()!=NOTRECORDING) {
+								recordingNowRadios.add(new RecordingRadio(entry.getValue().getName(), entry.getKey(), entry.getValue().getCurrentRecordingTimeInSeconds(), entry.getValue().getCurrentSizeInKB()));
+								((MainActivity)getActivity()).setIsRecordedStatus(true, entry
+										.getValue().getName());
+							}
 						}
 						else
 						{

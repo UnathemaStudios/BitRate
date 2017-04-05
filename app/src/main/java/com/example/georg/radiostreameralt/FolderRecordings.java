@@ -182,10 +182,10 @@ public class FolderRecordings extends Fragment {
 
     public String prettySize(long sizeInKB) {
         if (sizeInKB < 1024) {
-            return String.valueOf(sizeInKB) + " KB ";
+            return String.valueOf(sizeInKB) + "KB ";
         }
         else /*if (sizeInKB<1048576)*/ {
-            return String.format(Locale.US, "%.2f", (double) sizeInKB / 1024) + " MB ";
+            return String.format(Locale.US, "%.2f", (double) sizeInKB / 1024) + "MB ";
         }
     }
 
