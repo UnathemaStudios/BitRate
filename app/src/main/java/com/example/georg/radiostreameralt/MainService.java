@@ -48,7 +48,31 @@ public class MainService extends Service {
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+			if (intent.getAction().equals(AudioManager.ACTION_HEADSET_PLUG))
+			{
+				if (intent.getExtras().get("state").toString().equals("0"))
+				{
+					Log.w("HEADSET", "UNPLUGGED");
+					if (playerStatus != STOPPED)
+					{
+						stop();
+					}
+				}
+				else if (intent.getExtras().get("state").toString().equals("1"))
+				{
+					Log.w("HEADSET", "PLUGGED");
+					if (playerStatus == STOPPED && !stoppedByUser)
+					{
+						play(playerUrl);
+					}
+				}
+				else
+				{
+					Log.w("HEADSET", "DAFUQ");
+				}
+			}
+			else if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) 
+			{
 				if (checkNetworkConnection() == NO_NETWORK)
 				{
 					Log.w("Network", "No Network");
@@ -68,32 +92,6 @@ public class MainService extends Service {
 				else if (checkNetworkConnection() == ERROR)
 				{
 					Log.w("Network", "ERROR");
-				}
-			}
-			else if (intent.getAction().equals(AudioManager.ACTION_HEADSET_PLUG))
-			{
-				if (intent.hasExtra("state"))
-				{
-					if (intent.getExtras().get("state").toString().equals("0"))
-					{
-						Log.w("HEADSET", "UNPLUGGED");
-						if (playerStatus != STOPPED)
-						{
-							stop();
-						}
-					}
-					else if (intent.getExtras().get("state").toString().equals("1"))
-					{
-						Log.w("HEADSET", "PLUGGED");
-						if (playerStatus == STOPPED && !stoppedByUser)
-						{
-							play(playerUrl);
-						}
-					}
-					else
-					{
-						Log.w("HEADSET", "DAFUQ");
-					}
 				}
 			}
 		}
