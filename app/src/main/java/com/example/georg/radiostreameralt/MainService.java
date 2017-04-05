@@ -278,48 +278,57 @@ public class MainService extends Service {
 		playerStatus = LOADING;
 		send(Integer.toString(playerStatus));
 		buildNotification();
-		int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-		if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
-        {
-            if (checkNetworkConnection() == WIFI || checkNetworkConnection() == MOBILE)
-            {
-                streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		/*streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
+		
+		if (checkNetworkConnection() == WIFI || checkNetworkConnection() == MOBILE)
 		{
-			@Override
-			public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
-				Log.w("media", "Buffering: " + percent);
-			}
-		});
-		streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-			@Override
-			public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
-				Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
-				return false;
-			}
-		});*/
-                try {
-//			streamPlayer.setDataSource(this,Uri.parse(urlString));
-                    streamPlayer.setDataSource(urlString);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                streamPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mediaPlayer) {
-                        mediaPlayer.start();
-                        playerStatus = PLAYING;
-						send(Integer.toString(playerStatus));
-						buildNotification();	
-                    }
-                });
-                streamPlayer.prepareAsync();
-			}
-            else
+			int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
 			{
-                Toast.makeText(getApplicationContext(), "Enable Wifi or Mobile Data access first",Toast.LENGTH_SHORT).show();
-            }
+				streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+	/*streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
+	{
+		@Override
+		public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
+			Log.w("media", "Buffering: " + percent);
 		}
+	});
+	streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+		@Override
+		public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
+			Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
+			return false;
+		}
+	});*/
+				try
+				{
+//			streamPlayer.setDataSource(this,Uri.parse(urlString));
+					streamPlayer.setDataSource(urlString);
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				streamPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
+				{
+					@Override
+					public void onPrepared(MediaPlayer mediaPlayer)
+					{
+						mediaPlayer.start();
+						playerStatus = PLAYING;
+						send(Integer.toString(playerStatus));
+						buildNotification();
+					}
+				});
+				streamPlayer.prepareAsync();
+			}
+		}
+		else
+		{
+			playerStatus = STOPPED;
+			send(Integer.toString(playerStatus));
+			buildNotification();
+			Toast.makeText(getApplicationContext(), "Enable Wifi or Mobile Data access first",Toast.LENGTH_SHORT).show();
+		}
+		
 	}
 
     public void stop() {
@@ -327,10 +336,10 @@ public class MainService extends Service {
             streamPlayer.stop();
         }
         streamPlayer.reset();
-        playerStatus = STOPPED;
-        send(Integer.toString(playerStatus));
         sleepMinutes = -1;
         stopSleepTimer();
+		playerStatus = STOPPED;
+		send(Integer.toString(playerStatus));
 		buildNotification();
 	}
 

@@ -631,8 +631,6 @@ public class MainActivity extends AppCompatActivity
 //TODO: FolderRecordings Permissions THANOS
 //TODO: Http raspberry file for the radios(not locally saved file)
 //TODO: Record by duration dialog in PlayingNow and RadiosFragment
-//TODO: WIFI/Mobile data status Change THANOS
-//TODO: Metadata start stop THANOS
 //TODO: If earphones unplug -> Stop the player! (?)
 //TODO: PLAYER VISIBLE BUG
 //
