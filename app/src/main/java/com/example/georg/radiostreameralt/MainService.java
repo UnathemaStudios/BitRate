@@ -43,7 +43,7 @@ public class MainService extends Service {
 	public final static int WIFI = 1;
 	public final static int MOBILE = 2;
 	public final static int ERROR = -1;
-	private boolean stoppedByUser = false;
+	private boolean stoppedByUser = true;
 	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
@@ -175,8 +175,6 @@ public class MainService extends Service {
                     // at an attenuated level
                     if (playerStatus==PLAYING) streamPlayer.setVolume(0.1f, 0.1f);
                     break;
-				default:
-					break;
             }
         }
     };

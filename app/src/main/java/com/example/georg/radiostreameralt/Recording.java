@@ -78,7 +78,6 @@ class Recording implements Serializable{
                         while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 ||
                                 ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
                         {
-                            Log.w("inputstream", Integer.toString(c));
                             fileOutputStream.write(c);
                             bytesRead++;
                         }
@@ -95,7 +94,6 @@ class Recording implements Serializable{
                         {
                             fileOutputStream.write(c);
                             bytesRead++;
-                            Log.w("inputstream", Integer.toString(c));
                         }
                     }
 
