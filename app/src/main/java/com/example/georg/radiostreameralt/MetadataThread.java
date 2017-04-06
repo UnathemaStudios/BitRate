@@ -24,7 +24,7 @@ class MetadataThread extends Thread
 		try {
 			streamMeta.setStreamUrl(new URL(metadataUrl));
 			streamMeta.refreshMeta();
-			Log.w("METADATA", streamMeta.getStreamTitle());
+//			Log.w("METADATA", streamMeta.getStreamTitle());
 //			Log.w("METADATA", streamMeta.getArtist());
 //			Log.w("METADATA", streamMeta.getTitle());
 //			Log.w("METADATA", String.valueOf(streamMeta.getMetadata()));

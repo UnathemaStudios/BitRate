@@ -50,7 +50,7 @@ public class MainService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(AudioManager.ACTION_HEADSET_PLUG))
 			{
-				if (intent.getExtras().get("state").toString().equals("0"))
+				if (intent.getIntExtra("state", -1)==0)
 				{
 					Log.w("HEADSET", "UNPLUGGED");
 					if (playerStatus != STOPPED)
@@ -58,7 +58,7 @@ public class MainService extends Service {
 						stop();
 					}
 				}
-				else if (intent.getExtras().get("state").toString().equals("1"))
+				else if (intent.getIntExtra("state", -1)==1)
 				{
 					Log.w("HEADSET", "PLUGGED");
 					if (playerStatus == STOPPED && !stoppedByUser)
@@ -197,7 +197,7 @@ public class MainService extends Service {
         key = 0;
         if (serviceReceiver != null) {
             registerReceiver(serviceReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-			registerReceiver(serviceReceiver, new IntentFilter(AudioManager.ACTION_HEADSET_PLUG));
+			registerReceiver(serviceReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
         }
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }

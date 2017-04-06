@@ -44,7 +44,7 @@ class IcyStreamMeta
 	 * Get artist using stream's title
 	 *
 	 * @return String
-	 * @throws IOException
+	 * //@throws IOException
 	 */
 	public String getArtist() throws IOException
 	{
@@ -61,7 +61,7 @@ class IcyStreamMeta
 	 * Get streamTitle
 	 *
 	 * @return String
-	 * @throws IOException
+	 * //@throws IOException
 	 */
 	String getStreamTitle() throws IOException
 	{
@@ -76,7 +76,7 @@ class IcyStreamMeta
 	 * Get title using stream's title
 	 *
 	 * @return String
-	 * @throws IOException
+	 * //@throws IOException
 	 */
 	public String getTitle() throws IOException
 	{
@@ -89,7 +89,7 @@ class IcyStreamMeta
 		return artist.trim();
 	}
 	
-	public Map<String, String> getMetadata() throws IOException
+	Map<String, String> getMetadata() throws IOException
 	{
 		if (metadata == null)
 		{
@@ -99,7 +99,7 @@ class IcyStreamMeta
 		return metadata;
 	}
 	
-	synchronized public void refreshMeta() throws IOException
+	synchronized void refreshMeta() throws IOException
 	{
 		retreiveMetadata();
 	}
@@ -207,7 +207,7 @@ class IcyStreamMeta
 		return streamUrl;
 	}
 	
-	public void setStreamUrl(URL streamUrl)
+	void setStreamUrl(URL streamUrl)
 	{
 		this.metadata = null;
 		this.streamUrl = streamUrl;

@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,66 +49,78 @@ class Recording implements Serializable{
             @Override
             public void run()
             {
-                try
-                {
-                    status = RECORDING;
-                    FileOutputStream fileOutputStream;
-                    File streamsDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
-                    if (!streamsDir.exists())
-                    {
-                        boolean directoryCreated = streamsDir.mkdirs();
-                        Log.w("Recorder", "Created directory");
-                        if (!directoryCreated)
-                        {
-                            Log.w("Recorder", "Failed to create directory");
-                        }
-                    }
-                    File outputSource = new File(streamsDir, name + date + ".mp3");
-                    fileOutputStream = new FileOutputStream(outputSource);
-
-                    //ICY 200 OK ERROR FIX FOR KITKAT
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
-                    {
-                        Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
-                        OkHttpClient client = new OkHttpClient();
-                        Request request = new Request.Builder().url(urlString).build();
-                        Response response = client.newCall(request).execute();
-                        InputStream inputStream = response.body().byteStream();
-
-                        int c;
-                        while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 ||
-                                ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
-                        {
-                            fileOutputStream.write(c);
-                            bytesRead++;
-                        }
-                    } else
-                    {
-                        Log.w("Version", String.valueOf(Build.VERSION.SDK_INT));
-                        URL url = new URL(urlString);
-                        InputStream inputStream = url.openStream();
-
-                        int c;
-                        Log.w("duration", (Long.toString(duration)));
-                        while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 ||
-                                ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
-                        {
-                            fileOutputStream.write(c);
-                            bytesRead++;
-                        }
-                    }
-
-                    Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
-
-                    fileOutputStream.close();
-
-                    //Log.w("Recorder", "finished");
-                    MainService.activeRecordings--;
-                    status = NOTRECORDING;
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+	
+				status = RECORDING;
+				FileOutputStream fileOutputStream;
+				File streamsDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
+				if (!streamsDir.exists())
+				{
+					boolean directoryCreated = streamsDir.mkdirs();
+					Log.w("Recorder", "Created directory");
+					if (!directoryCreated)
+					{
+						Log.w("Recorder", "Failed to create directory");
+					}
+				}
+				File outputSource = new File(streamsDir, name + date + ".mp3");
+				try
+				{
+					fileOutputStream = new FileOutputStream(outputSource);
+				} catch (FileNotFoundException e)
+				{
+					fileOutputStream = null;
+					e.printStackTrace();
+				}
+	
+				try
+				{
+					//ICY 200 OK ERROR FIX FOR KITKAT
+					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
+					{
+						OkHttpClient client = new OkHttpClient();
+						Request request = new Request.Builder().url(urlString).build();
+						Response response = client.newCall(request).execute();
+						InputStream inputStream = response.body().byteStream();
+						
+						int c;
+						while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
+						{
+							
+							assert fileOutputStream != null;
+							fileOutputStream.write(c);
+							bytesRead++;
+						}
+					}
+					else
+					{
+						URL url = new URL(urlString);
+						InputStream inputStream = url.openStream();
+						
+						int c;
+						Log.w("duration", (Long.toString(duration)));
+						while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
+						{
+							assert fileOutputStream != null;
+							fileOutputStream.write(c);
+							bytesRead++;
+						}
+					}
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				
+				Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
+	
+				try	{
+					assert fileOutputStream != null;
+					fileOutputStream.close();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				MainService.activeRecordings--;
+				status = NOTRECORDING;
             }
         }).start();
     }
