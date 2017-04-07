@@ -1,5 +1,7 @@
 package com.example.georg.radiostreameralt;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -19,39 +21,42 @@ import okhttp3.Response;
 import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
 import static com.example.georg.radiostreameralt.MainService.RECORDING;
 
-class Recording implements Serializable{
-    private String name;
-    private String date;
-    private String urlString;
-    private long duration;
-    private boolean stopped;
-    private int status;
-    private int bytesRead;
-    private long startTimeInSeconds;
-
-
-    Recording(String date, String urlString, long duration, String name)
-    {
-        this.date = date;
-        this.urlString = urlString;
-        this.duration = duration;
-        this.name = name;
-        stopped = false;
-        bytesRead = 0;
-        startTimeInSeconds = System.currentTimeMillis() / 1000;
-    }
-
-    void start()
-    {
-        status = RECORDING;
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
+class Recording implements Serializable
+{
+	private String name;
+	private String date;
+	private String urlString;
+	private transient Context context;
+	private long duration;
+	private boolean stopped;
+	private int status;
+	private int bytesRead;
+	private long startTimeInSeconds;
 	
+	Recording(String date, String urlString, long duration, String name, Context context)
+	{
+		this.date = date;
+		this.urlString = urlString;
+		this.duration = duration;
+		this.name = name;
+		this.context = context;
+		stopped = false;
+		bytesRead = 0;
+		startTimeInSeconds = System.currentTimeMillis() / 1000;
+	}
+	
+	void start()
+	{
+		status = RECORDING;
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				boolean connectionLost;
+				boolean append = false;
 				status = RECORDING;
-				FileOutputStream fileOutputStream;
+				FileOutputStream fileOutputStream = null;
 				File streamsDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
 				if (!streamsDir.exists())
 				{
@@ -63,101 +68,132 @@ class Recording implements Serializable{
 					}
 				}
 				File outputSource = new File(streamsDir, name + date + ".mp3");
-				try
+				
+				do
 				{
-					fileOutputStream = new FileOutputStream(outputSource);
-				} catch (FileNotFoundException e)
-				{
-					fileOutputStream = null;
-					e.printStackTrace();
-				}
-	
-				try
-				{
-					//ICY 200 OK ERROR FIX FOR KITKAT
-					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
+					try
 					{
-						OkHttpClient client = new OkHttpClient();
-						Request request = new Request.Builder().url(urlString).build();
-						Response response = client.newCall(request).execute();
-						InputStream inputStream = response.body().byteStream();
-						
-						int c;
-						while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
-						{
-							
-							assert fileOutputStream != null;
-							fileOutputStream.write(c);
-							bytesRead++;
-						}
-					}
-					else
+						fileOutputStream = new FileOutputStream(outputSource, append);
+					} catch (FileNotFoundException e)
 					{
-						URL url = new URL(urlString);
-						InputStream inputStream = url.openStream();
-						
-						int c;
-						Log.w("duration", (Long.toString(duration)));
-						while (((c = inputStream.read()) != -1) && !stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))))
-						{
-							assert fileOutputStream != null;
-							fileOutputStream.write(c);
-							bytesRead++;
-						}
+						e.printStackTrace();
 					}
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+					append = true;
+					try
+					{
+						//ICY 200 OK ERROR FIX FOR KITKAT
+						if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)
+						{
+							OkHttpClient client = new OkHttpClient();
+							Request request = new Request.Builder().url(urlString).build();
+							Response response = client.newCall(request).execute();
+							InputStream inputStream = response.body().byteStream();
+							connectionLost = false;
+							int c;
+							while (!stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))) && ((c = inputStream.read()) != -1))
+							{
+								
+								assert fileOutputStream != null;
+								fileOutputStream.write(c);
+								bytesRead++;
+							}
+						}
+						else
+						{
+							URL url = new URL(urlString);
+							InputStream inputStream = url.openStream();
+							connectionLost = false;
+							int c;
+							Log.w("duration", (Long.toString(duration)));
+							while (!stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration))) && ((c = inputStream.read()) != -1) )
+							{
+								assert fileOutputStream != null;
+								fileOutputStream.write(c);
+								bytesRead++;
+							}
+						}
+					} catch (IOException e)
+					{
+						connectionLost = true;
+						try
+						{
+							long retryMilliseconds = 5000;
+							long timeLeftInSeconds = (startTimeInSeconds + duration) - (System.currentTimeMillis()/1000);
+							if (timeLeftInSeconds < 5 && timeLeftInSeconds > -1)
+							{
+								retryMilliseconds = (timeLeftInSeconds + 1) * 1000;
+							}
+							Log.w("Connection Lost", "Retrying in " + retryMilliseconds / 1000 + " seconds");
+							Thread.sleep(retryMilliseconds);
+						} catch (InterruptedException e1)
+						{
+							e1.printStackTrace();
+						}
+						e.printStackTrace();
+					}
+				} while (connectionLost && (!stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration)))));
 				
 				Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
-	
-				try	{
-					assert fileOutputStream != null;
-					fileOutputStream.close();
+				
+				try
+				{
+					if (fileOutputStream!=null)
+					{
+						fileOutputStream.close();
+					}
 				} catch (IOException e)
 				{
 					e.printStackTrace();
 				}
 				MainService.activeRecordings--;
 				status = NOTRECORDING;
-            }
-        }).start();
-    }
-
-    int getCurrentSizeInKB()
-    {
-        return (bytesRead / 1024);
-    }
-
-    long getCurrentRecordingTimeInSeconds()
-    {
-        return (System.currentTimeMillis() / 1000) - startTimeInSeconds;
-    }
-
-    int getStatus()
-    {
-        return status;
-    }
-
-    long getDuration()
-    {
-        return duration;
-    }
-
-    void stop()
-    {
+				tellServiceRecordingRecordingStopped();
+			}
+		}).start();
+	}
+	
+	private void tellServiceRecordingRecordingStopped()
+	{
 		
-        stopped = true;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
+		Intent intent = new Intent(context, MainService.class);
+		intent.setAction("RECORDING_STOPPED");
+		context.startService(intent);
+	}
+	
+	int getCurrentSizeInKB()
+	{
+		return (bytesRead / 1024);
+	}
+	
+	long getCurrentRecordingTimeInSeconds()
+	{
+		return (System.currentTimeMillis() / 1000) - startTimeInSeconds;
+	}
+	
+	int getStatus()
+	{
+		return status;
+	}
+	
+	public void setStatus(int status)
+	{
+		this.status = status;
+	}
+	
+	long getDuration()
+	{
+		return duration;
+	}
+	
+	void stop()
+	{
+		
+		stopped = true;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
 }
 

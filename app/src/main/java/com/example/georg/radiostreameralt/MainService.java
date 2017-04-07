@@ -210,6 +210,11 @@ public class MainService extends Service {
                     playerUrl = intent.getStringExtra("url");
                     finger = intent.getIntExtra("finger", -1);
                 }
+                else 
+				{
+					playerUrl = "http://philae.shoutca.st:8307/stream";
+					finger = 1;
+				}
                 play(playerUrl);
 				stoppedByUser = false;
                 break;
@@ -237,7 +242,7 @@ public class MainService extends Service {
             case "RECORD": {
                 String urlString = intent.getStringExtra("urlString");
                 rec.put(key, new Recording(date(), urlString, (long)intent.getIntExtra
-                        ("duration", -1)*60, intent.getStringExtra("name")));
+                        ("duration", -1)*60, intent.getStringExtra("name"),getApplicationContext()));
                 rec.get(key).start();
                 if (activeRecordings == 0) {
                     startRecordingBroadcast();
@@ -251,22 +256,27 @@ public class MainService extends Service {
             case "STOP_RECORD": {
                 int passedKey = intent.getIntExtra("key", -1);
                 rec.get(passedKey).stop();
-                while (rec.get(passedKey).getStatus() != NOTRECORDING) ;
-                rec.remove(passedKey);
-                Log.w("activeRecordings", String.valueOf(activeRecordings));
-                if (activeRecordings == 0) {
-                    stopRecordingBroadcast();
-                    zeroRecordingBroadcast();
-                    rec.clear();
-                    Log.w("Recorder", "No Recordings");
-                }
-                buildNotification();
+//                while (rec.get(passedKey).getStatus() != NOTRECORDING);
+//                rec.remove(passedKey);
                 break;
             }
+			case "RECORDING_STOPPED":
+			{
+				Log.w("activeRecordings", String.valueOf(activeRecordings));
+				if (activeRecordings == 0) {
+					stopRecordingBroadcast();
+					zeroRecordingBroadcast();
+					rec.clear();
+					Log.w("Recorder", "No Recordings");
+				}
+				buildNotification();
+				break;
+			}
         }
         return START_STICKY;
     }
-
+	
+    
     public void play(String urlString) {
 		if (playerStatus != STOPPED)
 		{
@@ -383,7 +393,6 @@ public class MainService extends Service {
         playIntent.setAction("PLAYER_PLAY");
         PendingIntent playPendingIntent = PendingIntent.getService(this, 0, playIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationCompat.Action playAction = new NotificationCompat.Action(R.drawable.ic_play, "Play", playPendingIntent);
-//		Notification.Action playAction = new Notification.Action.Builder(Icon.createWithResource(getApplicationContext(), R.drawable.ic_play), "Play", playPendingIntent).build();
 
         //notification STOP button
         Intent stopIntent = new Intent(getApplicationContext(), MainService.class);

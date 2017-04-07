@@ -656,7 +656,6 @@ public class MainActivity extends AppCompatActivity
 //TODO: PLAYER VISIBLE BUG
 //
 //TODO: Landscape mode fixes GIORGOS
-//TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!while(true)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <- <- <- THANOS
 //TODO: PlayingNow Controls + color??
 //TODO: Log file
 //TODO: Alarm (Schedule)
