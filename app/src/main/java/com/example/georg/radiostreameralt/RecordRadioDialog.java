@@ -7,20 +7,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.Locale;
-
-/**
- * Created by georg on 18/2/2017.
- */
 
 public class RecordRadioDialog extends DialogFragment {
 
@@ -28,7 +29,6 @@ public class RecordRadioDialog extends DialogFragment {
         public void onDialogPositiveClick(int hour, int minute);
     }
     private NoticeDialogListener mListener;
-
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -39,7 +39,7 @@ public class RecordRadioDialog extends DialogFragment {
         final NumberPicker npHour = (NumberPicker)textEntryView.findViewById(R.id.npHour);
         final NumberPicker npMinute = (NumberPicker)textEntryView.findViewById(R.id.npMinute);
         final RadioButton rbUnlimited = (RadioButton)textEntryView.findViewById(R.id.rbUnlimitedTime);
-        RadioButton rbLimitedTime = (RadioButton)textEntryView.findViewById(R.id.rbLimitedTime);
+        final RadioButton rbLimitedTime = (RadioButton)textEntryView.findViewById(R.id.rbLimitedTime);
         npHour.setMaxValue(23);
         npHour.setMinValue(0);
         npHour.setFormatter(new NumberPicker.Formatter() {
@@ -56,10 +56,32 @@ public class RecordRadioDialog extends DialogFragment {
                 return String.format(Locale.US, "%02d", i);
             }
         });
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Choose Record Type")
-                .setView(textEntryView)
-                .setPositiveButton(R.string.add_radio_dialog_add, new DialogInterface.OnClickListener() {
+		npHour.setEnabled(false);
+		npMinute.setEnabled(false);
+		RadioGroup radioGroup = (RadioGroup)textEntryView.findViewById(R.id.rbGroup);
+		radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+		{
+			@Override
+			public void onCheckedChanged(RadioGroup group, @IdRes int checkedId)
+			{
+				if(checkedId == R.id.rbLimitedTime)
+				{
+					npHour.setEnabled(true);
+					npMinute.setEnabled(true);
+				}
+				else
+				{
+					npHour.setEnabled(false);
+					npMinute.setEnabled(false);
+				}
+			}
+		});
+				
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(textEntryView)
+				.setTitle("Start a new recording")
+				.setPositiveButton("START", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if(rbUnlimited.isChecked()){
                             mListener.onDialogPositiveClick(-1, -1);
@@ -74,9 +96,8 @@ public class RecordRadioDialog extends DialogFragment {
                     }
                 });
         // Create the AlertDialog object and return it
-        return builder.create();
-
-    }
+		return builder.create();
+	}
 
     // Use this instance of the interface to deliver action event
 
@@ -98,6 +119,6 @@ public class RecordRadioDialog extends DialogFragment {
     @Override
     public void show(FragmentManager manager, String tag) {
         super.show(manager, tag);
-    }
+	}
 }
 
