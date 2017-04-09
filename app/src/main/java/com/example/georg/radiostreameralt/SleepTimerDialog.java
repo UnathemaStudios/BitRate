@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -15,20 +16,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 
-/**
- * Created by georg on 3/3/2017.
- */
-
 public class SleepTimerDialog extends DialogFragment {
-    public interface NoticeDialogListener {
+    interface NoticeDialogListener {
         public void onDialogPositiveClick(int minutes);
     }
     private SleepTimerDialog.NoticeDialogListener mListener;
     private NumberPicker timePicker;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @Override
+    @NonNull
+	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         LayoutInflater factory = LayoutInflater.from(getContext());
@@ -37,7 +33,7 @@ public class SleepTimerDialog extends DialogFragment {
         timePicker.setMaxValue(120);
         timePicker.setMinValue(1);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Select Sleep Minutes")
+        builder.setTitle("Select Sleep Minutes")
                 .setView(textEntryView)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -76,5 +72,4 @@ public class SleepTimerDialog extends DialogFragment {
     public void show(FragmentManager manager, String tag) {
         super.show(manager, tag);
     }
-
 }

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -25,12 +26,12 @@ import java.util.Locale;
 
 public class RecordRadioDialog extends DialogFragment {
 
-    public interface NoticeDialogListener {
+    interface NoticeDialogListener {
         public void onDialogPositiveClick(int hour, int minute);
     }
     private NoticeDialogListener mListener;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
@@ -121,4 +122,3 @@ public class RecordRadioDialog extends DialogFragment {
         super.show(manager, tag);
 	}
 }
-
