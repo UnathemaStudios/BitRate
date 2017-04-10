@@ -514,14 +514,14 @@ public class MainActivity extends AppCompatActivity
 		animate.setDuration(250);
 		animate.setFillAfter(true);
 		playerLayout.startAnimation(animate);
-//		playerLayout.setVisibility(View.INVISIBLE);
+		findViewById(R.id.relativeLayoutWrapper).setVisibility(View.GONE);
 	}
 	
 	public void slideToTop()
 	{
-		//playerLayout.setVisibility(View.VISIBLE);
+		findViewById(R.id.relativeLayoutWrapper).setVisibility(View.VISIBLE);
 		TranslateAnimation animate = new TranslateAnimation(0, 0, playerLayout.getHeight(), 0);
-		animate.setDuration(250);
+		animate.setDuration(500);
 		animate.setFillAfter(true);
 		playerLayout.startAnimation(animate);
 	}
@@ -646,17 +646,12 @@ public class MainActivity extends AppCompatActivity
 //TODO LIST
 //TODO: Permissions in choosing Radio Name
 //TODO: Notification Custom
-//TODO: Fix ui issues with RecordRadioDialog GIORGOS
 //TODO: Fix Radio Images with Image Asset GIORGOS
 //TODO: FolderRecordings Permissions THANOS
 //TODO: UNICODE METADATA THANOS
 //TODO: Http raspberry file for the radios(not locally saved file)
-//TODO: Record by duration dialog in PlayingNow and RadiosFragment
-//
-//TODO: PLAYER VISIBLE BUG
 //
 //TODO: Landscape mode fixes GIORGOS
-//TODO: PlayingNow Controls + color??
 //TODO: Log file
 //TODO: Alarm (Schedule)
 //TODO: Testing

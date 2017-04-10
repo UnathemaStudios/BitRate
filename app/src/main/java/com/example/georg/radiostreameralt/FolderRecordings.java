@@ -140,10 +140,6 @@ public class FolderRecordings extends Fragment {
         for (File file : Files)
             if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3")) {
                 recFiles.add(file.getName());
-                Log.w("Recording Name", recordingNameFromFileName(file.getName()));
-                Log.w("Recording Date", recordingDateFromFilename(file.getName()));
-                Log.w("Recording Time", recordingTimeFromFilename(file.getName()));
-                Log.w("File Size", prettySize(file.length() / 1024));
             }
         adapter.updateData(recFiles);
     }
@@ -163,9 +159,24 @@ public class FolderRecordings extends Fragment {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.delete_folder_recording:
-                new File(Environment.getExternalStorageDirectory().toString() + "/Streams", recFiles.get(info.position)).delete();
+                new File(Environment.getExternalStorageDirectory().toString() + "/Streams",
+                        recFiles.get(info.position)).delete();
                 recFiles.remove(info.position);
                 adapter.updateData(recFiles);
+                return true;
+            case R.id.delete_all_folder_recording:
+                File dir = new File(Environment.getExternalStorageDirectory().toString() +
+                        "/Streams");
+                if (dir.isDirectory())
+                {
+                    String[] children = dir.list();
+                    for (int i = 0; i < children.length; i++)
+                    {
+                        new File(dir, children[i]).delete();
+                    }
+                    recFiles.clear();
+                    adapter.updateData(recFiles);
+                }
                 return true;
             default:
                 return super.onContextItemSelected(item);
