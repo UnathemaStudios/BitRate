@@ -140,18 +140,23 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			@Override
 			public void onClick(View v)
 			{
-				String text = tvTimeRemaining.getText().toString();
-				if (text.equals("") || text.equals("-1") || text.equals("0"))
+				if (((MainActivity) getActivity()).getPlaying() != 0)
 				{
-					SleepTimerDialog sleepTimerDialog = new SleepTimerDialog();
-					sleepTimerDialog.setTargetFragment(PlayingNowFragment.this, 2);
-					sleepTimerDialog.show(getFragmentManager(), "rockets");
+					String text = tvTimeRemaining.getText().toString();
+					if (text.equals("") || text.equals("-1") || text.equals("0"))
+					{
+						SleepTimerDialog sleepTimerDialog = new SleepTimerDialog();
+						sleepTimerDialog.setTargetFragment(PlayingNowFragment.this, 2);
+						sleepTimerDialog.show(getFragmentManager(), "rockets");
+					}
+					else
+					{
+						((MainActivity) getActivity()).tellServiceT("SLEEPTIMER", -1);
+						setSleepText(0);
+					}
 				}
-				else
-				{
-					((MainActivity) getActivity()).tellServiceT("SLEEPTIMER", -1);
-					setSleepText(0);
-				}
+				else Toast.makeText(getContext(), "Player is already stopped", Toast.LENGTH_SHORT).show();
+					
 			}
 		});
 

@@ -58,17 +58,13 @@ public class MainService extends Service {
 						stop();
 					}
 				}
-				else if (intent.getIntExtra("state", -1)==1)
+				else
 				{
 					Log.w("HEADSET", "PLUGGED");
 					if (playerStatus == STOPPED && !stoppedByUser)
 					{
 						play(playerUrl);
 					}
-				}
-				else
-				{
-					Log.w("HEADSET", "DAFUQ");
 				}
 			}
 			else if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) 
@@ -242,7 +238,7 @@ public class MainService extends Service {
             case "RECORD": {
                 String urlString = intent.getStringExtra("urlString");
                 rec.put(key, new Recording(date(), urlString, (long)intent.getIntExtra
-                        ("duration", -1)*60, intent.getStringExtra("name"),getApplicationContext()));
+                        ("duration", -1)*60, intent.getStringExtra("name"),getApplicationContext(),key));
                 rec.get(key).start();
                 if (activeRecordings == 0) {
                     startRecordingBroadcast();
@@ -256,12 +252,11 @@ public class MainService extends Service {
             case "STOP_RECORD": {
                 int passedKey = intent.getIntExtra("key", -1);
                 rec.get(passedKey).stop();
-//                while (rec.get(passedKey).getStatus() != NOTRECORDING);
-//                rec.remove(passedKey);
                 break;
             }
 			case "RECORDING_STOPPED":
 			{
+				rec.remove(intent.getIntExtra("hashKey", -1));
 				Log.w("activeRecordings", String.valueOf(activeRecordings));
 				if (activeRecordings == 0) {
 					stopRecordingBroadcast();
@@ -276,7 +271,6 @@ public class MainService extends Service {
         return START_STICKY;
     }
 	
-    
     public void play(String urlString) {
 		if (playerStatus != STOPPED)
 		{
@@ -292,20 +286,20 @@ public class MainService extends Service {
 			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
 			{
 				streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-	/*streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
-	{
-		@Override
-		public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
-			Log.w("media", "Buffering: " + percent);
-		}
-	});
-	streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-		@Override
-		public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
-			Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
-			return false;
-		}
-	});*/
+				streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
+				{
+					@Override
+					public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
+						Log.w("media", "Buffering: " + percent);
+					}
+				});
+				streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+					@Override
+					public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
+						Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
+						return false;
+					}
+				});
 				try
 				{
 //			streamPlayer.setDataSource(this,Uri.parse(urlString));
@@ -335,7 +329,6 @@ public class MainService extends Service {
 			buildNotification();
 			Toast.makeText(getApplicationContext(), "Enable Wifi or Mobile Data access first",Toast.LENGTH_SHORT).show();
 		}
-		
 	}
 
     public void stop() {
@@ -343,8 +336,8 @@ public class MainService extends Service {
             streamPlayer.stop();
         }
         streamPlayer.reset();
-        sleepMinutes = -1;
-        stopSleepTimer();
+		sleepMinutes = -1;
+		stopSleepTimer();
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus));
 		buildNotification();

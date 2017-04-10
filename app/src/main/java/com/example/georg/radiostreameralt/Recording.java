@@ -27,19 +27,21 @@ class Recording implements Serializable
 	private String date;
 	private String urlString;
 	private transient Context context;
+	private int hashKey;
 	private long duration;
 	private boolean stopped;
 	private int status;
 	private int bytesRead;
 	private long startTimeInSeconds;
 	
-	Recording(String date, String urlString, long duration, String name, Context context)
+	Recording(String date, String urlString, long duration, String name, Context context, int hashKey)
 	{
 		this.date = date;
 		this.urlString = urlString;
 		this.duration = duration;
 		this.name = name;
 		this.context = context;
+		this.hashKey = hashKey;
 		stopped = false;
 		bytesRead = 0;
 		startTimeInSeconds = System.currentTimeMillis() / 1000;
@@ -154,9 +156,9 @@ class Recording implements Serializable
 	
 	private void tellServiceRecordingRecordingStopped()
 	{
-		
 		Intent intent = new Intent(context, MainService.class);
 		intent.setAction("RECORDING_STOPPED");
+		intent.putExtra("hashKey", hashKey);
 		context.startService(intent);
 	}
 	
