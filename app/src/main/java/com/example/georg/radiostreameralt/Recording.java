@@ -176,12 +176,7 @@ class Recording implements Serializable
 	{
 		return status;
 	}
-	
-	public void setStatus(int status)
-	{
-		this.status = status;
-	}
-	
+
 	long getDuration()
 	{
 		return duration;
