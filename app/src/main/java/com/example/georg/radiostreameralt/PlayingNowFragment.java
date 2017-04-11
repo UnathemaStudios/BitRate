@@ -256,12 +256,12 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		if (playerStatus == PLAYING) {
 			getActivity().findViewById(R.id.loadingLayoutBig).setVisibility(View.GONE);
 			ibPPButton.setVisibility(View.VISIBLE);
-			ibPPButton.setImageResource(R.drawable.ic_stop);
+			ibPPButton.setImageResource(R.drawable.ic_stop_circle_outline);
 		}
 		else if (playerStatus == STOPPED) {
 			getActivity().findViewById(R.id.loadingLayoutBig).setVisibility(View.GONE);
 			ibPPButton.setVisibility(View.VISIBLE);
-			ibPPButton.setImageResource(R.drawable.ic_play_circle_outline);
+			ibPPButton.setImageResource(R.drawable.ic_play_rounded_circle_outline);
 		}
 		else {
 			ibPPButton.setVisibility(View.INVISIBLE);
