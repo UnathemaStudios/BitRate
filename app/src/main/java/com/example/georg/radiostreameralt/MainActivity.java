@@ -291,6 +291,7 @@ public class MainActivity extends AppCompatActivity
 		{
 			tellServiceP("REQUEST_STATUS");
 		}
+		Log.w("MAINACTIVITY", "RESTART");
 		super.onRestart();
 	}
 	
@@ -299,6 +300,7 @@ public class MainActivity extends AppCompatActivity
 	{
 		unregisterReceiver(serviceReceiver);
 		saveToFIle();
+		Log.w("MAINACTIVITY", "DESTROYED");
 		super.onDestroy();
 	}
 	
@@ -584,27 +586,9 @@ public class MainActivity extends AppCompatActivity
 		playingNowFragment.setPPButtonStatus(playing, radiosList.get(finger).isRecorded());
 	}
 
-    /*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
+	public void setBadgeCount(int recordings){
+		recordFragment.setBadgeCount(recordings);
+	}
 	
 	class ViewPagerAdapter extends FragmentPagerAdapter
 	{
@@ -644,14 +628,13 @@ public class MainActivity extends AppCompatActivity
 }
 
 //TODO LIST
-//TODO: Permissions in choosing Radio Name
-//TODO: Notification Custom
-//TODO: Fix Radio Images with Image Asset GIORGOS
-//TODO: FolderRecordings Permissions THANOS
 //TODO: UNICODE METADATA THANOS
-//TODO: Http raspberry file for the radios(not locally saved file)
+//TODO: Add X button to recording list
+//TODO: Add confirmation Dialog in delete/delete All
 //
-//TODO: Landscape mode fixes GIORGOS
+//TODO: Notification Custom
+//TODO: Http raspberry file for the radios(not locally saved file)
+//TODO: Fix Radio Images resolution variant GIORGOS
 //TODO: Log file
 //TODO: Alarm (Schedule)
 //TODO: Testing

@@ -38,7 +38,6 @@ public class RecordingNow extends Fragment
 	
 	private ArrayList<RecordingRadio> recordingNowRadios = new ArrayList<>();
 	private FunDapter adapter;
-	private boolean first = true;
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -58,7 +57,10 @@ public class RecordingNow extends Fragment
 						{
 
 							if(entry.getValue().getStatus()!=NOTRECORDING) {
-								recordingNowRadios.add(new RecordingRadio(entry.getValue().getName(), entry.getKey(), entry.getValue().getCurrentRecordingTimeInSeconds(), entry.getValue().getCurrentSizeInKB()));
+								recordingNowRadios.add(new RecordingRadio(entry.getValue()
+										.getName(), entry.getKey(), entry.getValue()
+										.getCurrentRecordingTimeInSeconds(), entry.getValue()
+										.getCurrentSizeInKB(), entry.getValue().getDuration()));
 								((MainActivity)getActivity()).setIsRecordedStatus(true, entry
 										.getValue().getName());
 							}
@@ -68,6 +70,7 @@ public class RecordingNow extends Fragment
 							Log.w("MainActivity", "HashMap entry is null");
 						}
 					}
+					((MainActivity)getActivity()).setBadgeCount(recordingNowRadios.size());
 					adapter.updateData(recordingNowRadios);
 				}
 				else
@@ -129,7 +132,8 @@ public class RecordingNow extends Fragment
 			@Override
 			public String getStringValue(RecordingRadio item, int position)
 			{
-				return prettyTime(item.getTime());
+				if(item.getDuration()==-60) return prettyTime(item.getTime()) + "/--:--";
+				else return prettyTime(item.getTime()) + "/" + prettyTime(item.getDuration());
 			}
 		});
 		

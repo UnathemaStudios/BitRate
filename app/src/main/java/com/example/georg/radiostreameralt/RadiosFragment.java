@@ -1,10 +1,10 @@
 package com.example.georg.radiostreameralt;
 
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -134,8 +135,15 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	@Override
 	public void onDialogPositiveClick(String name, String url)
 	{
-		((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
-		adapter.updateData(((MainActivity) getActivity()).radiosList);
-		Log.w("ΡαδιοσΦραγμεντ", "Radio added to list");
+		boolean found = false;
+		for(Radio item : ((MainActivity)getActivity()).radiosList){
+			if(item.getName().equals(name)) found = true;
+		}
+
+		if(!found) {
+			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
+			adapter.updateData(((MainActivity) getActivity()).radiosList);
+		}
+		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
 	}
 }

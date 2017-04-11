@@ -115,6 +115,7 @@ public class MainService extends Service {
             Intent intent = new Intent();
             intent.setAction("recList");
             intent.putExtra("recHashMap", rec);
+			intent.putExtra("numberOfRecordings", activeRecordings);
             sendBroadcast(intent);
             recordingHandler.postDelayed(this, 500);
         }
@@ -373,6 +374,7 @@ public class MainService extends Service {
         Intent intent = new Intent();
         intent.setAction("recList");
         intent.putExtra("recHashMap", rec);
+		intent.putExtra("numberOfRecordings", activeRecordings);
         sendBroadcast(intent);
     }
 

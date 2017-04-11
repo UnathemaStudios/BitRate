@@ -8,9 +8,13 @@
     <!-- TODO: Update blank fragment layout -->
 
     <ListView
+        android:id="@+id/recordingNowListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/recordingNowListView"/>
+        android:layout_alignParentTop="true"
+        android:clipToPadding="true"
+        android:divider="@color/lightPrimaryColor"
+        android:dividerHeight="1dp"
+        />
 </RelativeLayout>

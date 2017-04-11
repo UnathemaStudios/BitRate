@@ -6,13 +6,15 @@ public class RecordingRadio {
     private int id;
     private long time;
     private int size;
+    private long duration;
 //    private boolean stopped;
 
-    RecordingRadio(String name, int id, long time, int size){
+    RecordingRadio(String name, int id, long time, int size, long duration){
         this.name = name;
         this.id = id;
         this.time = time;
         this.size = size;
+        this.duration = duration;
     }
 
     public String getName() {
@@ -29,5 +31,9 @@ public class RecordingRadio {
 
     int getSize() {
         return size;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 }
