@@ -630,7 +630,8 @@ public class MainActivity extends AppCompatActivity
 //TODO LIST
 //TODO: UNICODE METADATA THANOS
 //TODO: chceckbox instead of radiogroup in record dialog
-//
+//TODO: VLC
+//TODO: License
 //
 //TODO: Notification Custom
 //TODO: Http raspberry file for the radios(not locally saved file)
