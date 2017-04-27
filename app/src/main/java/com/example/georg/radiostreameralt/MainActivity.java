@@ -629,12 +629,11 @@ public class MainActivity extends AppCompatActivity
 
 //TODO LIST
 //TODO: UNICODE METADATA THANOS
-//TODO: Add X button to recording list
-//TODO: Add confirmation Dialog in delete/delete All
+//TODO: chceckbox instead of radiogroup in record dialog
+//
 //
 //TODO: Notification Custom
 //TODO: Http raspberry file for the radios(not locally saved file)
-//TODO: Fix Radio Images resolution variant GIORGOS
 //TODO: Log file
 //TODO: Alarm (Schedule)
 //TODO: Testing

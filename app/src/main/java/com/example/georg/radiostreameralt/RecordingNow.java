@@ -12,11 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
+import com.amigold.fundapter.interfaces.ItemClickListener;
+import com.amigold.fundapter.interfaces.StaticImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,20 +139,31 @@ public class RecordingNow extends Fragment
 				else return prettyTime(item.getTime()) + "/" + prettyTime(item.getDuration());
 			}
 		});
+		dictionary.addStaticImageField(R.id.ivRecordingNowClose, new StaticImageLoader() {
+			@Override
+			public void loadImage(Object item, ImageView imageView, int position) {
+				imageView.setImageResource(R.drawable.ic_close_black_24dp);
+			}
+		}).onClick(new ItemClickListener<RecordingRadio>() {
+			@Override
+			public void onClick(RecordingRadio item, int position, View view) {
+				((MainActivity) getActivity()).tellServiceR("STOP_RECORD", recordingNowRadios.get(position).getId());
+			}
+		});
 		
 		adapter = new FunDapter<>(view.getContext(), recordingNowRadios, R.layout.recording_now_layout, dictionary);
 		
 		ListView listView = (ListView) getActivity().findViewById(R.id.recordingNowListView);
 		listView.setAdapter(adapter);
 		
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+		/*listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 				((MainActivity) getActivity()).tellServiceR("STOP_RECORD", recordingNowRadios.get(position).getId());
 			}
-		});
+		});*/
 	}
 	
 	public String prettyTime(long timeInSeconds)

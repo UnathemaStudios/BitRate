@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
               android:layout_height="match_parent">
 
     <TextView
@@ -8,9 +9,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/tvRecordingNowTime"
         android:layout_alignParentTop="true"
+        android:singleLine="true"
         android:fontFamily="monospace"
-        android:layout_marginTop="8dp"
         android:gravity="center"
         android:textColor="@color/textColorPrimary"
         android:textSize="32sp"
@@ -20,20 +22,27 @@
         android:id="@+id/tvRecordingNowTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
         android:fontFamily="monospace"
         android:textColor="@color/textColorPrimary"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/tvRecordingNowSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvRecordingNowTime"
-        android:layout_alignParentEnd="true"
+        android:layout_toStartOf="@+id/ivRecordingNowClose"
         android:fontFamily="monospace"
         android:textColor="@color/textColorPrimary"
         android:textSize="16sp"/>
+
+    <ImageView
+        android:id="@+id/ivRecordingNowClose"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/tvRecordingNowTime"
+        android:scaleType="fitXY"/>
 </RelativeLayout>

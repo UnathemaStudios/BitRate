@@ -43,6 +43,7 @@ public class MainService extends Service {
 	public final static int WIFI = 1;
 	public final static int MOBILE = 2;
 	public final static int ERROR = -1;
+	public boolean flag = true;
 	private boolean stoppedByUser = true;
 	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
@@ -55,7 +56,10 @@ public class MainService extends Service {
 					Log.w("HEADSET", "UNPLUGGED");
 					if (playerStatus != STOPPED)
 					{
-						stop();
+						if(!flag) {
+							stop();
+						}
+						else flag = false;
 					}
 				}
 				else
