@@ -10,7 +10,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tvFolderRecordingsName"
         android:textAlignment="textStart"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="3dp"
         android:layout_marginTop="0dp"
         android:textColor="@color/windowBackground"
         android:textSize="16sp"/>
@@ -46,7 +46,7 @@
         android:fontFamily="monospace"
         android:textAlignment="textStart"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="3dp"
         android:textColor="@color/textColorPrimary"
         android:textSize="24sp"
         android:textStyle="bold"/>

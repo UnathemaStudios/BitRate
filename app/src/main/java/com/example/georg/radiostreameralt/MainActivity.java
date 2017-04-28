@@ -628,9 +628,9 @@ public class MainActivity extends AppCompatActivity
 }
 
 //TODO LIST
-//TODO: UNICODE METADATA THANOS
+//
 //TODO: chceckbox instead of radiogroup in record dialog
-//TODO: VLC
+//TODO: VLC / UNICODE METADATA
 //TODO: License
 //
 //TODO: Notification Custom

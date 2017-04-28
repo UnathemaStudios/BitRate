@@ -1,6 +1,7 @@
 package com.example.georg.radiostreameralt;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -76,10 +77,10 @@ public class MainService extends Service {
 				if (checkNetworkConnection() == NO_NETWORK)
 				{
 					Log.w("Network", "No Network");
-					if (playerStatus != STOPPED)
-					{
-						stop();
-					}
+//					if (playerStatus != STOPPED)
+//					{
+//						stop();
+//					}
 				}
 				else if (checkNetworkConnection() == WIFI)
 				{
@@ -137,7 +138,7 @@ public class MainService extends Service {
     private static final int LOADING = 1;
     private static final int PLAYING = 2;
     private MediaPlayer streamPlayer = new MediaPlayer();
-    private int finger;
+    private int finger = 1;
     private int playerStatus = STOPPED;
     private int sleepMinutes = -1;
     private String playerUrl;
@@ -276,7 +277,7 @@ public class MainService extends Service {
         return START_STICKY;
     }
 	
-    public void play(String urlString) {
+	public void play(String urlString) {
 		if (playerStatus != STOPPED)
 		{
 			stop();
@@ -291,20 +292,7 @@ public class MainService extends Service {
 			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
 			{
 				streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-				streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
-				{
-					@Override
-					public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
-						Log.w("media", "Buffering: " + percent);
-					}
-				});
-				streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-					@Override
-					public boolean onInfo(MediaPlayer mediaPlayer, int i, int i2) {
-						Log.w("asd", "MediaPlayer.OnInfoListener: " + i);
-						return false;
-					}
-				});
+				
 				try
 				{
 //			streamPlayer.setDataSource(this,Uri.parse(urlString));
@@ -318,10 +306,34 @@ public class MainService extends Service {
 					@Override
 					public void onPrepared(MediaPlayer mediaPlayer)
 					{
+						Log.w("onPrepared", "PREPARED");
 						mediaPlayer.start();
 						playerStatus = PLAYING;
 						send(Integer.toString(playerStatus));
 						buildNotification();
+					}
+				});
+				streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
+				{
+					@Override
+					public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
+						Log.w("Buffering", " " + percent);
+					}
+				});
+				streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+					@Override
+					public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+						Log.w("OnInfoListener", what + " " + extra);
+						return false;
+					}
+				});
+				streamPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener()
+				{
+					@Override
+					public boolean onError(MediaPlayer mp, int what, int extra)
+					{
+						Log.w("onError", what + " " + extra);
+						return false;
 					}
 				});
 				streamPlayer.prepareAsync();
