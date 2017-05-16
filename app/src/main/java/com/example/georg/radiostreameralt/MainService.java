@@ -13,9 +13,9 @@ import android.content.IntentFilter;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -24,9 +24,13 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
 public class MainService extends Service {
     
@@ -38,7 +42,6 @@ public class MainService extends Service {
     //`88.    .88'   888       o  8       `888   888       o  888  `88b.   .8'     `888.   888       o
     // `Y8bood8P'   o888ooooood8 o8o        `8  o888ooooood8 o888o  o888o o88o     o8888o o888ooooood8
 
-    //AJSHDKASDKJAHSDKHASD
     private static final int notificationID = 8888;
     private boolean notificationExists = false;
 	public final static int NO_NETWORK = 0;
@@ -134,11 +137,13 @@ public class MainService extends Service {
     // 888          888           .88ooo8888.       `888'      888    "     888`88b.
     // 888          888       o  .8'     `888.       888       888       o  888  `88b.
     //o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
-
+    
+    
+    private LibVLC mLibVLC = null;
     private static final int STOPPED = 0;
     private static final int LOADING = 1;
     private static final int PLAYING = 2;
-    private MediaPlayer streamPlayer = new MediaPlayer();
+    private MediaPlayer streamPlayer = null;
     private int finger = 1;
     private int playerStatus = STOPPED;
     private int sleepMinutes = -1;
@@ -158,7 +163,7 @@ public class MainService extends Service {
 							play(playerUrl);
 						}
 					}
-                    streamPlayer.setVolume(1.0f, 1.0f);
+                    streamPlayer.setVolume(100);
                     break;
 
                 case AudioManager.AUDIOFOCUS_LOSS:
@@ -176,7 +181,7 @@ public class MainService extends Service {
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                     // Lost focus for a short time, but it's ok to keep playing
                     // at an attenuated level
-                    if (playerStatus==PLAYING) streamPlayer.setVolume(0.1f, 0.1f);
+                    if (playerStatus==PLAYING) streamPlayer.setVolume(10);
                     break;
             }
         }
@@ -197,6 +202,11 @@ public class MainService extends Service {
 
     @Override
     public void onCreate() {
+    
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+        mLibVLC = new LibVLC(this, args);
+        streamPlayer = new MediaPlayer(mLibVLC);
         key = 0;
         if (serviceReceiver != null) {
             registerReceiver(serviceReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -292,52 +302,12 @@ public class MainService extends Service {
 			int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
 			{
-				streamPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-				
-				try
-				{
-//			streamPlayer.setDataSource(this,Uri.parse(urlString));
-					streamPlayer.setDataSource(urlString);
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-				streamPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener()
-				{
-					@Override
-					public void onPrepared(MediaPlayer mediaPlayer)
-					{
-						Log.w("onPrepared", "PREPARED");
-						mediaPlayer.start();
-						playerStatus = PLAYING;
-						send(Integer.toString(playerStatus));
-						buildNotification();
-					}
-				});
-				streamPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener()
-				{
-					@Override
-					public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
-						Log.w("Buffering", " " + percent);
-					}
-				});
-				streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-					@Override
-					public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
-						Log.w("OnInfoListener", what + " " + extra);
-						return false;
-					}
-				});
-				streamPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener()
-				{
-					@Override
-					public boolean onError(MediaPlayer mp, int what, int extra)
-					{
-						Log.w("onError", what + " " + extra);
-						return false;
-					}
-				});
-				streamPlayer.prepareAsync();
+                streamPlayer.setMedia(new Media(mLibVLC, Uri.parse(urlString)));
+                
+                streamPlayer.play();
+                playerStatus = PLAYING;
+                send(Integer.toString(playerStatus));
+                buildNotification();
 			}
 		}
 		else
@@ -350,10 +320,10 @@ public class MainService extends Service {
 	}
 
     public void stop() {
+        
         if (streamPlayer.isPlaying()) {
             streamPlayer.stop();
         }
-        streamPlayer.reset();
 		sleepMinutes = -1;
 		stopSleepTimer();
 		playerStatus = STOPPED;
