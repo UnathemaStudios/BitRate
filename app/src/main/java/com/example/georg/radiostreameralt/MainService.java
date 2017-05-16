@@ -147,7 +147,7 @@ public class MainService extends Service {
     private int finger = 1;
     private int playerStatus = STOPPED;
     private int sleepMinutes = -1;
-    private String playerUrl;
+    private String playerUrl = null;
     private android.os.Handler sleepTimerHandler = new android.os.Handler();
     private AudioManager audioManager;
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -225,8 +225,11 @@ public class MainService extends Service {
                 }
                 else 
 				{
-					playerUrl = "http://philae.shoutca.st:8307/stream";
-					finger = 1;
+                    if (playerUrl == null)
+                    {
+                        playerUrl = "http://philae.shoutca.st:8307/stream";
+                        finger = 1;
+                    }
 				}
                 play(playerUrl);
 				stoppedByUser = false;
