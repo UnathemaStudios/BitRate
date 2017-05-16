@@ -38,6 +38,7 @@ public class MainService extends Service {
     //`88.    .88'   888       o  8       `888   888       o  888  `88b.   .8'     `888.   888       o
     // `Y8bood8P'   o888ooooood8 o8o        `8  o888ooooood8 o888o  o888o o88o     o8888o o888ooooood8
 
+    //AJSHDKASDKJAHSDKHASD
     private static final int notificationID = 8888;
     private boolean notificationExists = false;
 	public final static int NO_NETWORK = 0;
