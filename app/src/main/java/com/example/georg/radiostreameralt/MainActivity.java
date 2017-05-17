@@ -409,14 +409,14 @@ public class MainActivity extends AppCompatActivity
 		{
 			radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.drawable
 					.rock1055));
-			radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R
+			radiosList.add(new Radio("InfinityGreece", "http://51.254.243.74:80/stream", R
 					.drawable.ic_radio_infinitygreece));
 			radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream" +
 					".mp3", R.drawable.ic_radio_nowhere));
 			try
 			{
 				boolean fileCreated = radiosFile.createNewFile();
-				Log.w("fileCreated", "" + fileCreated);
+//				Log.w("fileCreated", "" + fileCreated);
 				if (!fileCreated) Log.w("FILE ERROR", "File NOTcreated");
 				saveToFIle();
 			} catch (IOException e)

@@ -48,7 +48,7 @@ public class MainService extends Service {
 	public final static int WIFI = 1;
 	public final static int MOBILE = 2;
 	public final static int ERROR = -1;
-	public boolean flag = true;
+	public boolean firstTime = true;
 	private boolean stoppedByUser = true;
 	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
@@ -61,10 +61,10 @@ public class MainService extends Service {
 					Log.w("HEADSET", "UNPLUGGED");
 					if (playerStatus != STOPPED)
 					{
-						if(!flag) {
+						if(!firstTime) {
 							stop();
 						}
-						else flag = false;
+						else firstTime = false;
 					}
 				}
 				else
@@ -80,7 +80,7 @@ public class MainService extends Service {
 			{
 				if (checkNetworkConnection() == NO_NETWORK)
 				{
-					Log.w("Network", "No Network");
+//					Log.w("Network", "No Network");
 //					if (playerStatus != STOPPED)
 //					{
 //						stop();
@@ -88,15 +88,15 @@ public class MainService extends Service {
 				}
 				else if (checkNetworkConnection() == WIFI)
 				{
-					Log.w("Network", "WIFI");
+//					Log.w("Network", "WIFI");
 				}
 				else if (checkNetworkConnection() == MOBILE)
 				{
-					Log.w("Network", "MOBILE");
+//					Log.w("Network", "MOBILE");
 				}
 				else if (checkNetworkConnection() == ERROR)
 				{
-					Log.w("Network", "ERROR");
+//					Log.w("Network", "ERROR");
 				}
 			}
 		}
@@ -138,7 +138,7 @@ public class MainService extends Service {
     // 888          888       o  .8'     `888.       888       888       o  888  `88b.
     //o888o        o888ooooood8 o88o     o8888o     o888o     o888ooooood8 o888o  o888o
     
-    
+    private String status;
     private LibVLC mLibVLC = null;
     private static final int STOPPED = 0;
     private static final int LOADING = 1;
@@ -163,7 +163,7 @@ public class MainService extends Service {
 							play(playerUrl);
 						}
 					}
-                    streamPlayer.setVolume(100);
+                    streamPlayer.play();
                     break;
 
                 case AudioManager.AUDIOFOCUS_LOSS:
@@ -181,7 +181,7 @@ public class MainService extends Service {
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                     // Lost focus for a short time, but it's ok to keep playing
                     // at an attenuated level
-                    if (playerStatus==PLAYING) streamPlayer.setVolume(10);
+                    if (playerStatus==PLAYING) streamPlayer.pause();
                     break;
             }
         }
@@ -199,20 +199,169 @@ public class MainService extends Service {
             sleepTimerHandler.postDelayed(this, 60000);
         }
     };
-
+    
+    private int bytesRead = -1;
+    private int counter = -1;
+    
+    private android.os.Handler checkIfStoppedHandler = new android.os.Handler();
+    private Runnable checkIfStoppedRunnable = new Runnable() {
+        public void run() {
+//            Log.w("-----------------------", "-----------------------------------------------------");
+            
+            if (streamPlayer.getMedia().getStats() != null)
+            {
+//				Log.w("COUNTER", counter+"");
+//				Log.w("BYTES READ" , bytesRead+"");
+//				Log.w("PLAYER STATE", streamPlayer.getPlayerState()+"");
+                if (streamPlayer.getPlayerState() == 3 || streamPlayer.getPlayerState() == 6 || streamPlayer.getPlayerState() == 5)
+                {
+                    if (bytesRead == streamPlayer.getMedia().getStats().readBytes)
+                    {
+                        counter++;
+                        if (counter == 10)
+                        {
+                            streamPlayer.stop();
+                            streamPlayer.play();
+                            counter = 0;
+                        }
+                    }
+                    else
+                    {
+                        counter = 0;
+                    }
+                }
+                
+//                Log.w("BITRATE", Math.round(streamPlayer.getMedia().getStats().demuxBitrate * 8000)+" kbps");
+//                Log.w("KILOBYTES READ", Math.round(streamPlayer.getMedia().getStats().readBytes / 1024)+" KB");
+                bytesRead = streamPlayer.getMedia().getStats().readBytes;
+            }
+            if (streamPlayer.getMedia().getTrackCount() > 0)
+            {
+                if (streamPlayer.getMedia().getTrack(0).codec.equals("MPEG Audio layer 1/2"))
+                {
+//                    Log.w("TYPE", "MP3");
+                }
+                else if (streamPlayer.getMedia().getTrack(0).codec.equals("MPEG AAC Audio"))
+                {
+//                    Log.w("TYPE", "AAC");
+                }
+                else if (streamPlayer.getMedia().getTrack(0).codec.equals("FLAC (Free Lossless Audio Codec)"))
+                {
+//                    Log.w("TYPE", "FLAC");
+                }
+                else
+                {
+                    Log.w("TYPE", streamPlayer.getMedia().getTrack(0).codec);
+                }
+            }
+            checkIfStoppedHandler.postDelayed(this, 1000);
+        }
+    };
+    
+    public void startCheckIfStopped() {
+        checkIfStoppedHandler.postDelayed(checkIfStoppedRunnable, 1000);
+//        Log.w("CHECK IF STOPPED", "STARTED");
+    }
+    
+    public void stopCheckIfStopped() {
+        checkIfStoppedHandler.removeCallbacks(checkIfStoppedRunnable);
+//        Log.w("CHECK IF STOPPED", "STOPPED");
+    }
+    
     @Override
     public void onCreate() {
     
         final ArrayList<String> args = new ArrayList<>();
-        args.add("-vvv");
+        args.add("-vv");
+        args.add("--network-caching=1000");
+//        args.add("--file-caching=1000");
         mLibVLC = new LibVLC(this, args);
         streamPlayer = new MediaPlayer(mLibVLC);
+    
+        streamPlayer.setEventListener(new MediaPlayer.EventListener()
+        {
+            @Override
+            public void onEvent(MediaPlayer.Event event)
+            {
+                switch (event.type) {
+                    case MediaPlayer.Event.Buffering:
+//                        Log.w("BUFFERING", "" + (int) event.getBuffering());
+                        if ((int) event.getBuffering() == 100)
+                        {
+                            playerStatus = PLAYING;
+                            send(Integer.toString(playerStatus));
+                            buildNotification();
+                            status = "DONE";
+                            Log.w("STATUS", status);
+                        }
+                        if (status.equals("CONNECTING") && (int)event.getBuffering()>=2)
+                        {
+                            status = "BUFFERING";
+                            Log.w("STATUS", status);
+                        }
+                        break;
+                    case MediaPlayer.Event.Opening:
+//						Log.w("MEDIAPLAYER EVENT", "OPENING");
+                        break;
+                    case MediaPlayer.Event.Playing:
+//						Log.w("MEDIAPLAYER EVENT", "PLAYING");
+                        break;
+                    case MediaPlayer.Event.Stopped:
+//						Log.w("MEDIAPLAYER EVENT", "STOPPED");
+                        break;
+                    case MediaPlayer.Event.EncounteredError:
+//						Log.w("MEDIAPLAYER EVENT", "ERROR");
+                        break;
+                    case MediaPlayer.Event.MediaChanged:
+//						Log.w("MEDIAPLAYER EVENT", "MEDIACHANGED");
+                        break;
+                    case MediaPlayer.Event.EndReached:
+//                        Log.w("MEDIAPLAYER EVENT", "END REACHED");
+                    default:
+//						Log.w("UN MEDIA PLAYER EVENT",String.valueOf(event.type));
+                }
+            }
+        });
+        
+        
         key = 0;
         if (serviceReceiver != null) {
             registerReceiver(serviceReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 			registerReceiver(serviceReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
         }
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    }
+    
+    public void startMediaListener(){
+        streamPlayer.getMedia().setEventListener(new Media.EventListener()
+        {
+            @Override
+            public void onEvent(Media.Event event)
+            {
+                switch (event.type)
+                {
+                    case Media.Event.MetaChanged:
+                        if (streamPlayer.getMedia().getMeta(Media.Meta.Title) != null)
+                        {
+//							Log.w("Title", streamPlayer.getMedia().getMeta(Media.Meta.Title));
+                        }
+                        if (streamPlayer.getMedia().getMeta(Media.Meta.Genre) != null)
+                        {
+//							Log.w("Genre", streamPlayer.getMedia().getMeta(Media.Meta.Genre));
+                        }
+                        if (streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying) != null)
+                        {
+//							Log.w("NowPlaying", streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying));
+                        }
+                        break;
+                    case Media.Event.StateChanged:
+//                        Log.w("MEDIA STATE", String.valueOf(streamPlayer.getMedia().getState()));
+                        break;
+                    default:
+//                        Log.w("UNKNOWN EVENT",String.valueOf(event.type));
+                }
+            }
+        });
     }
 
     @Override
@@ -297,6 +446,8 @@ public class MainService extends Service {
 			stop();
 		}
 		playerStatus = LOADING;
+        status = "CONNECTING";
+        Log.w("STATUS", status);
 		send(Integer.toString(playerStatus));
 		buildNotification();
 		
@@ -306,11 +457,13 @@ public class MainService extends Service {
 			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
 			{
                 streamPlayer.setMedia(new Media(mLibVLC, Uri.parse(urlString)));
-                
                 streamPlayer.play();
-                playerStatus = PLAYING;
-                send(Integer.toString(playerStatus));
-                buildNotification();
+                startMediaListener();
+                startCheckIfStopped();
+//                playerStatus = PLAYING;
+//                send(Integer.toString(playerStatus));
+//                buildNotification();
+                
 			}
 		}
 		else
@@ -327,8 +480,10 @@ public class MainService extends Service {
         if (streamPlayer.isPlaying()) {
             streamPlayer.stop();
         }
-		sleepMinutes = -1;
+        streamPlayer.getMedia().release();
+        sleepMinutes = -1;
 		stopSleepTimer();
+        stopCheckIfStopped();
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus));
 		buildNotification();

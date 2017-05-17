@@ -108,7 +108,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        Log.w("PLAYING NOW FRAGMENT", "ON VIEW CREATED");
+//        Log.w("PLAYING NOW FRAGMENT", "ON VIEW CREATED");
         
         ibPPButton = (ImageButton) getActivity().findViewById(R.id.ibPPPLayingNow);
         ibSleepTimer = (ImageButton) getActivity().findViewById(R.id.ibSleepTimer);
