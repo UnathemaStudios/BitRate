@@ -320,13 +320,13 @@ public class MainService extends Service {
 				{
 					@Override
 					public void onBufferingUpdate(MediaPlayer streamPlayer, int percent) {
-						Log.w("Buffering", " " + percent);
+//						Log.w("Buffering", " " + percent);
 					}
 				});
 				streamPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
 					@Override
 					public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
-						Log.w("OnInfoListener", what + " " + extra);
+						Log.w("OnInfoListener", "what:" + what + " " + "extra:" + extra);
 						return false;
 					}
 				});
