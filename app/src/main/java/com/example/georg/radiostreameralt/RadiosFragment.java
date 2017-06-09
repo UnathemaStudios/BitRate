@@ -61,7 +61,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			@Override
 			public void loadImage(Radio item, ImageView imageView, int position)
 			{
-				imageView.setImageResource(item.getIcon());
+				imageView.setImageResource(getResources().getIdentifier(item.getLogo(),"raw",getContext().getPackageName()));
 			}
 		});
 		
@@ -119,8 +119,13 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		switch (item.getItemId())
 		{
 			case R.id.delete_radios:
-				((MainActivity) getActivity()).radiosList.remove(info.position);
-				adapter.updateData(((MainActivity) getActivity()).radiosList);
+				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser())
+				{
+					((MainActivity) getActivity()).radiosList.remove(info.position);
+					adapter.updateData(((MainActivity) getActivity()).radiosList);
+					((MainActivity)getActivity()).loadUserRadiosToXML();
+				}
+				else Toast.makeText(getContext(),"You cannot delete prebuilt radios.", Toast.LENGTH_SHORT).show();
 				return true;
 			default:
 				return super.onContextItemSelected(item);
@@ -142,8 +147,10 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		}
 
 		if(!found) {
-			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
+//			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
+			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "defaultradio", true));
 			adapter.updateData(((MainActivity) getActivity()).radiosList);
+			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
 	}

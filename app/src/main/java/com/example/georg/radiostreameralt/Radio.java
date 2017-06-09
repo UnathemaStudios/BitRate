@@ -2,15 +2,15 @@ package com.example.georg.radiostreameralt;
 
 
 class Radio {
-    private String name, url;
-    private int icon;
-    private boolean isRecorded;
+    private String name, url, logo;
+    private boolean isRecorded, isMadeByUser;
 
-    Radio (String name, String url, int icon){
+    Radio (String name, String url, String logo, boolean isMadeByUser){
         this.name = name;
         this.url = url;
-        this.icon = icon;
+		this.logo = logo;
         this.isRecorded = false;
+		this.isMadeByUser = isMadeByUser;
     }
 
     public String getName() {
@@ -21,13 +21,17 @@ class Radio {
         return url;
     }
 
-    public int getIcon() {
-        return icon;
+    public String getLogo() {
+        return logo;
     }
 
     boolean isRecorded() {
         return isRecorded;
     }
+    
+    boolean isMadeByUser(){
+		return isMadeByUser;
+	}
 
     void setRecorded(boolean recorded) {
         isRecorded = recorded;
