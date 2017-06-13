@@ -25,4 +25,8 @@
   <Url>http://radio.arenafm.gr:45054/;stream</Url>
   <Logo>lal</Logo>
 
+  <Name>PandaRadio</Name>
+  <Url>http://192.99.8.192:2032/stream</Url>
+  <Logo>panda</Logo>
+
 </Radios>

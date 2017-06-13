@@ -92,7 +92,7 @@ public class MainService extends Service {
 				if (streamPlayer.getPlayerState() == 3 || streamPlayer.getPlayerState() == 6 || streamPlayer.getPlayerState() == 5) {
 					if (bytesRead == streamPlayer.getMedia().getStats().readBytes) {
 						counter++;
-						if (counter == 10) {
+						if (counter == 5) {
 							streamPlayer.stop();
 							streamPlayer.play();
 							counter = 0;
