@@ -117,6 +117,19 @@
         android:textAlignment="center"
         android:textColor="@color/textColorPrimary"/>
 
+    <ImageButton
+        android:id="@+id/ibAboutUs"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
+        android:elevation="4dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_info_outline_black_24dp"/>
+
     <RelativeLayout
 
         android:id="@+id/loadingLayoutBig"

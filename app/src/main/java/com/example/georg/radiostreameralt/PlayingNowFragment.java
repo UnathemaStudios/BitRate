@@ -47,6 +47,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	private TextView tvRadioName;
 	private TextView tvRadioMetadata;
 	private TextView tvIsRecorded;
+	private ImageButton ibAboutUs;
 //	private Runnable metadataRunnable;
 	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
@@ -124,6 +125,8 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		tvTimeRemaining = (TextView) getActivity().findViewById(R.id.tvTimeRemaining);
 		tvIsRecorded = (TextView) getActivity().findViewById(R.id.tvIsRecorded);
 		tvRadioMetadata = (TextView) getActivity().findViewById(R.id.tvRadioMetadata);
+		ibAboutUs = (ImageButton)getActivity().findViewById(R.id.ibAboutUs);
+		ibAboutUs.setImageResource(R.drawable.ic_info_outline_black_24dp);
 		
 		ivRadio.setImageResource(getResources().getIdentifier(((MainActivity) getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
@@ -173,6 +176,14 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 				if (playerStatus == PLAYING) {
 					((MainActivity) getActivity()).stop();
 				} else ((MainActivity) getActivity()).play();
+			}
+		});
+
+		ibAboutUs.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				InfoDialog infoDialog = new InfoDialog();
+				infoDialog.show(getFragmentManager(), "AK47", "About", "Description");
 			}
 		});
 	}

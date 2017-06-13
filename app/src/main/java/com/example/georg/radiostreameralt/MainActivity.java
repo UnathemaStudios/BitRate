@@ -62,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
 	private ImageView ivImageSmall;
 	private TextView tvDescription;
 	private int finger = 0;
-	private File radiosFile;
-	private File radiosFileEXTdir;
-	private File radiosFileEXT;
 	private int playing;
 	private RelativeLayout playerLayout;
 	private int durationtmp;
@@ -630,8 +627,8 @@ public class MainActivity extends AppCompatActivity {
 		
 		@Override
 		public CharSequence getPageTitle(int position) {
-			//return fragmentTitleList.get(position);
-			return null;
+			return fragmentTitleList.get(position);
+			//return null;
 		}
 		
 		void addFragment(Fragment fragment, String title) {
@@ -644,13 +641,11 @@ public class MainActivity extends AppCompatActivity {
 //TODO LIST
 //
 //TODO: chceckbox instead of radiogroup in record dialog
-//TODO: VLC / UNICODE METADATA
+//TODO: UNICODE METADATA
 //TODO: License
 //TODO: Translate
-//TDOO: XML 
 //
 //TODO: Notification Custom
-//TODO: Http raspberry file for the radios(not locally saved file)
 //TODO: Log file
 //TODO: Alarm (Schedule)
 //TODO: Testing
