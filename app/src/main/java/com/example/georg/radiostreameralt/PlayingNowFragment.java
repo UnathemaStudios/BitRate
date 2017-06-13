@@ -139,15 +139,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		}
 
 
-
-//		metadataRunnable = new Runnable() {
-//			@Override
-//			public void run() {
-//				new MetadataThread(((MainActivity) getActivity()).getPlayerUrl(), getContext()).start();
-//				metadataHandler.postDelayed(this, 10000);
-//			}
-//		};
-		
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

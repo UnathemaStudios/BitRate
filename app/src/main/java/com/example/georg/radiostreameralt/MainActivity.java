@@ -175,7 +175,11 @@ public class MainActivity extends AppCompatActivity {
 						if (xmlPullParser.getName().equals("Logo"))
 						{
 							logo = xmlPullParser.nextText();
-							radiosList.add(new Radio(name, url, logo, false));
+						}
+
+						if (xmlPullParser.getName().equals("Description")){
+							String description = xmlPullParser.nextText();
+							radiosList.add(new Radio(name, url, logo, false, description));
 						}
 						
 						break;
@@ -228,9 +232,13 @@ public class MainActivity extends AppCompatActivity {
 							if (xmlPullParser.getName().equals("Logo"))
 							{
 								logo = xmlPullParser.nextText();
-								radiosList.add(new Radio(name, url, logo, true));
 							}
-							
+
+							if (xmlPullParser.getName().equals("Description")){
+								String description = xmlPullParser.nextText();
+								radiosList.add(new Radio(name, url, logo, false, description));
+							}
+
 							break;
 						case XmlPullParser.END_TAG:
 //						Log.w("getName", xmlPullParser.getName());						
