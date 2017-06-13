@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
 							if (xmlPullParser.getName().equals("Description")){
 								String description = xmlPullParser.nextText();
-								radiosList.add(new Radio(name, url, logo, false, description));
+								radiosList.add(new Radio(name, url, logo, true, description));
 							}
 
 							break;
@@ -341,6 +341,10 @@ public class MainActivity extends AppCompatActivity {
 					xmlSerializer.startTag(null,"Logo");
 					xmlSerializer.text("defaultradio");
 					xmlSerializer.endTag(null,"Logo");
+
+					xmlSerializer.startTag(null,"Description");
+					xmlSerializer.text(entry.getDescription());
+					xmlSerializer.endTag(null,"Description");
 					
 					numberOfUserListEntries++;
 				}

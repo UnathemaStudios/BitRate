@@ -53,8 +53,8 @@
         android:layout_below="@+id/tvRadioMetadata"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:layout_marginLeft="100dp"
-        android:layout_marginRight="100dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         android:layout_marginTop="20dp"
         android:elevation="4dp"
         android:fontFamily="monospace"
@@ -62,7 +62,7 @@
         android:textAlignment="center"
         android:textColor="@color/textColorPrimary"
         android:textSize="40sp"
-        autofit:minTextSize="15sp"/>
+        autofit:minTextSize="25sp"/>
 
     <ImageButton
         android:id="@+id/ibPPPLayingNow"
