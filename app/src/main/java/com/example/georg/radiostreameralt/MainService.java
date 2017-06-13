@@ -300,10 +300,11 @@ public class MainService extends Service {
 							sendMetadata();
 						}
 						else
+
 						{
 							playerMetadata = "NO DATA";
 							sendMetadata();
-						}
+            }
 						break;
 					case Media.Event.StateChanged:
 //						Log.w("MEDIA STATE", String.valueOf(streamPlayer.getMedia().getState()));
@@ -314,7 +315,6 @@ public class MainService extends Service {
 			}
 		});
 	}
-	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		switch (intent.getAction()) {
@@ -327,6 +327,7 @@ public class MainService extends Service {
 						playerUrl = "http://philae.shoutca.st:8307/stream";
 						finger = 1;
 					}
+
 				}
 				play(playerUrl);
 				stoppedByUser = false;
@@ -411,7 +412,6 @@ public class MainService extends Service {
 //				playerStatus = PLAYING;
 //				send(Integer.toString(playerStatus));
 //				buildNotification();
-				
 			}
 		} else {
 			playerStatus = STOPPED;
