@@ -105,7 +105,7 @@
 
     <TextView
         android:id="@+id/tvRadioMetadata"
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/ivPlayingNowExtended"
         android:layout_centerHorizontal="true"
@@ -114,6 +114,7 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
+        android:textAlignment="center"
         android:textColor="@color/textColorPrimary"/>
 
     <RelativeLayout

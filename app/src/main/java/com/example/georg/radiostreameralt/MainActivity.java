@@ -21,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
@@ -29,18 +30,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
 	private static final int STOPPED = 0;
 	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
@@ -63,42 +71,33 @@ public class MainActivity extends AppCompatActivity
 	private boolean backPressed = false;
 	private boolean playerVisible = false;
 	//Broadcast Receiver
-	private BroadcastReceiver serviceReceiver = new BroadcastReceiver()
-	{
+	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
-		public void onReceive(Context context, Intent intent)
-		{
+		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals("0")) //if 0 (STOPPED) is received
 			{
 				//ui after Stopped
 				playerStop();
 				playingNowFragment.setSleepText(0);
-			}
-			else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
+			} else if (intent.getAction().equals("1")) //if 1 (LOADING) is received
 			{
 				findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
 				ibPPbutton.setVisibility(View.INVISIBLE);
 				playing = LOADING;
 				playingNowFragment.setPPButtonStatus(LOADING, radiosList.get(finger).isRecorded());
-			}
-			else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
+			} else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
 			{
 				playerPlay();
-			}
-			else if (intent.getAction().equals("SET_FINGER"))
-			{
+			} else if (intent.getAction().equals("SET_FINGER")) {
 				setFinger(intent.getIntExtra("finger", -1));
-			}
-			else if (intent.getAction().equals("timeRemaining"))
-			{
+			} else if (intent.getAction().equals("timeRemaining")) {
 				playingNowFragment.setSleepText(intent.getIntExtra("timeRemainingInt", -999));
 			}
 		}
 	};
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		//Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -118,48 +117,148 @@ public class MainActivity extends AppCompatActivity
 		setupTabIcons();
 		
 		playerLayout = (RelativeLayout) findViewById(R.id.relativeLayout2);
-		tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager)
-		{
+		tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
 			
 			@Override
-			public void onTabSelected(TabLayout.Tab tab)
-			{
+			public void onTabSelected(TabLayout.Tab tab) {
 				super.onTabSelected(tab);
 				int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color.colorAccent);
 				tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
 				
-				if (tabLayout.getSelectedTabPosition() == 0 && playerVisible)
-				{
+				if (tabLayout.getSelectedTabPosition() == 0 && playerVisible) {
 					slideToBottom();
 					playerVisible = false;
-				}
-				else if (tabLayout.getSelectedTabPosition() != 0 && !playerVisible)
-				{
+				} else if (tabLayout.getSelectedTabPosition() != 0 && !playerVisible) {
 					slideToTop();
 					playerVisible = true;
 				}
 			}
 			
 			@Override
-			public void onTabUnselected(TabLayout.Tab tab)
-			{
+			public void onTabUnselected(TabLayout.Tab tab) {
 				super.onTabUnselected(tab);
 				int tabIconColor = ContextCompat.getColor(MainActivity.this.getApplicationContext(), R.color.textColorPrimary);
 				tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
 			}
 			
 			@Override
-			public void onTabReselected(TabLayout.Tab tab)
-			{
+			public void onTabReselected(TabLayout.Tab tab) {
 				super.onTabReselected(tab);
 			}
 		});
 		viewPager.setOffscreenPageLimit(2);
 		pageSelector(1);
 		
-		//-//-//-//-Radios List Init-//-//-//-//-//-//
+		//load default radio list from XML
+		radiosList = new ArrayList<>();
+		try {
+			XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
+			XmlPullParser xmlPullParser = xppFactory.newPullParser();
+			xmlPullParser.setInput(getApplicationContext().getResources().openRawResource(R.raw.defaultradios), "utf-8");
+			
+			String name = null;
+			String url = null;
+			String logo = null;
+			int eventType = xmlPullParser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				switch (eventType) {
+					case XmlPullParser.START_TAG:
+						
+						if (xmlPullParser.getName().equals("Name")) {
+							name = xmlPullParser.nextText();
+						}
+						
+						if (xmlPullParser.getName().equals("Url")) {
+							url = xmlPullParser.nextText();
+						}
+
+						if (xmlPullParser.getName().equals("Logo"))
+						{
+							logo = xmlPullParser.nextText();
+						}
+
+						if (xmlPullParser.getName().equals("Description")){
+							String description = xmlPullParser.nextText();
+							radiosList.add(new Radio(name, url, logo, false, description));
+						}
+						
+						break;
+					case XmlPullParser.END_TAG:
+//						Log.w("getName", xmlPullParser.getName());						
+						break;
+					default:
+						break;
+				} // end switch
+				
+				// Move forward the parsing "cursor", or you can stop parsing
+				eventType = xmlPullParser.next();
+				
+			} // end whiles
+			
+			
+		} catch (XmlPullParserException | IOException e) {
+			e.printStackTrace();
+		}
 		
-		initRadiosList();
+		
+		
+		
+		//load user radio list from XML if exists
+		File directory = new File(String.valueOf(getApplicationContext().getFilesDir()));
+		File outputSource = new File(directory, "userradios.xml");
+		if (outputSource.exists())
+		{
+			try {
+				XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
+				XmlPullParser xmlPullParser = xppFactory.newPullParser();
+				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
+				
+				String name = null;
+				String url = null;
+				String logo = null;
+				int eventType = xmlPullParser.getEventType();
+				while (eventType != XmlPullParser.END_DOCUMENT) {
+					switch (eventType) {
+						case XmlPullParser.START_TAG:
+							
+							if (xmlPullParser.getName().equals("Name")) {
+								name = xmlPullParser.nextText();
+							}
+							
+							if (xmlPullParser.getName().equals("Url")) {
+								url = xmlPullParser.nextText();
+							}
+							
+							if (xmlPullParser.getName().equals("Logo"))
+							{
+								logo = xmlPullParser.nextText();
+							}
+
+							if (xmlPullParser.getName().equals("Description")){
+								String description = xmlPullParser.nextText();
+								radiosList.add(new Radio(name, url, logo, false, description));
+							}
+
+							break;
+						case XmlPullParser.END_TAG:
+//						Log.w("getName", xmlPullParser.getName());						
+							break;
+						default:
+							break;
+					} // end switch
+					
+					// Move forward the parsing "cursor", or you can stop parsing
+					eventType = xmlPullParser.next();
+					
+				} // end whiles
+				
+				
+			} catch (XmlPullParserException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
 		
 		//-//-//-//- Tabs Ended -//-//-//-//-//
 		
@@ -170,24 +269,18 @@ public class MainActivity extends AppCompatActivity
 		playing = STOPPED;
 		ibPPbutton.setImageResource(R.drawable.ic_play);
 		
-		ibPPbutton.setOnClickListener(new View.OnClickListener()
-		{
+		ibPPbutton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v)
-			{
-				if (playing == PLAYING)
-				{
+			public void onClick(View v) {
+				if (playing == PLAYING) {
 					stop();
-				}
-				else if (playing == STOPPED)
-				{
+				} else if (playing == STOPPED) {
 					play();
 				}
 			}
 		});
 		//start listening for broadcasts
-		if (serviceReceiver != null)
-		{
+		if (serviceReceiver != null) {
 			registerReceiver(serviceReceiver, new IntentFilter("0"));
 			registerReceiver(serviceReceiver, new IntentFilter("1"));
 			registerReceiver(serviceReceiver, new IntentFilter("2"));
@@ -195,49 +288,111 @@ public class MainActivity extends AppCompatActivity
 			registerReceiver(serviceReceiver, new IntentFilter("timeRemaining"));
 		}
 		
-		if (isMyServiceRunning(MainService.class))
-		{
+		if (isMyServiceRunning(MainService.class)) {
 			tellServiceP("REQUEST_PLAYER_STATUS");
+		} else setFinger(1);
+	}
+	
+	void loadUserRadiosToXML()
+	{
+		int numberOfUserListEntries = 0;
+		FileOutputStream fileOutputStream = null;
+		File directory = new File(String.valueOf(getApplicationContext().getFilesDir()));
+		if (!directory.exists())
+		{
+			boolean directoryCreated = directory.mkdirs();
+			Log.w("Recorder", "Created directory");
+			if (!directoryCreated)
+			{
+				Log.w("Recorder", "Failed to create directory");
+			}
 		}
-		else setFinger(1);
+		
+		File outputSource = new File(directory, "userradios.xml");
+		
+		try
+		{
+			fileOutputStream = new FileOutputStream(outputSource);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		
+		XmlSerializer xmlSerializer = Xml.newSerializer();
+		StringWriter writer = new StringWriter();
+		try
+		{
+			xmlSerializer.setOutput(writer);
+			xmlSerializer.startDocument("UTF-8", true);
+			xmlSerializer.startTag(null, "Radios");
+			
+			for (Radio entry : radiosList) {
+				
+				if (entry.isMadeByUser())
+				{
+					xmlSerializer.startTag(null, "Name");
+					xmlSerializer.text(entry.getName());
+					xmlSerializer.endTag(null, "Name");
+					
+					xmlSerializer.startTag(null,"Url");
+					xmlSerializer.text(entry.getUrl());
+					xmlSerializer.endTag(null, "Url");
+					
+					xmlSerializer.startTag(null,"Logo");
+					xmlSerializer.text("defaultradio");
+					xmlSerializer.endTag(null,"Logo");
+					
+					numberOfUserListEntries++;
+				}
+			}
+			
+			xmlSerializer.endTag(null, "Radios");
+			xmlSerializer.endDocument();
+			xmlSerializer.flush();
+			String dataWrite = writer.toString();
+			assert fileOutputStream != null;
+			fileOutputStream.write(dataWrite.getBytes());
+			fileOutputStream.close();
+		}catch (IllegalArgumentException | IllegalStateException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		if (numberOfUserListEntries ==0)
+		{
+			outputSource.delete();
+			Log.w("userradios.xml", "deleted");
+		}
 	}
 	
 	@Override
-	public void onBackPressed()
-	{
-		if (!backPressed)
-		{
+	public void onBackPressed() {
+		if (!backPressed) {
 			Toast.makeText(getApplicationContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
 			backPressed = true;
 			
 			final Handler handler = new Handler();
-			handler.postDelayed(new Runnable()
-			{
+			handler.postDelayed(new Runnable() {
 				@Override
-				public void run()
-				{
+				public void run() {
 					backPressed = false;
 				}
 			}, 2000);
-		}
-		else super.onBackPressed();
+		} else super.onBackPressed();
 	}
-
+	
 	public void play() {
 		disableButtons();
 		playingNowFragment.disableButtons(true);
 		tellServiceP("PLAYER_PLAY", radiosList.get(finger).getUrl(), finger);
 	}
 	
-	public void stop()
-	{
+	public void stop() {
 		disableButtons();
 		playingNowFragment.disableButtons(true);
 		tellServiceP("PLAYER_STOP");
 	}
 	
-	private void playerStop()
-	{
+	private void playerStop() {
 		ibPPbutton.setVisibility(View.VISIBLE);
 		ibPPbutton.setImageResource(R.drawable.ic_play);
 		ibPPbutton.setEnabled(true);
@@ -246,8 +401,7 @@ public class MainActivity extends AppCompatActivity
 		playingNowFragment.setPPButtonStatus(STOPPED, radiosList.get(finger).isRecorded());
 	}
 	
-	private void playerPlay()
-	{
+	private void playerPlay() {
 		ibPPbutton.setVisibility(View.VISIBLE);
 		ibPPbutton.setImageResource(R.drawable.ic_stop);
 		ibPPbutton.setEnabled(true);
@@ -256,20 +410,17 @@ public class MainActivity extends AppCompatActivity
 		playingNowFragment.setPPButtonStatus(PLAYING, radiosList.get(finger).isRecorded());
 	}
 	
-	public void disableButtons()
-	{
+	public void disableButtons() {
 		ibPPbutton.setEnabled(false);
 		ibPPbutton.setVisibility(View.INVISIBLE);
 	}
 	
 	@Override
-	protected void onStart()
-	{
+	protected void onStart() {
 		super.onStart();
 	}
 	
-	private void setupViewPager(ViewPager viewPager)
-	{
+	private void setupViewPager(ViewPager viewPager) {
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 		adapter.addFragment(playingNowFragment, "Playing Now");
 		adapter.addFragment(radiosFragment, "Radios");
@@ -277,87 +428,65 @@ public class MainActivity extends AppCompatActivity
 		viewPager.setAdapter(adapter);
 	}
 	
-	private void setupTabIcons()
-	{
+	private void setupTabIcons() {
 		tabLayout.getTabAt(0).setIcon(R.drawable.ic_play_circle);
 		tabLayout.getTabAt(1).setIcon(R.drawable.ic_radio);
 		tabLayout.getTabAt(2).setIcon(R.drawable.ic_recording_now);
 	}
 	
 	@Override
-	protected void onRestart()
-	{
-		if (isMyServiceRunning(MainService.class))
-		{
+	protected void onRestart() {
+		if (isMyServiceRunning(MainService.class)) {
 			tellServiceP("REQUEST_STATUS");
 		}
-		Log.w("MAINACTIVITY", "RESTART");
+//		Log.w("MAINACTIVITY", "RESTART");
 		super.onRestart();
 	}
 	
 	@Override
-	protected void onDestroy()
-	{
+	protected void onDestroy() {
 		unregisterReceiver(serviceReceiver);
-		saveToFIle();
-		Log.w("MAINACTIVITY", "DESTROYED");
+//		Log.w("MAINACTIVITY", "DESTROYED");
 		super.onDestroy();
 	}
 	
-	public void recordCurrentRadio(int duration)
-	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-		{
-			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-			{
+	public void recordCurrentRadio(int duration) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 				Log.w("Main", "Permission (Write to external storage) already granted");
 				rec(radiosList.get(finger).getUrl(), duration);
-			}
-			else
-			{
+			} else {
 				durationtmp = duration;
 				String permissionRequested[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 				requestPermissions(permissionRequested, 5);
 			}
-		}
-		else
-		{
+		} else {
 			rec(radiosList.get(finger).getUrl(), duration);
 		}
 	}
 	
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-	{
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == 5)
-		{
-			if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-			{
+		if (requestCode == 5) {
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Log.w("Main", "Permission (Write to external storage) just granted");
 				rec(radiosList.get(finger).getUrl(), durationtmp);
-			}
-			else
-			{
+			} else {
 				Log.w("Main", "Permission (Write to external storage) denied");
 			}
 		}
 	}
 	
-	public void rec(String url, int duration)
-	{
-		if (duration != 0)
-		{
+	public void rec(String url, int duration) {
+		if (duration != 0) {
 			tellServiceR("RECORD", url, duration);
-		}
-		else
-		{
+		} else {
 			tellServiceR("RECORD", url, -1);
 		}
 	}
 	
-	public void tellServiceP(String action, String url, int finger)
-	{
+	public void tellServiceP(String action, String url, int finger) {
 		Intent intent = new Intent(this, MainService.class);
 		intent.setAction(action);
 		intent.putExtra("url", url);
@@ -365,15 +494,13 @@ public class MainActivity extends AppCompatActivity
 		startService(intent);
 	}
 	
-	public void tellServiceP(String action)
-	{
+	public void tellServiceP(String action) {
 		Intent intent = new Intent(this, MainService.class);
 		intent.setAction(action);
 		startService(intent);
 	}
 	
-	public void tellServiceR(String action, String url, int duration)
-	{
+	public void tellServiceR(String action, String url, int duration) {
 		Intent intent = new Intent(this, MainService.class);
 		intent.setAction(action);
 		intent.putExtra("urlString", url);
@@ -382,136 +509,32 @@ public class MainActivity extends AppCompatActivity
 		startService(intent);
 	}
 	
-	public void tellServiceR(String action, int key)
-	{
+	public void tellServiceR(String action, int key) {
 		Intent serviceIntent = new Intent(this, MainService.class);
 		serviceIntent.setAction(action);
 		serviceIntent.putExtra("key", key);
 		startService(serviceIntent);
 	}
 	
-	public void tellServiceT(String action, int sleepTime)
-	{
+	public void tellServiceT(String action, int sleepTime) {
 		Intent serviceIntent = new Intent(this, MainService.class);
 		serviceIntent.setAction(action);
 		serviceIntent.putExtra("sleepTime", sleepTime);
 		startService(serviceIntent);
 	}
 	
-	public void initRadiosList()
-	{
-		radiosFile = new File(getFilesDir(), "RadiosList");
-		radiosFileEXTdir = new File(Environment.getExternalStorageDirectory() + "/Streams");
-		radiosFileEXT = new File(radiosFileEXTdir.getAbsolutePath(), "RadiosList.txt");
-		radiosList = new ArrayList<>();
-		Log.w("radiosFile.exists()", radiosFile.exists() + "");
-		if (!radiosFile.exists())
-		{
-			radiosList.add(new Radio("1055 Rock", "http://46.4.121.138:8006/1055rock", R.drawable
-					.rock1055));
-			radiosList.add(new Radio("InfinityGreece", "http://philae.shoutca.st:8307/stream", R
-					.drawable.ic_radio_infinitygreece));
-			radiosList.add(new Radio("Radio Nowhere", "http://radio.arenafm.gr:45054/;stream" +
-					".mp3", R.drawable.ic_radio_nowhere));
-			try
-			{
-				boolean fileCreated = radiosFile.createNewFile();
-				Log.w("fileCreated", "" + fileCreated);
-				if (!fileCreated) Log.w("FILE ERROR", "File NOTcreated");
-				saveToFIle();
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		if (!radiosFileEXTdir.exists()) radiosFileEXTdir.mkdirs();
-		if (!radiosFileEXT.exists())
-		{
-			try
-			{
-				radiosFileEXT.createNewFile();
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		//Read List
-		BufferedReader reader = null;
-		try
-		{
-			reader = new BufferedReader(new FileReader(radiosFile));
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		radiosList.clear();
-		String name, url;
-		int icon;
-		try
-		{
-			while ((name = reader.readLine()) != null)
-			{
-				url = reader.readLine();
-				icon = Integer.parseInt(reader.readLine());
-				radiosList.add(new Radio(name, url, icon));
-				System.out.println(name + url + icon);
-			}
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		try
-		{
-			reader.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void saveToFIle()
-	{
-		try
-		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(radiosFile));
-			//BufferedWriter writerEXT = new BufferedWriter(new FileWriter(radiosFileEXT));
-			for (int i = 0; i < radiosList.size(); i++)
-			{
-				writer.write(radiosList.get(i).getName());
-				writer.newLine();
-				//writerEXT.write(radiosList.get(i).getName() + " ");
-				writer.write(radiosList.get(i).getUrl());
-				writer.newLine();
-				//writerEXT.write(radiosList.get(i).getUrl() + " ");
-				writer.write(Integer.toString(radiosList.get(i).getIcon()));
-				writer.newLine();
-				//writerEXT.write(Integer.toString(radiosList.get(i).getIcon()));
-			}
-			writer.close();
-			//writerEXT.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	//function to check if a service is running
-	private boolean isMyServiceRunning(Class<?> serviceClass)
-	{
+	public boolean isMyServiceRunning(Class<?> serviceClass) {
 		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
-		{
-			if (serviceClass.getName().equals(service.service.getClassName()))
-			{
+		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public void slideToBottom()
-	{
+	public void slideToBottom() {
 		TranslateAnimation animate = new TranslateAnimation(0, 0, 0, playerLayout.getHeight());
 		animate.setDuration(250);
 		animate.setFillAfter(true);
@@ -519,8 +542,7 @@ public class MainActivity extends AppCompatActivity
 		findViewById(R.id.relativeLayoutWrapper).setVisibility(View.GONE);
 	}
 	
-	public void slideToTop()
-	{
+	public void slideToTop() {
 		findViewById(R.id.relativeLayoutWrapper).setVisibility(View.VISIBLE);
 		TranslateAnimation animate = new TranslateAnimation(0, 0, playerLayout.getHeight(), 0);
 		animate.setDuration(500);
@@ -528,99 +550,87 @@ public class MainActivity extends AppCompatActivity
 		playerLayout.startAnimation(animate);
 	}
 	
-	private void pageSelector(int pagePosition)
-	{
+	private void pageSelector(int pagePosition) {
 		tabLayout.setScrollPosition(pagePosition, 0f, true);
 		viewPager.setCurrentItem(pagePosition);
 	}
 	
-	public int getPlayerDrawable()
-	{
-		return radiosList.get(finger).getIcon();
+	public String getPlayerDrawable() {
+		return radiosList.get(finger).getLogo();
 	}
 	
-	public String getPlayerName()
-	{
+	public String getPlayerName() {
 		return radiosList.get(finger).getName();
 	}
 	
-	public String getPlayerUrl()
-	{
+	public String getPlayerUrl() {
 		return radiosList.get(finger).getUrl();
 	}
 	
-	public void setFinger(int finger)
-	{
+	public void setFinger(int finger) {
 		this.finger = finger;
-		ivImageSmall.setImageResource(radiosList.get(finger).getIcon());
+		ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(),"raw",getApplicationContext().getPackageName()));
 		tvDescription.setText(radiosList.get(finger).getName());
 	}
 	
-	public int getPlaying()
-	{
+	public int getPlaying() {
 		return playing;
 	}
-
-	public void setIsRecordedStatus(boolean status){
+	
+	public void setIsRecordedStatus(boolean status) {
 		radiosList.get(finger).setRecorded(status);
 		setPlayingNowIsRecorded();
 	}
-
-	public void setIsRecordedStatus(boolean status, String Name){
-		for(int i=0;i<radiosList.size();i++){
-			if(radiosList.get(i).getName().equals(Name)){
+	
+	public void setIsRecordedStatus(boolean status, String Name) {
+		for (int i = 0; i < radiosList.size(); i++) {
+			if (radiosList.get(i).getName().equals(Name)) {
 				radiosList.get(i).setRecorded(status);
 			}
 		}
 		setPlayingNowIsRecorded();
 	}
-
-	public void isRecordedStatusFalseAll(){
-		for(Radio entry : radiosList){
+	
+	public void isRecordedStatusFalseAll() {
+		for (Radio entry : radiosList) {
 			entry.setRecorded(false);
 		}
 		setPlayingNowIsRecorded();
 	}
-
-	public void setPlayingNowIsRecorded(){
+	
+	public void setPlayingNowIsRecorded() {
 		playingNowFragment.setPPButtonStatus(playing, radiosList.get(finger).isRecorded());
 	}
-
-	public void setBadgeCount(int recordings){
+	
+	public void setBadgeCount(int recordings) {
 		recordFragment.setBadgeCount(recordings);
 	}
 	
-	class ViewPagerAdapter extends FragmentPagerAdapter
-	{
+	class ViewPagerAdapter extends FragmentPagerAdapter {
 		private final List<Fragment> fragmentList = new ArrayList<>();
 		private final List<String> fragmentTitleList = new ArrayList<>();
 		
-		ViewPagerAdapter(FragmentManager manager)
-		{
+		ViewPagerAdapter(FragmentManager manager) {
 			super(manager);
 		}
 		
 		@Override
-		public Fragment getItem(int position)
-		{
+		public Fragment getItem(int position) {
 			return fragmentList.get(position);
 		}
 		
 		@Override
-		public int getCount()
-		{
+		public int getCount() {
 			return fragmentList.size();
 		}
 		
 		@Override
-		public CharSequence getPageTitle(int position)
-		{
+		public CharSequence getPageTitle(int position) {
 			//return fragmentTitleList.get(position);
 			return null;
 		}
 		
-		void addFragment(Fragment fragment, String title)
-		{
+		void addFragment(Fragment fragment, String title) {
 			fragmentList.add(fragment);
 			fragmentTitleList.add(title);
 		}

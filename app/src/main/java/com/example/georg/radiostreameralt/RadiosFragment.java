@@ -39,7 +39,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
@@ -61,7 +61,19 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			@Override
 			public void loadImage(Radio item, ImageView imageView, int position)
 			{
-				imageView.setImageResource(item.getIcon());
+				imageView.setImageResource(getResources().getIdentifier(item.getLogo(),"raw",getContext().getPackageName()));
+			}
+		});
+		dictionary.addStaticImageField(R.id.radioInfo, new StaticImageLoader() {
+			@Override
+			public void loadImage(Object item, ImageView imageView, int position) {
+				imageView.setImageResource(R.drawable.ic_info_black);
+			}
+		}).onClick(new ItemClickListener<Radio>() {
+			@Override
+			public void onClick(Radio item, int position, View view) {
+				InfoDialog infoDialog = new InfoDialog();
+				infoDialog.show(getFragmentManager(), "bazooka", item.getName(), item.getDescription());
 			}
 		});
 		
@@ -119,8 +131,13 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		switch (item.getItemId())
 		{
 			case R.id.delete_radios:
-				((MainActivity) getActivity()).radiosList.remove(info.position);
-				adapter.updateData(((MainActivity) getActivity()).radiosList);
+				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser())
+				{
+					((MainActivity) getActivity()).radiosList.remove(info.position);
+					adapter.updateData(((MainActivity) getActivity()).radiosList);
+					((MainActivity)getActivity()).loadUserRadiosToXML();
+				}
+				else Toast.makeText(getContext(),"You cannot delete prebuilt radios.", Toast.LENGTH_SHORT).show();
 				return true;
 			default:
 				return super.onContextItemSelected(item);
@@ -142,8 +159,11 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		}
 
 		if(!found) {
-			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
+//			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
+			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "defaultradio",
+					true, "user created"));
 			adapter.updateData(((MainActivity) getActivity()).radiosList);
+			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
 	}
