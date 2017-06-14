@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 
 import android.app.AlertDialog;
@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.unathemastudios.bitrate.bitrate.R;
 
 /**
  * Created by georg on 18/2/2017.

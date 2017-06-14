@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 public class RecordingRadio {
 

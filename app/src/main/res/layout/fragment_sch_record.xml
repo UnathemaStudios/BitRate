@@ -3,7 +3,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@color/darkGrey"
-             tools:context="com.example.georg.radiostreameralt.SchRecord">
+             tools:context="com.unathemastudios.bitrate.SchRecord">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

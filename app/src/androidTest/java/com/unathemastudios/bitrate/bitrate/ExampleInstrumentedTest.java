@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate.bitrate;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

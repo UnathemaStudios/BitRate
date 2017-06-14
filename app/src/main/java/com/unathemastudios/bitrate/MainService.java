@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -22,6 +22,8 @@ import android.support.v7.app.NotificationCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.unathemastudios.bitrate.bitrate.R;
 
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;

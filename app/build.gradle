@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
-        applicationId "com.example.georg.radiostreameralt"
+        applicationId "com.unathemastudios.bitrate"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1

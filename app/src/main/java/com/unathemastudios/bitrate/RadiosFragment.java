@@ -1,7 +1,6 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 import android.os.Bundle;
-import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,6 +20,7 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.ItemClickListener;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
+import com.unathemastudios.bitrate.bitrate.R;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener
 {

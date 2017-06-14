@@ -4,7 +4,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
-                tools:context="com.example.georg.radiostreameralt.RecordFragment"
+                tools:context="com.unathemastudios.bitrate.RecordFragment"
                 android:background="@color/darkGrey">
 
     <!-- TODO: Update blank fragment layout -->

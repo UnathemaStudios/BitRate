@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +17,6 @@ import java.net.URL;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
-import static com.example.georg.radiostreameralt.MainService.RECORDING;
 
 class Recording implements Serializable
 {
@@ -49,7 +46,7 @@ class Recording implements Serializable
 	
 	void start()
 	{
-		status = RECORDING;
+		status = MainService.RECORDING;
 		new Thread(new Runnable()
 		{
 			@Override
@@ -57,7 +54,7 @@ class Recording implements Serializable
 			{
 				boolean connectionLost;
 				boolean append = false;
-				status = RECORDING;
+				status = MainService.RECORDING;
 				FileOutputStream fileOutputStream = null;
 				File streamsDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
 				if (!streamsDir.exists())
@@ -148,7 +145,7 @@ class Recording implements Serializable
 					e.printStackTrace();
 				}
 				MainService.activeRecordings--;
-				status = NOTRECORDING;
+				status = MainService.NOTRECORDING;
 				tellServiceRecordingRecordingStopped();
 			}
 		}).start();

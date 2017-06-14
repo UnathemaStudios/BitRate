@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.example.georg.radiostreameralt">
+          package="com.unathemastudios.bitrate.bitrate">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -18,7 +18,7 @@
         android:theme="@style/MyMaterialTheme"
         tools:replace="android:icon">
         <activity
-            android:name=".MainActivity"
+            android:name="com.unathemastudios.bitrate.MainActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/MyMaterialTheme">
@@ -29,12 +29,12 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".MainService"/>
+        <service android:name="com.unathemastudios.bitrate.MainService"/>
 
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.georg.radiostreameralt.provider"
+            android:authorities="com.unathemastudios.bitrate.bitrate.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

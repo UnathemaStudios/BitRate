@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 
 import android.Manifest;
@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabSelectListener;
+import com.unathemastudios.bitrate.bitrate.R;
 
 /**
  * A simple {@link Fragment} subclass.

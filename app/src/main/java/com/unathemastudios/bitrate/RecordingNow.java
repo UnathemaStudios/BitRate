@@ -1,4 +1,4 @@
-package com.example.georg.radiostreameralt;
+package com.unathemastudios.bitrate;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -20,14 +19,12 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.ItemClickListener;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
+import com.unathemastudios.bitrate.bitrate.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import static com.example.georg.radiostreameralt.MainService.NOTRECORDING;
-import static com.example.georg.radiostreameralt.MainService.RECORDING;
 
 
 public class RecordingNow extends Fragment
@@ -59,7 +56,7 @@ public class RecordingNow extends Fragment
 						if (entry != null)
 						{
 
-							if(entry.getValue().getStatus()!=NOTRECORDING) {
+							if(entry.getValue().getStatus()!= MainService.NOTRECORDING) {
 								recordingNowRadios.add(new RecordingRadio(entry.getValue()
 										.getName(), entry.getKey(), entry.getValue()
 										.getCurrentRecordingTimeInSeconds(), entry.getValue()
