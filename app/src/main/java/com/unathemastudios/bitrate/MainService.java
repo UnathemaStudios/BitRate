@@ -156,7 +156,9 @@ public class MainService extends Service {
 					break;
 				
 				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-					stop();
+					if (playerStatus != STOPPED) {
+						stop();
+					}
 					break;
 				
 				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -431,6 +433,7 @@ public class MainService extends Service {
 		sleepMinutes = -1;
 		stopSleepTimer();
 		stopCheckIfStopped();
+		audioManager.abandonAudioFocus(afChangeListener);
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus));
 		buildNotification();
