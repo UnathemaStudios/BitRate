@@ -16,7 +16,6 @@ import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.unathemastudios.bitrate.bitrate.R;
 
 import java.util.Locale;
 

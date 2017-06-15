@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.unathemastudios.bitrate.bitrate.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

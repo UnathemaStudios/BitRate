@@ -23,7 +23,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.unathemastudios.bitrate.bitrate.R;
 
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;

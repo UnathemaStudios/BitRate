@@ -10,7 +10,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
-import com.unathemastudios.bitrate.bitrate.R;
 
 /**
  * Created by georg on 27/4/2017.

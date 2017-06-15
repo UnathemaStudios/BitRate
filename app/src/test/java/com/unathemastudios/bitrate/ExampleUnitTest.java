@@ -1,4 +1,4 @@
-package com.unathemastudios.bitrate.bitrate;
+package com.unathemastudios.bitrate;
 
 import org.junit.Test;
 

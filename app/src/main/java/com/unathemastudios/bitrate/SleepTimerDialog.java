@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
 
-import com.unathemastudios.bitrate.bitrate.R;
 
 public class SleepTimerDialog extends DialogFragment {
     interface NoticeDialogListener {

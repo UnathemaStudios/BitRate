@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
-import com.unathemastudios.bitrate.bitrate.R;
 
 import java.io.File;
 import java.util.ArrayList;
