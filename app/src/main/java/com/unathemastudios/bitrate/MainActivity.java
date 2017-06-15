@@ -640,6 +640,7 @@ public class MainActivity extends AppCompatActivity {
 //TODO: UNICODE METADATA
 //TODO: License
 //TODO: Translate
+//TODO: TEST GITHUB
 //
 //TODO: Notification Custom
 //TODO: Log file
