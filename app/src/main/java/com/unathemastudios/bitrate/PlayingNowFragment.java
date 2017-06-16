@@ -126,7 +126,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		tvIsRecorded = (TextView) getActivity().findViewById(R.id.tvIsRecorded);
 		tvRadioMetadata = (TextView) getActivity().findViewById(R.id.tvRadioMetadata);
 		ibAboutUs = (ImageButton)getActivity().findViewById(R.id.ibAboutUs);
-		ibAboutUs.setImageResource(R.drawable.ic_info_outline_black_24dp);
 		
 		ivRadio.setImageResource(getResources().getIdentifier(((MainActivity) getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
