@@ -23,7 +23,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
-
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -34,10 +33,10 @@ import java.util.HashMap;
 
 public class MainService extends Service {
 	
-//	public final static int NO_NETWORK = 0;
+	//	public final static int NO_NETWORK = 0;
 	public final static int WIFI = 1;
 	public final static int MOBILE = 2;
-//	public final static int ERROR = -1;
+	//	public final static int ERROR = -1;
 	public final static int RECORDING = 0;
 	public final static int NOTRECORDING = 1;
 	//GENERAL
@@ -121,18 +120,6 @@ public class MainService extends Service {
 			checkIfStoppedHandler.postDelayed(this, 1000);
 		}
 	};
-	private Runnable sleepTimerRunnable = new Runnable() {
-		public void run() {
-			if (sleepMinutes != -1) {
-				sleepMinutes--;
-				if (sleepMinutes == 0) {
-					stop();
-				}
-				send("timeRemaining", sleepMinutes);
-			}
-			sleepTimerHandler.postDelayed(this, 60000);
-		}
-	};
 	private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
 		@Override
 		public void onAudioFocusChange(int focusChange) {
@@ -169,6 +156,18 @@ public class MainService extends Service {
 					}
 					break;
 			}
+		}
+	};
+	private Runnable sleepTimerRunnable = new Runnable() {
+		public void run() {
+			if (sleepMinutes != -1) {
+				sleepMinutes--;
+				if (sleepMinutes == 0) {
+					stop();
+				}
+				send("timeRemaining", sleepMinutes);
+			}
+			sleepTimerHandler.postDelayed(this, 60000);
 		}
 	};
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
@@ -301,13 +300,12 @@ public class MainService extends Service {
 //							Log.w("NowPlaying", streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying));
 							playerMetadata = streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying);
 							sendMetadata();
-						}
-						else
-
+						} else
+						
 						{
 							playerMetadata = "NO DATA";
 							sendMetadata();
-            }
+						}
 						break;
 					case Media.Event.StateChanged:
 //						Log.w("MEDIA STATE", String.valueOf(streamPlayer.getMedia().getState()));
@@ -318,6 +316,7 @@ public class MainService extends Service {
 			}
 		});
 	}
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		switch (intent.getAction()) {
@@ -330,7 +329,7 @@ public class MainService extends Service {
 						playerUrl = "http://philae.shoutca.st:8307/stream";
 						finger = 1;
 					}
-
+					
 				}
 				play(playerUrl);
 				stoppedByUser = false;
@@ -571,8 +570,7 @@ public class MainService extends Service {
 		}
 	}
 	
-	public void sendMetadata()
-	{
+	public void sendMetadata() {
 		Intent intent = new Intent();
 		intent.setAction("metadataBroadcast");
 		intent.putExtra("streamTitle", playerMetadata);
