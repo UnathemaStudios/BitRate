@@ -210,7 +210,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	
 	private void setupPage() {
 		Bitmap icon;
-//        ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
+		setPPButtonDrawable();
+		setRecCurrentRadioUI();
+		
 		if(((MainActivity)getActivity()).getPlayerDrawable().equals("")){
 			ivRadio.setImageResource(getResources().getIdentifier("bitratedefault","raw",getContext().getPackageName()));
 			icon = BitmapFactory.decodeResource(getActivity().getResources(),R.mipmap.ic_launcher);
@@ -224,8 +226,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			tvRadioName.setText("BitRate");
 		}
 		else tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
-		setPPButtonDrawable();
-		setRecCurrentRadioUI();
 		tvRadioMetadata.setSelected(true);
 		
 		//-//--/--/--/--/BackGround/--/--/--/--//-//

@@ -139,7 +139,7 @@ public class FolderRecordings extends Fragment implements ConfirmationDialog.Not
 		recFiles = new ArrayList<>();
 		File[] Files = new File(Environment.getExternalStorageDirectory().toString() + "/Streams").listFiles();
 		for (File file : Files)
-			if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3")) {
+			if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3") && !file.getName().startsWith("!")) {
 				recFiles.add(file.getName());
 			}
 		adapter.updateData(recFiles);

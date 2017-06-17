@@ -66,7 +66,9 @@ class Recording implements Serializable
 						Log.w("Recorder", "Failed to create directory");
 					}
 				}
-				File outputSource = new File(streamsDir, name + date + ".mp3");
+				
+				File outputSource = new File(streamsDir, "!" + name + date + ".mp3");
+				File outputSourceComplete = new File(streamsDir,name + date + ".mp3");
 				
 				do
 				{
@@ -144,6 +146,7 @@ class Recording implements Serializable
 				{
 					e.printStackTrace();
 				}
+				outputSource.renameTo(outputSourceComplete);
 				MainService.activeRecordings--;
 				status = MainService.NOTRECORDING;
 				tellServiceRecordingRecordingStopped();
@@ -190,4 +193,3 @@ class Recording implements Serializable
 		return name;
 	}
 }
-
