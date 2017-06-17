@@ -57,12 +57,12 @@ public class SchRecord extends Fragment {
 
 
 
-//                ((MainActivity)getActivity()).startService(intent);
                 pIntent = PendingIntent.getService(getContext(), 1, intent, 0);
 
-                manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                        SystemClock.elapsedRealtime() + 10*1000, pIntent);
-
+                manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 10*1000, pIntent);
+				manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 10*1000, 60*1000, pIntent);
+				
+				
             }
         });
 

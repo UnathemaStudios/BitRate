@@ -209,15 +209,26 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	}
 	
 	private void setupPage() {
+		Bitmap icon;
 //        ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
-		ivRadio.setImageResource(getResources().getIdentifier(((MainActivity)getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
-		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
+		if(((MainActivity)getActivity()).getPlayerDrawable().equals("")){
+			ivRadio.setImageResource(R.mipmap.ic_launcher);
+			icon = BitmapFactory.decodeResource(getActivity().getResources(),R.mipmap.ic_launcher);
+			disableButtons(true);
+		}
+		else{
+			icon = BitmapFactory.decodeResource(getActivity().getResources(),getResources().getIdentifier(((MainActivity) getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
+			ivRadio.setImageResource(getResources().getIdentifier(((MainActivity)getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
+		}
+		if(((MainActivity) getActivity()).getPlayerName().equals("")){
+			tvRadioName.setText("BitRate");
+		}
+		else tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		setPPButtonDrawable();
 		setRecCurrentRadioUI();
 		tvRadioMetadata.setSelected(true);
 		
 		//-//--/--/--/--/BackGround/--/--/--/--//-//
-		Bitmap icon = BitmapFactory.decodeResource(getActivity().getResources(),getResources().getIdentifier(((MainActivity) getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
 		int h = getView().getHeight();
 		int w = getView().getWidth();
 		ShapeDrawable mDrawable = new ShapeDrawable(new RectShape());

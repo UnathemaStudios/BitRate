@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 	private ImageButton ibPPbutton;
 	private ImageView ivImageSmall;
 	private TextView tvDescription;
-	private int finger = 0;
+	private int finger = -1;
 	private int playing;
 	private RelativeLayout playerLayout;
 	private int durationtmp;
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		if (isMyServiceRunning(MainService.class)) {
 			tellServiceP("REQUEST_PLAYER_STATUS");
-		} else setFinger(1);
+		} else setFinger(-1);
 	}
 	
 	void loadUserRadiosToXML()
@@ -553,10 +553,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	public String getPlayerDrawable() {
+		if(finger==-1) return "";
 		return radiosList.get(finger).getLogo();
 	}
 	
 	public String getPlayerName() {
+		if(finger==-1) return "";
 		return radiosList.get(finger).getName();
 	}
 	
@@ -566,8 +568,14 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void setFinger(int finger) {
 		this.finger = finger;
-		ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(),"raw",getApplicationContext().getPackageName()));
-		tvDescription.setText(radiosList.get(finger).getName());
+		if(finger!=-1) {
+			ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
+			tvDescription.setText(radiosList.get(finger).getName());
+		}
+		else{
+			ivImageSmall.setImageResource(R.mipmap.ic_launcher);
+			tvDescription.setText("No Radio Selected");
+		}
 	}
 	
 	public int getPlaying() {

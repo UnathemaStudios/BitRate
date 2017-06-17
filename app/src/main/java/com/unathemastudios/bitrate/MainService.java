@@ -71,7 +71,7 @@ public class MainService extends Service {
 	private String status;
 	private LibVLC mLibVLC = null;
 	private MediaPlayer streamPlayer = null;
-	private int finger = 1;
+	private int finger = -1;
 	private int playerStatus = STOPPED;
 	private int sleepMinutes = -1;
 	private String playerUrl = null;
@@ -324,13 +324,7 @@ public class MainService extends Service {
 				if (intent.hasExtra("url")) {
 					playerUrl = intent.getStringExtra("url");
 					finger = intent.getIntExtra("finger", -1);
-				} else {
-					if (playerUrl == null) {
-						playerUrl = "http://philae.shoutca.st:8307/stream";
-						finger = 1;
-					}
-					
-				}
+				} 
 				play(playerUrl);
 				stoppedByUser = false;
 				break;
@@ -498,27 +492,32 @@ public class MainService extends Service {
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationBuilder.setSmallIcon(R.drawable.ic_stat_name);
-		notificationBuilder.setContentTitle("Stream Player");
 		
 		String recordingNotificationText;
+		String divider;
 		
 		if (activeRecordings != 0) {
 			if (activeRecordings == 1) {
-				recordingNotificationText = "   /   " + activeRecordings + " Recording";
+				recordingNotificationText = activeRecordings + " Recording";
+				divider = "   /   ";
 			} else {
-				recordingNotificationText = "   /   " + activeRecordings + " Recordings";
+				recordingNotificationText = activeRecordings + " Recordings";
+				divider = "   /   ";
 			}
 		} else {
 			recordingNotificationText = "";
+			divider = "";
 		}
 		
 		if (playerStatus == LOADING) {
-			notificationBuilder.setContentText("Loading" + recordingNotificationText);
+			notificationBuilder.setContentTitle("Loading" + divider + recordingNotificationText);
 		} else if (playerStatus == PLAYING) {
-			notificationBuilder.setContentText("Playing" + recordingNotificationText);
+			notificationBuilder.setContentTitle("Playing" + divider + recordingNotificationText);
 			notificationBuilder.addAction(stopAction);
+		} else if(playerStatus==STOPPED&&finger==-1){
+			notificationBuilder.setContentTitle(recordingNotificationText);
 		} else if (playerStatus == STOPPED) {
-			notificationBuilder.setContentText("Stopped" + recordingNotificationText);
+			notificationBuilder.setContentTitle("Stopped" + divider + recordingNotificationText);
 			notificationBuilder.addAction(playAction);
 		}
 		notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
