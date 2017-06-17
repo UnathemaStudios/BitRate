@@ -71,6 +71,8 @@ public class RecordingNow extends Fragment
 					}
 					((MainActivity)getActivity()).setBadgeCount(recordingNowRadios.size());
 					adapter.updateData(recordingNowRadios);
+					if(recordingNowRadios.isEmpty())  getActivity().findViewById(R.id.noActiveRecordings).setVisibility(View.VISIBLE);
+					else getActivity().findViewById(R.id.noActiveRecordings).setVisibility(View.GONE);
 				}
 				else
 				{
@@ -109,6 +111,9 @@ public class RecordingNow extends Fragment
 
 //		TextView tvrecordingNowRadio = (TextView) getActivity().findViewById(R.id.tvRecordingNow);
 		
+		
+		if(recordingNowRadios.isEmpty()) getActivity().findViewById(R.id.noActiveRecordings).setVisibility(View.VISIBLE);
+		else getActivity().findViewById(R.id.noActiveRecordings).setVisibility(View.GONE);
 		BindDictionary<RecordingRadio> dictionary = new BindDictionary<>();
 		dictionary.addStringField(R.id.tvRecordingNow, new StringExtractor<RecordingRadio>()
 		{

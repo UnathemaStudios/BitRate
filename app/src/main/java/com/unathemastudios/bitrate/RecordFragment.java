@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarTab;
@@ -29,7 +30,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 public class RecordFragment extends Fragment {
 
 	private RecordingNow recordingNow;
-	private SchRecord schRecord;
+	//private SchRecord schRecord;
 	private FolderRecordings folderRecordings;
 	private FragmentManager manager;
 	private BottomBarTab recNowTab;
@@ -53,7 +54,7 @@ public class RecordFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		recordingNow = new RecordingNow();
-		schRecord = new SchRecord();
+		//schRecord = new SchRecord();
 		folderRecordings = new FolderRecordings();
 
 		if(serviceReceiver!=null){
@@ -84,11 +85,6 @@ public class RecordFragment extends Fragment {
 					manager.beginTransaction()
 							//.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
 							.replace(R.id.record_layout_for_fragments, recordingNow).commit();
-				}
-				else if (tabId == R.id.tab_scheduled_recordings) {
-					manager.beginTransaction()
-							//.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
-							.replace(R.id.record_layout_for_fragments, schRecord).commit();
 				}
 				else if (tabId == R.id.tab_folder_recordings) {
 					folderTransaction();

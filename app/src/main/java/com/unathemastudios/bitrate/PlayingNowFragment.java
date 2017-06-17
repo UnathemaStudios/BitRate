@@ -212,7 +212,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		Bitmap icon;
 //        ivRadio.setImageResource(((MainActivity) getActivity()).getPlayerDrawable());
 		if(((MainActivity)getActivity()).getPlayerDrawable().equals("")){
-			ivRadio.setImageResource(R.mipmap.ic_launcher);
+			ivRadio.setImageResource(getResources().getIdentifier("bitratedefault","raw",getContext().getPackageName()));
 			icon = BitmapFactory.decodeResource(getActivity().getResources(),R.mipmap.ic_launcher);
 			disableButtons(true);
 		}

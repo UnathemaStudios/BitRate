@@ -420,8 +420,8 @@ public class MainActivity extends AppCompatActivity {
 	private void setupViewPager(ViewPager viewPager) {
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 		adapter.addFragment(playingNowFragment, "Playing Now");
-		adapter.addFragment(radiosFragment, "Radios");
-		adapter.addFragment(recordFragment, "Record");
+		adapter.addFragment(radiosFragment, "Stations");
+		adapter.addFragment(recordFragment, "Recording");
 		viewPager.setAdapter(adapter);
 	}
 	
@@ -648,12 +648,12 @@ public class MainActivity extends AppCompatActivity {
 //TODO: UNICODE METADATA
 //TODO: License
 //TODO: Translate
-//TODO: TEST GITHUB
+//TODO: active recordings in folder
+//TODO: sch record UI
 //
 //TODO: Notification Custom
 //TODO: Log file
 //TODO: Alarm (Schedule)
-//TODO: Testing
 //TODO: PlayStore
 //TODO: Chat
 //

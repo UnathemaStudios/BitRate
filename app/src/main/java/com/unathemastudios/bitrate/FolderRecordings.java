@@ -90,6 +90,7 @@ public class FolderRecordings extends Fragment implements ConfirmationDialog.Not
 
 		adapter = new FunDapter(getContext(), recFiles, R.layout.rec_files_layout, dictionary);
 		lvFolderRecordings.setAdapter(adapter);
+		
 
 		//Setting onItemClickListener
 		lvFolderRecordings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -142,6 +143,8 @@ public class FolderRecordings extends Fragment implements ConfirmationDialog.Not
 				recFiles.add(file.getName());
 			}
 		adapter.updateData(recFiles);
+		if(recFiles.isEmpty()) getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.VISIBLE);
+		else getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.GONE);
 	}
 
 
@@ -212,6 +215,8 @@ public class FolderRecordings extends Fragment implements ConfirmationDialog.Not
 					recFiles.get(pos)).delete();
 			recFiles.remove(pos);
 			adapter.updateData(recFiles);
+			if(recFiles.isEmpty()) getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.VISIBLE);
+			else getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.GONE);
 		}
 		else{
 			File dir = new File(Environment.getExternalStorageDirectory().toString() +
@@ -223,6 +228,8 @@ public class FolderRecordings extends Fragment implements ConfirmationDialog.Not
 				}
 				recFiles.clear();
 				adapter.updateData(recFiles);
+				if(recFiles.isEmpty()) getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.VISIBLE);
+				else getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.GONE);
 			}
 		}
 	}

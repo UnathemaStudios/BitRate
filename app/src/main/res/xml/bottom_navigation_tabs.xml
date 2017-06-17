@@ -6,13 +6,8 @@
         activeColor="@color/colorAccent"
         title="Recording Now"/>
     <tab
-        icon="@drawable/ic_schedule_black"
-        id="@+id/tab_scheduled_recordings"
-        activeColor="@color/colorAccent"
-        title="Scheduled"/>
-    <tab
         icon="@drawable/ic_folder_black"
         id="@+id/tab_folder_recordings"
         activeColor="@color/colorAccent"
-        title="Folder"/>
+        title="Recordings"/>
 </tabs>
