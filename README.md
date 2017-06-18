@@ -1,2 +1,2 @@
-# RadioStreamerAlt
-Tabbed Radio Streamer
+BitRate
+Audio stream player & recorder
