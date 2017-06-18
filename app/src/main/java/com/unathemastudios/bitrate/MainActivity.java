@@ -395,7 +395,14 @@ public class MainActivity extends AppCompatActivity {
 		ibPPbutton.setEnabled(true);
 		playing = STOPPED;
 		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
-		playingNowFragment.setPPButtonStatus(STOPPED, radiosList.get(finger).isRecorded());
+		if (finger != -1)
+		{
+			playingNowFragment.setPPButtonStatus(STOPPED, radiosList.get(finger).isRecorded());
+		}
+		else
+		{
+			playingNowFragment.setPPButtonStatus(STOPPED, false);
+		}
 	}
 	
 	private void playerPlay() {
@@ -404,7 +411,14 @@ public class MainActivity extends AppCompatActivity {
 		ibPPbutton.setEnabled(true);
 		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
 		playing = PLAYING;
-		playingNowFragment.setPPButtonStatus(PLAYING, radiosList.get(finger).isRecorded());
+		if (finger != -1)
+		{
+			playingNowFragment.setPPButtonStatus(PLAYING, radiosList.get(finger).isRecorded());
+		}
+		else 
+		{
+			playingNowFragment.setPPButtonStatus(PLAYING, false);
+		}		
 	}
 	
 	public void disableButtons() {
@@ -566,8 +580,8 @@ public class MainActivity extends AppCompatActivity {
 		return radiosList.get(finger).getUrl();
 	}
 	
-	public void setFinger(int finger) {
-		this.finger = finger;
+	public void setFinger(int passedFinger) {
+		finger = passedFinger;
 		if(finger!=-1) {
 			ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
 			tvDescription.setText(radiosList.get(finger).getName());

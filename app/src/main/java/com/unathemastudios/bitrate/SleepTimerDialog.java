@@ -27,14 +27,15 @@ public class SleepTimerDialog extends DialogFragment {
         LayoutInflater factory = LayoutInflater.from(getContext());
         final View textEntryView = factory.inflate(R.layout.sleep_timer_dialog_layout, null);
         timePicker = (NumberPicker)textEntryView.findViewById(R.id.numberPicker);
-        timePicker.setMaxValue(120);
+        timePicker.setMaxValue(8);
         timePicker.setMinValue(1);
+		timePicker.setDisplayedValues(new String[]{"15", "30", "45", "60", "75", "90", "105", "120"});
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Select Sleep Minutes")
                 .setView(textEntryView)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogPositiveClick(timePicker.getValue());
+                        mListener.onDialogPositiveClick(timePicker.getValue()*15);
                         SleepTimerDialog.this.dismiss();
                     }
                 })

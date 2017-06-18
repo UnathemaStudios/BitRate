@@ -138,10 +138,14 @@ public class FolderRecordings extends Fragment implements ConfirmationDialog.Not
 
 		recFiles = new ArrayList<>();
 		File[] Files = new File(Environment.getExternalStorageDirectory().toString() + "/Streams").listFiles();
-		for (File file : Files)
-			if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3") && !file.getName().startsWith("!")) {
-				recFiles.add(file.getName());
-			}
+		if (Files != null)
+		{
+			for (File file : Files)
+				if (!file.isDirectory() && Objects.equals(getExtension(file.getName()), "mp3") && !file.getName().startsWith("!")) {
+					recFiles.add(file.getName());
+				}
+		}
+		
 		adapter.updateData(recFiles);
 		if(recFiles.isEmpty()) getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.VISIBLE);
 		else getActivity().findViewById(R.id.folderIsEmpty).setVisibility(View.GONE);

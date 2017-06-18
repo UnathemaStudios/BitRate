@@ -24,6 +24,9 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabSelectListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -109,9 +112,13 @@ public class RecordFragment extends Fragment {
 					PackageManager.PERMISSION_GRANTED)
 			{
 				Log.w("Folder", "Permission (Read external storage) already granted");
-				manager.beginTransaction()
-						//.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
-						.replace(R.id.record_layout_for_fragments, folderRecordings).commit();
+				new Timer().schedule(new TimerTask() {
+					@Override public void run() {
+						manager.beginTransaction()
+								//.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+								.replace(R.id.record_layout_for_fragments, folderRecordings).commit();
+					}
+				}, 0);
 			}
 			else
 			{
@@ -151,5 +158,10 @@ public class RecordFragment extends Fragment {
 			}
 		}
 	}
-
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+	}
 }

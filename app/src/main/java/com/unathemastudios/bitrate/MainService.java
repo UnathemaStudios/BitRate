@@ -275,7 +275,6 @@ public class MainService extends Service {
 			}
 		});
 		
-		
 		key = 0;
 		if (serviceReceiver != null) {
 			registerReceiver(serviceReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -335,8 +334,8 @@ public class MainService extends Service {
 				break;
 			}
 			case "REQUEST_PLAYER_STATUS": {
-				send(Integer.toString(playerStatus));
 				send("SET_FINGER", finger);
+				send(Integer.toString(playerStatus));
 				send("timeRemaining", sleepMinutes);
 				break;
 			}
