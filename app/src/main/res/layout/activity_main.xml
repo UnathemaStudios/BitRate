@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:elevation="4dp"
             app:tabGravity="fill"
+            app:tabMaxWidth="0dp"
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/colorAccent"/>
 
