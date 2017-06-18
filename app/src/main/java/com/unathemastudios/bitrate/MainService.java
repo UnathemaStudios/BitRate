@@ -425,7 +425,6 @@ public class MainService extends Service {
 		sleepMinutes = -1;
 		stopSleepTimer();
 		stopCheckIfStopped();
-		audioManager.abandonAudioFocus(afChangeListener);
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus));
 		buildNotification();
@@ -437,6 +436,7 @@ public class MainService extends Service {
 			streamPlayer.release();
 			stopForeground(true);
 			unregisterReceiver(serviceReceiver);
+			audioManager.abandonAudioFocus(afChangeListener);
 			stopSelf();
 		}
 	}
