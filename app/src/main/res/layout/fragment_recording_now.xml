@@ -17,12 +17,13 @@
         android:divider="@color/transparent"
         android:dividerHeight="2dp"/>
 
-    <TextView
+    <me.grantland.widget.AutofitTextView
         android:id="@+id/noActiveRecordings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:lines="1"
         android:textSize="36sp"
         android:textColor="@color/windowBackground"
         android:text="No active recordings"/>

@@ -230,7 +230,6 @@ public class MainService extends Service {
 		final ArrayList<String> args = new ArrayList<>();
 		args.add("-vv");
 		args.add("--network-caching=1000");
-//		args.add("--file-caching=1000");
 		mLibVLC = new LibVLC(this, args);
 		streamPlayer = new MediaPlayer(mLibVLC);
 		
@@ -435,8 +434,6 @@ public class MainService extends Service {
 			stop();
 			streamPlayer.release();
 			stopForeground(true);
-			unregisterReceiver(serviceReceiver);
-			audioManager.abandonAudioFocus(afChangeListener);
 			stopSelf();
 		}
 	}
@@ -592,6 +589,13 @@ public class MainService extends Service {
 			return 0;
 		}
 		return -1;
+	}
+	
+	@Override
+	public void onDestroy() {
+		unregisterReceiver(serviceReceiver);
+		audioManager.abandonAudioFocus(afChangeListener);
+		super.onDestroy();
 	}
 	
 	@Nullable

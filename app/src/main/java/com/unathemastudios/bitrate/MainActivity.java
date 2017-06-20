@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
 		//Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		//setSupportActionBar(toolbar);
 		
-		//-#_#_#_#_#_#_#_#_#_#_#_#_#_#_#-//
-		
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
 		recordFragment = new RecordFragment();
