@@ -5,12 +5,10 @@
                 android:layout_height="match_parent"
                 tools:context="com.unathemastudios.bitrate.RadiosFragment"
                 android:animateLayoutChanges="true"
-                android:background="@color/colorPrimary"
-    >
+                android:background="@color/colorPrimary">
 
     <!-- TODO: Update blank fragment layout -->
-
-
+    
     <ListView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
@@ -41,6 +39,5 @@
         android:scaleType="fitXY"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
-
-
+    
 </RelativeLayout>
