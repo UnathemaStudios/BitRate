@@ -39,5 +39,16 @@
         android:scaleType="fitXY"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
-    
+
+    <me.grantland.widget.AutofitTextView
+        android:id="@+id/noStations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:lines="1"
+        android:textSize="36sp"
+        android:textColor="@color/windowBackground"
+        android:text="Add a new station"/>
+
 </RelativeLayout>

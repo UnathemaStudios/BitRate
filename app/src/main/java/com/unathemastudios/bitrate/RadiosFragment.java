@@ -110,6 +110,10 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				addRadioDialog.show(getFragmentManager(), "missiles");
 			}
 		});
+		if(((MainActivity)getActivity()).radiosList.isEmpty()){
+			getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+		}
+		else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -133,6 +137,10 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser())
 				{
 					((MainActivity) getActivity()).radiosList.remove(info.position);
+					if(((MainActivity)getActivity()).radiosList.isEmpty()){
+					getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+					}
+					else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
 					adapter.updateData(((MainActivity) getActivity()).radiosList);
 					((MainActivity)getActivity()).loadUserRadiosToXML();
 				}
@@ -161,6 +169,10 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 //			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
 			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "defaultradio",
 					true, "user created"));
+			if(((MainActivity)getActivity()).radiosList.isEmpty()){
+				getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+				}
+			else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
 			adapter.updateData(((MainActivity) getActivity()).radiosList);
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}

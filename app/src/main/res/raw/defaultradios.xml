@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Radios>
 
-  <Name>Velvet</Name>
-  <Url>http://s10.voscast.com:9942</Url>
-  <Logo>velvet</Logo>
-  <Description>this is Velvet!!</Description>
+  <!--<Name>Velvet</Name>-->
+  <!--<Url>http://s10.voscast.com:9942</Url>-->
+  <!--<Logo>velvet</Logo>-->
+  <!--<Description>this is Velvet!!</Description>-->
 
 
-  <Name>Rainbow</Name>
-  <Url>http://62.212.82.197:8000</Url>
-  <Logo>rainbow</Logo>
-  <Description>this is Rainbow!!</Description>
+  <!--<Name>Rainbow</Name>-->
+  <!--<Url>http://62.212.82.197:8000</Url>-->
+  <!--<Logo>rainbow</Logo>-->
+  <!--<Description>this is Rainbow!!</Description>-->
 
 
-  <Name>Zoo Radio</Name>
-  <Url>http://s10.voscast.com:9940/;</Url>
-  <Logo>zoo</Logo>
-  <Description>this is zooradio!!</Description>
-    
+  <!--<Name>Zoo Radio</Name>-->
+  <!--<Url>http://s10.voscast.com:9940/;</Url>-->
+  <!--<Logo>zoo</Logo>-->
+  <!--<Description>this is zooradio!!</Description>-->
+    <!---->
 
 </Radios>
