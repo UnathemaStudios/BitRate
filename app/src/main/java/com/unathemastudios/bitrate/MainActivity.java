@@ -587,6 +587,7 @@ public class MainActivity extends AppCompatActivity {
 		else{
 			ivImageSmall.setImageResource(R.mipmap.ic_launcher);
 			tvDescription.setText("No Radio Selected");
+			ibPPbutton.setEnabled(false);
 		}
 	}
 	
