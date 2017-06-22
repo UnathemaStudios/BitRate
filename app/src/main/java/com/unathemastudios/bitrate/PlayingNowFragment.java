@@ -174,9 +174,14 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		ibPPButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (playerStatus == PLAYING) {
-					((MainActivity) getActivity()).stop();
-				} else ((MainActivity) getActivity()).play();
+				if(((MainActivity)getActivity()).finger!=-1) {
+					if (playerStatus == PLAYING) {
+						((MainActivity) getActivity()).stop();
+					}
+					else ((MainActivity) getActivity()).play();
+				}
+				else Toast.makeText(getContext(), "Please select a radio first", Toast.LENGTH_SHORT)
+						.show();
 			}
 		});
 
@@ -309,6 +314,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		((MainActivity) getActivity()).setIsRecordedStatus(true);
 		isRecorded = true;
 		setRecCurrentRadioUI();
+		((MainActivity)getActivity()).pageSelector(2);
 	}
 }
 

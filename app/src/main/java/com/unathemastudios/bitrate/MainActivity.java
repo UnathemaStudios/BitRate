@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 	private ImageButton ibPPbutton;
 	private ImageView ivImageSmall;
 	private TextView tvDescription;
-	private int finger = -1;
+	public int finger = -1;
 	private int playing;
 	private RelativeLayout playerLayout;
 	private int durationtmp;
@@ -263,11 +263,16 @@ public class MainActivity extends AppCompatActivity {
 		ibPPbutton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (playing == PLAYING) {
-					stop();
-				} else if (playing == STOPPED) {
-					play();
+				if(finger!=-1) {
+					if (playing == PLAYING) {
+						stop();
+					}
+					else if (playing == STOPPED) {
+						play();
+					}
 				}
+				else Toast.makeText(getApplicationContext(), "Please select a Radio First", Toast.LENGTH_SHORT)
+						.show();
 			}
 		});
 		//start listening for broadcasts
@@ -559,7 +564,7 @@ public class MainActivity extends AppCompatActivity {
 		playerLayout.startAnimation(animate);
 	}
 	
-	private void pageSelector(int pagePosition) {
+	public void pageSelector(int pagePosition) {
 		tabLayout.setScrollPosition(pagePosition, 0f, true);
 		viewPager.setCurrentItem(pagePosition);
 	}
