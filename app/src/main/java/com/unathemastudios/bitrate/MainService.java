@@ -327,6 +327,11 @@ public class MainService extends Service {
 				stoppedByUser = false;
 				break;
 			}
+			case "SET_SERVICE_FINGER":
+			{
+				finger = intent.getIntExtra("finger", -1);
+				break;
+			}
 			case "PLAYER_STOP": {
 				stop();
 				stoppedByUser = true;

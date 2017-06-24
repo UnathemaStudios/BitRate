@@ -1,6 +1,6 @@
 package com.unathemastudios.bitrate;
 
-public class RecordingRadio {
+class RecordingRadio {
 
     private String name;
     private int id;

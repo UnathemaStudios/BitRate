@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -45,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+	private SharedPreferences pref;
 	private static final int STOPPED = 0;
 	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
@@ -77,7 +79,10 @@ public class MainActivity extends AppCompatActivity {
 				findViewById(R.id.loadingLayout).setVisibility(View.VISIBLE);
 				ibPPbutton.setVisibility(View.INVISIBLE);
 				playing = LOADING;
-				playingNowFragment.setPPButtonStatus(LOADING, radiosList.get(finger).isRecorded());
+				if (finger != -1)
+				{
+					playingNowFragment.setPPButtonStatus(LOADING, radiosList.get(finger).isRecorded());
+				}
 			} else if (intent.getAction().equals("2")) //if 2 (PLAYING) is received
 			{
 				playerPlay();
@@ -96,9 +101,13 @@ public class MainActivity extends AppCompatActivity {
 		//Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		//setSupportActionBar(toolbar);
 		
+		
+		pref = getPreferences(Context.MODE_PRIVATE);
+		
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
 		recordFragment = new RecordFragment();
+		
 		
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		setupViewPager(viewPager);
@@ -282,11 +291,14 @@ public class MainActivity extends AppCompatActivity {
 			registerReceiver(serviceReceiver, new IntentFilter("2"));
 			registerReceiver(serviceReceiver, new IntentFilter("SET_FINGER"));
 			registerReceiver(serviceReceiver, new IntentFilter("timeRemaining"));
+			
 		}
 		
 		if (isMyServiceRunning(MainService.class)) {
 			tellServiceP("REQUEST_PLAYER_STATUS");
-		} else setFinger(-1);
+		} else setFinger(pref.getInt("lastfinger",-1));
+		
+		
 	}
 	
 	void loadUserRadiosToXML()
@@ -500,6 +512,14 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
+	public void tellServicePF(String action, int finger)
+	{
+		Intent intent = new Intent(this, MainService.class);
+		intent.setAction(action);
+		intent.putExtra("finger", finger);
+		startService(intent);
+	}
+	
 	public void tellServiceP(String action, String url, int finger) {
 		Intent intent = new Intent(this, MainService.class);
 		intent.setAction(action);
@@ -585,6 +605,7 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void setFinger(int passedFinger) {
 		finger = passedFinger;
+		Log.w("FINGER",finger+"");
 		if(finger!=-1) {
 			ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
 			tvDescription.setText(radiosList.get(finger).getName());

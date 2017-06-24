@@ -1,5 +1,7 @@
 package com.unathemastudios.bitrate;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +27,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 {
 	private FloatingActionButton fabAddRadio;
 	private FunDapter adapter;
+	private SharedPreferences pref;
 	
 	public RadiosFragment()
 	{
@@ -42,7 +45,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	{
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
-		
+		pref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		fabAddRadio = (FloatingActionButton) view.findViewById(R.id.fabAddRadio);
 		BindDictionary<Radio> dictionary = new BindDictionary<>();
 		
@@ -90,6 +93,9 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", ((MainActivity) getActivity()).radiosList.get(position).getUrl(), position);
 				((MainActivity) getActivity()).disableButtons();
 				((MainActivity) getActivity()).setFinger(position);
+				SharedPreferences.Editor editor = pref.edit();
+				editor.putInt("lastfinger", position);
+				editor.apply();
 			}
 		});
 		
@@ -137,8 +143,42 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser())
 				{
 					((MainActivity) getActivity()).radiosList.remove(info.position);
+					if (((MainActivity)getActivity()).finger == info.position)
+					{
+						if (info.position != 0)
+						{
+							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
+							{
+								((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", ((MainActivity) getActivity()).radiosList.get(info.position-1).getUrl(), info.position-1);
+							}
+						}
+						else
+						{
+							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
+							{
+								((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", "no url", info.position-1);
+							}
+							((MainActivity)getActivity()).stop();
+						}
+						((MainActivity) getActivity()).disableButtons();
+						((MainActivity)getActivity()).setFinger(info.position-1);
+						SharedPreferences.Editor editor = pref.edit();
+						editor.putInt("lastfinger",info.position-1);
+						editor.apply();
+					}
+					else if (((MainActivity)getActivity()).finger > info.position)
+					{
+						((MainActivity)getActivity()).finger --;
+						if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class)) 
+						{
+							((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", ((MainActivity) getActivity()).finger);
+						}
+						SharedPreferences.Editor editor = pref.edit();
+						editor.putInt("lastfinger",((MainActivity)getActivity()).finger);
+						editor.apply();
+					}
 					if(((MainActivity)getActivity()).radiosList.isEmpty()){
-					getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+						getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
 					}
 					else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
 					adapter.updateData(((MainActivity) getActivity()).radiosList);
