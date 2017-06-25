@@ -180,7 +180,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 					}
 					else ((MainActivity) getActivity()).play();
 				}
-				else Toast.makeText(getContext(), "Please select a radio first", Toast.LENGTH_SHORT)
+				else Toast.makeText(getContext(), "Please select a station first", Toast.LENGTH_SHORT)
 						.show();
 			}
 		});

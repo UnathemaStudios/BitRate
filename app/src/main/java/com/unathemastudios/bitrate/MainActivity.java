@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 						play();
 					}
 				}
-				else Toast.makeText(getApplicationContext(), "Please select a Radio First", Toast.LENGTH_SHORT)
+				else Toast.makeText(getApplicationContext(), "Please select a station first", Toast.LENGTH_SHORT)
 						.show();
 			}
 		});
@@ -605,7 +605,6 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void setFinger(int passedFinger) {
 		finger = passedFinger;
-		Log.w("FINGER",finger+"");
 		if(finger!=-1) {
 			ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
 			tvDescription.setText(radiosList.get(finger).getName());
@@ -643,7 +642,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	public void setPlayingNowIsRecorded() {
-		playingNowFragment.setPPButtonStatus(playing, radiosList.get(finger).isRecorded());
+		if (finger != -1) {
+			playingNowFragment.setPPButtonStatus(playing, radiosList.get(finger).isRecorded());
+		}
 	}
 	
 	public void setBadgeCount(int recordings) {

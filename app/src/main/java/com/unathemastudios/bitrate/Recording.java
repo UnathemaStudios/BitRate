@@ -118,9 +118,9 @@ class Recording implements Serializable
 						connectionLost = true;
 						try
 						{
-							long retryMilliseconds = 5000;
+							long retryMilliseconds = 2000;
 							long timeLeftInSeconds = (startTimeInSeconds + duration) - (System.currentTimeMillis()/1000);
-							if (timeLeftInSeconds < 5 && timeLeftInSeconds > -1)
+							if (timeLeftInSeconds < 2 && timeLeftInSeconds > -1)
 							{
 								retryMilliseconds = (timeLeftInSeconds + 1) * 1000;
 							}

@@ -435,8 +435,8 @@ public class MainService extends Service {
 	}
 	
 	public void close() {
+		stop();
 		if (activeRecordings == 0) {
-			stop();
 			streamPlayer.release();
 			stopForeground(true);
 			stopSelf();

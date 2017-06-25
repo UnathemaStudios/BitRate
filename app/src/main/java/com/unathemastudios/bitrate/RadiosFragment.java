@@ -142,49 +142,43 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			case R.id.delete_radios:
 				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser())
 				{
-					((MainActivity) getActivity()).radiosList.remove(info.position);
-					if (((MainActivity)getActivity()).finger == info.position)
+					if (!((MainActivity)getActivity()).radiosList.get(info.position).isRecorded())
 					{
-						if (info.position != 0)
+						((MainActivity) getActivity()).radiosList.remove(info.position);
+						if (((MainActivity)getActivity()).finger == info.position)
 						{
 							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
 							{
-								((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", ((MainActivity) getActivity()).radiosList.get(info.position-1).getUrl(), info.position-1);
+								((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", "no url", -1);
+								((MainActivity) getActivity()).tellServiceP("CLOSE");
 							}
+							((MainActivity) getActivity()).disableButtons();
+							((MainActivity)getActivity()).setFinger(-1);
+							SharedPreferences.Editor editor = pref.edit();
+							editor.putInt("lastfinger",-1);
+							editor.apply();
 						}
-						else
+						else if (((MainActivity)getActivity()).finger > info.position)
 						{
+							((MainActivity)getActivity()).finger --;
 							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
 							{
-								((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", "no url", info.position-1);
+								((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", ((MainActivity) getActivity()).finger);
 							}
-							((MainActivity)getActivity()).stop();
+							SharedPreferences.Editor editor = pref.edit();
+							editor.putInt("lastfinger",((MainActivity)getActivity()).finger);
+							editor.apply();
 						}
-						((MainActivity) getActivity()).disableButtons();
-						((MainActivity)getActivity()).setFinger(info.position-1);
-						SharedPreferences.Editor editor = pref.edit();
-						editor.putInt("lastfinger",info.position-1);
-						editor.apply();
-					}
-					else if (((MainActivity)getActivity()).finger > info.position)
-					{
-						((MainActivity)getActivity()).finger --;
-						if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class)) 
-						{
-							((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", ((MainActivity) getActivity()).finger);
+						if(((MainActivity)getActivity()).radiosList.isEmpty()){
+							getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
 						}
-						SharedPreferences.Editor editor = pref.edit();
-						editor.putInt("lastfinger",((MainActivity)getActivity()).finger);
-						editor.apply();
+						else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+						adapter.updateData(((MainActivity) getActivity()).radiosList);
+						((MainActivity)getActivity()).loadUserRadiosToXML();
 					}
-					if(((MainActivity)getActivity()).radiosList.isEmpty()){
-						getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
-					}
-					else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
-					adapter.updateData(((MainActivity) getActivity()).radiosList);
-					((MainActivity)getActivity()).loadUserRadiosToXML();
+					else Toast.makeText(getContext(),"You cannot delete a station that is currently being recorded.", Toast.LENGTH_LONG).show();
 				}
-				else Toast.makeText(getContext(),"You cannot delete prebuilt radios.", Toast.LENGTH_SHORT).show();
+				else Toast.makeText(getContext(),"You cannot delete prebuilt stations.", Toast.LENGTH_SHORT).show();
 				return true;
 			default:
 				return super.onContextItemSelected(item);
