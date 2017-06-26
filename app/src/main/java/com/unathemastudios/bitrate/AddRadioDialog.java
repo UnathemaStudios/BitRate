@@ -47,7 +47,11 @@ public class AddRadioDialog extends DialogFragment {
 								mListener.onDialogPositiveClick(etName.getText().toString(), etUrl.getText().toString());
 								AddRadioDialog.this.dismiss();
 							}
-							else Toast.makeText(getContext(), "URL should start with \"http://\"" , Toast.LENGTH_SHORT).show();
+							else 
+							{
+								mListener.onDialogPositiveClick(etName.getText().toString(),"http://" + etUrl.getText().toString());
+								AddRadioDialog.this.dismiss();
+							}
                         }
                         else Toast.makeText(getContext(), "Name and URL can not be empty", Toast.LENGTH_SHORT).show();
                     }
