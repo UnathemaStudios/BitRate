@@ -41,11 +41,13 @@ public class AddRadioDialog extends DialogFragment {
                 .setView(textEntryView)
                 .setPositiveButton(R.string.add_radio_dialog_add, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if(!(etName.getText().toString().equals("")||etUrl
-                                .getText().toString().equals(""))) {
-                            mListener.onDialogPositiveClick(etName.getText().toString(), etUrl
-                                    .getText().toString());
-                            AddRadioDialog.this.dismiss();
+                        if(!(etName.getText().toString().equals("")||etUrl.getText().toString().equals("")))
+                        {
+							if (etUrl.getText().toString().startsWith("http://")) {
+								mListener.onDialogPositiveClick(etName.getText().toString(), etUrl.getText().toString());
+								AddRadioDialog.this.dismiss();
+							}
+							else Toast.makeText(getContext(), "URL should start with \"http://\"" , Toast.LENGTH_SHORT).show();
                         }
                         else Toast.makeText(getContext(), "Name and URL can not be empty", Toast.LENGTH_SHORT).show();
                     }
