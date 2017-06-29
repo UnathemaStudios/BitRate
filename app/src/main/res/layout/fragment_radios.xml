@@ -4,6 +4,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context="com.unathemastudios.bitrate.RadiosFragment"
+                xmlns:fab="http://schemas.android.com/apk/res-auto"
                 android:animateLayoutChanges="true"
                 android:background="@color/colorPrimary">
 
@@ -27,12 +28,16 @@
         android:paddingBottom="10dp"
         android:paddingTop="2dp"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:clickable="true"
-        app:fabSize="normal"
-        app:srcCompat="@drawable/ic_add"
+        fab:fab_addButtonColorNormal="@color/colorAccent"
+        fab:fab_addButtonColorPressed="@color/RED"
+        fab:fab_addButtonPlusIconColor="@color/textColorPrimary"
+        fab:fab_addButtonSize="mini"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        fab:fab_labelsPosition="right"
         android:id="@+id/fabAddRadio"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="66dp"

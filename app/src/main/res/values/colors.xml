@@ -12,4 +12,5 @@
     <color name="darkerGrey">#263238</color>
     <color name="BLACK">#0f191e</color>
     <color name="RED">#b71c1c</color>
+    <color name="black_semi_transparent">#B2000000</color>
 </resources>

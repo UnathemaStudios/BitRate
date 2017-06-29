@@ -16,16 +16,18 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+import 
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.ItemClickListener;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener
 {
-	private FloatingActionButton fabAddRadio;
+	private FloatingActionsMenu fabAddRadio;
 	private FunDapter adapter;
 	private SharedPreferences pref;
 	
@@ -46,7 +48,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
 		pref = getActivity().getPreferences(Context.MODE_PRIVATE);
-		fabAddRadio = (FloatingActionButton) view.findViewById(R.id.fabAddRadio);
+		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
 		BindDictionary<Radio> dictionary = new BindDictionary<>();
 		
 		dictionary.addStringField(R.id.tvName, new StringExtractor<Radio>()
@@ -106,6 +108,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
+		fabAddRadio
 		fabAddRadio.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
