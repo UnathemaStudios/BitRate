@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,29 +145,37 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				RecordRadioDialog recordRadioDialog = new RecordRadioDialog();
-				recordRadioDialog.setTargetFragment(PlayingNowFragment.this, 3);
-				recordRadioDialog.show(getFragmentManager(), "torpido");
+				if(((MainActivity)getActivity()).finger!=-1) {
+					RecordRadioDialog recordRadioDialog = new RecordRadioDialog();
+					recordRadioDialog.setTargetFragment(PlayingNowFragment.this, 3);
+					recordRadioDialog.show(getFragmentManager(), "torpido");
+				}
+				else Toast.makeText(getContext(), "Please select a station first", Toast.LENGTH_SHORT)
+						.show();
 			}
 		});
 		
 		ibSleepTimer.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (((MainActivity) getActivity()).getPlaying() != 0) {
-					String text = tvTimeRemaining.getText().toString();
-					if (text.equals("") || text.equals("-1") || text.equals("0")) {
-						SleepTimerDialog sleepTimerDialog = new SleepTimerDialog();
-						sleepTimerDialog.setTargetFragment(PlayingNowFragment.this, 2);
-						sleepTimerDialog.show(getFragmentManager(), "rockets");
-					} else {
-						((MainActivity) getActivity()).tellServiceT("SLEEPTIMER", -1);
-						setSleepText(0);
-					}
-				} else
-					Toast.makeText(getContext(), "Player is already stopped", Toast.LENGTH_SHORT).show();
-				
+				if (((MainActivity) getActivity()).finger != -1) {
+					if (((MainActivity) getActivity()).getPlaying() != 0) {
+						String text = tvTimeRemaining.getText().toString();
+						if (text.equals("") || text.equals("-1") || text.equals("0")) {
+							SleepTimerDialog sleepTimerDialog = new SleepTimerDialog();
+							sleepTimerDialog.setTargetFragment(PlayingNowFragment.this, 2);
+							sleepTimerDialog.show(getFragmentManager(), "rockets");
+						} else {
+							((MainActivity) getActivity()).tellServiceT("SLEEPTIMER", -1);
+							setSleepText(0);
+						}
+					} else
+						Toast.makeText(getContext(), "Player is already stopped", Toast.LENGTH_SHORT).show();
+				}
+				else Toast.makeText(getContext(), "Please select a station first", Toast.LENGTH_SHORT)
+						.show();
 			}
+			
 		});
 		
 		ibPPButton.setOnClickListener(new View.OnClickListener() {
@@ -221,7 +228,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		if(((MainActivity)getActivity()).getPlayerDrawable().equals("")){
 			ivRadio.setImageResource(getResources().getIdentifier("bitratedefault","raw",getContext().getPackageName()));
 			icon = BitmapFactory.decodeResource(getActivity().getResources(),R.mipmap.ic_launcher);
-			disableButtons(true);
+			disableButtons(false);
 		}
 		else{
 			icon = BitmapFactory.decodeResource(getActivity().getResources(),getResources().getIdentifier(((MainActivity) getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));

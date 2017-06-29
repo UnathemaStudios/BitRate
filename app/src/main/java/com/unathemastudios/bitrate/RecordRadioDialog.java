@@ -1,6 +1,5 @@
 package com.unathemastudios.bitrate;
 
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
 
 import java.util.Locale;
 
@@ -72,7 +70,6 @@ public class RecordRadioDialog extends DialogFragment {
 				}
 			}
 		});
-				
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(textEntryView)

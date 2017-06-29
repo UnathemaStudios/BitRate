@@ -599,9 +599,6 @@ public class MainActivity extends AppCompatActivity {
 		return radiosList.get(finger).getName();
 	}
 	
-	public String getPlayerUrl() {
-		return radiosList.get(finger).getUrl();
-	}
 	
 	public void setFinger(int passedFinger) {
 		finger = passedFinger;
@@ -611,9 +608,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 		else{
 			ivImageSmall.setImageResource(R.mipmap.ic_launcher);
-			tvDescription.setText("No Radio Selected");
-			ibPPbutton.setEnabled(false);
-		}
+			tvDescription.setText("BitRate");
+			}
 	}
 	
 	public int getPlaying() {
