@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
-import 
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
@@ -24,10 +22,13 @@ import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.ItemClickListener;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener
 {
 	private FloatingActionsMenu fabAddRadio;
+	private FloatingActionButton addCustom;
+	private FloatingActionButton addShoutcast;
 	private FunDapter adapter;
 	private SharedPreferences pref;
 	
@@ -48,7 +49,14 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_radios, container, false);
 		pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
 		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
+		addCustom = (FloatingActionButton) view.findViewById(R.id.fab_add_custom);
+		addShoutcast = (FloatingActionButton) view.findViewById(R.id.fab_add_shoutcast);
+
+		addCustom.setTitle("Add Custom Station");
+		addShoutcast.setTitle("Import Station from Shoutcast.com");
+
 		BindDictionary<Radio> dictionary = new BindDictionary<>();
 		
 		dictionary.addStringField(R.id.tvName, new StringExtractor<Radio>()
@@ -108,8 +116,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
-		fabAddRadio
-		fabAddRadio.setOnClickListener(new View.OnClickListener()
+
+		addCustom.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)

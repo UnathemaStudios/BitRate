@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -9,7 +8,7 @@
                 android:background="@color/colorPrimary">
 
     <!-- TODO: Update blank fragment layout -->
-    
+
     <ListView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
@@ -28,23 +27,6 @@
         android:paddingBottom="10dp"
         android:paddingTop="2dp"/>
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:clickable="true"
-        fab:fab_addButtonColorNormal="@color/colorAccent"
-        fab:fab_addButtonColorPressed="@color/RED"
-        fab:fab_addButtonPlusIconColor="@color/textColorPrimary"
-        fab:fab_addButtonSize="mini"
-        fab:fab_labelStyle="@style/menu_labels_style"
-        fab:fab_labelsPosition="right"
-        android:id="@+id/fabAddRadio"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="66dp"
-        android:scaleType="fitXY"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"/>
-
     <me.grantland.widget.AutofitTextView
         android:id="@+id/noStations"
         android:layout_width="wrap_content"
@@ -52,8 +34,47 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:lines="1"
-        android:textSize="36sp"
+        android:text="Add a new station"
         android:textColor="@color/windowBackground"
-        android:text="Add a new station"/>
+        android:textSize="36sp"/>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/fabAddRadio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="66dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        android:visibility="visible"
+        android:elevation="8dp"
+        fab:fab_addButtonColorNormal="@color/colorAccent"
+        fab:fab_addButtonColorPressed="@color/RED"
+        fab:fab_addButtonPlusIconColor="@color/textColorPrimary"
+        fab:fab_addButtonSize="normal"
+        fab:fab_labelStyle="@style/menu_labels_style">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_custom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/BLACK"
+            fab:fab_colorPressed="@color/colorPrimaryDark"
+            fab:fab_icon="@drawable/ic_add_custom_station"
+            fab:fab_title="Add Custom Station"
+            fab:fab_size="normal"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_shoutcast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/BLACK"
+            fab:fab_colorPressed="@color/colorPrimaryDark"
+            fab:fab_icon="@drawable/ic_shoutcast_temporary"
+            fab:fab_title="Import Station from Shoutcast.com"
+            fab:fab_size="normal"/>
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </RelativeLayout>
