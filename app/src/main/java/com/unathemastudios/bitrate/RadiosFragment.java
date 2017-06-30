@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
@@ -31,7 +33,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	private FloatingActionButton addShoutcast;
 	private FunDapter adapter;
 	private SharedPreferences pref;
-	
+	private RelativeLayout asl;
+
 	public RadiosFragment()
 	{
 		// Required empty public constructor
@@ -53,8 +56,10 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
 		addCustom = (FloatingActionButton) view.findViewById(R.id.fab_add_custom);
 		addShoutcast = (FloatingActionButton) view.findViewById(R.id.fab_add_shoutcast);
+		asl = (RelativeLayout) view.findViewById(R.id.addShoutcastLayout);
 		addCustom.setVisibility(View.GONE);
 		addShoutcast.setVisibility(View.GONE);
+		asl.setVisibility(View.GONE);
 
 		addCustom.setTitle("Add Custom Station");
 		addShoutcast.setTitle("Import Station from Shoutcast.com");
@@ -143,6 +148,18 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				addRadioDialog.show(getFragmentManager(), "missiles");
 			}
 		});
+
+		addShoutcast.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getActivity().findViewById(R.id.addShoutcastLayout).setVisibility(View.VISIBLE);
+				SearchShoutcastFragment searchShoutcastFragment = new SearchShoutcastFragment();
+				FragmentManager manager = getFragmentManager();
+				manager.beginTransaction()
+						.replace(R.id.addShoutcastLayout, searchShoutcastFragment).commit();
+			}
+		});
+
 		if(((MainActivity)getActivity()).radiosList.isEmpty()){
 			getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
 		}
