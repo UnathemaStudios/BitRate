@@ -47,8 +47,8 @@
         android:layout_marginBottom="66dp"
         android:layout_marginRight="16dp"
         android:clickable="true"
-        android:elevation="8dp"
         android:visibility="visible"
+        android:elevation="8dp"
         fab:fab_addButtonColorNormal="@color/colorAccent"
         fab:fab_addButtonColorPressed="@color/RED"
         fab:fab_addButtonPlusIconColor="@color/textColorPrimary"
@@ -76,16 +76,5 @@
             fab:fab_title="Import Station from Shoutcast.com"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-    <RelativeLayout
-        android:id="@+id/addShoutcastLayout"
-        android:background="@color/windowBackground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="70dp"
-        android:layout_marginEnd="29dp"
-        android:layout_marginStart="29dp"
-        android:elevation="10dp"
-        android:layout_marginTop="70dp"/>
 
 </RelativeLayout>

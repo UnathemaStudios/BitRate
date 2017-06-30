@@ -33,7 +33,6 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	private FloatingActionButton addShoutcast;
 	private FunDapter adapter;
 	private SharedPreferences pref;
-	private RelativeLayout asl;
 
 	public RadiosFragment()
 	{
@@ -56,10 +55,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
 		addCustom = (FloatingActionButton) view.findViewById(R.id.fab_add_custom);
 		addShoutcast = (FloatingActionButton) view.findViewById(R.id.fab_add_shoutcast);
-		asl = (RelativeLayout) view.findViewById(R.id.addShoutcastLayout);
 		addCustom.setVisibility(View.GONE);
 		addShoutcast.setVisibility(View.GONE);
-		asl.setVisibility(View.GONE);
 
 		addCustom.setTitle("Add Custom Station");
 		addShoutcast.setTitle("Import Station from Shoutcast.com");
@@ -146,19 +143,19 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				AddRadioDialog addRadioDialog = new AddRadioDialog();
 				addRadioDialog.setTargetFragment(RadiosFragment.this, 1);
 				addRadioDialog.show(getFragmentManager(), "missiles");
+				fabAddRadio.collapse();
 			}
 		});
 
 		addShoutcast.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getActivity().findViewById(R.id.addShoutcastLayout).setVisibility(View.VISIBLE);
-				SearchShoutcastFragment searchShoutcastFragment = new SearchShoutcastFragment();
-				FragmentManager manager = getFragmentManager();
-				manager.beginTransaction()
-						.replace(R.id.addShoutcastLayout, searchShoutcastFragment).commit();
+				SearchShoutcastDialog searchShoutcastDialog = new SearchShoutcastDialog();
+				searchShoutcastDialog.show(getFragmentManager(), "teaser");
+				fabAddRadio.collapse();
 			}
 		});
+
 
 		if(((MainActivity)getActivity()).radiosList.isEmpty()){
 			getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);

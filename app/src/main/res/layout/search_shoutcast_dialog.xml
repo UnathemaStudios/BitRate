@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:weightSum="10">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:weightSum="7"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/ibCloseSearchDialog"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:tint="@color/BLACK"
+            android:background="@color/transparent"
+            app:srcCompat="@drawable/ic_close_black_24dp"/>
+
+        <EditText
+            android:id="@+id/etSearchTerm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:hint="Search Shoutcast.com"
+            android:ems="10"/>
+
+        <ImageButton
+            android:id="@+id/ibSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:background="@color/transparent"
+            app:srcCompat="@drawable/ic_search"/>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/search_results_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="9"/>
+</LinearLayout>
