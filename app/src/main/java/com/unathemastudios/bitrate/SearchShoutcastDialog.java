@@ -3,16 +3,13 @@ package com.unathemastudios.bitrate;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +22,6 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -40,13 +34,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import static android.R.attr.duration;
+import static java.security.AccessController.getContext;
 
 /**
  * Created by georg on 30/6/2017.
@@ -64,8 +54,7 @@ public class SearchShoutcastDialog extends DialogFragment {
 	private EditText etTerm;
 	private ImageButton ibSearch;
 	private String searchTerm;
-	private FileOutputStream fileOutputStream;
-	private File outputSource;
+	private FunDapter<String> adapter;
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
@@ -77,7 +66,6 @@ public class SearchShoutcastDialog extends DialogFragment {
 		etTerm = (EditText)textEntryView.findViewById(R.id.etSearchTerm);
 		ibSearch = (ImageButton)textEntryView.findViewById(R.id.ibSearch);
 		searchTable = new ArrayList<>();
-		final FunDapter<String> adapter;
 
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -103,84 +91,8 @@ public class SearchShoutcastDialog extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				searchTerm = etTerm.getText().toString().replace(" ", "+");
-
-
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-
-						fileOutputStream = null;
-						File internalDir = new File(getContext().getFilesDir()+"");
-						outputSource = new File(internalDir,"temp.xml");
-						try
-						{
-							fileOutputStream = new FileOutputStream(outputSource);
-						} catch (FileNotFoundException e)
-						{
-							e.printStackTrace();
-						}
-
-						URL url = null;
-						try {
-							url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=B9nzm2JVUDlEwjIV&search=" + searchTerm);
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-						}
-						InputStream inputStream = null;
-						try {
-							inputStream = url.openStream();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						int c;
-						Log.w("duration", (Long.toString(duration)));
-						try {
-							while ((c = inputStream.read()) != -1)
-							{
-								assert fileOutputStream != null;
-								fileOutputStream.write(c);
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-
-						if (outputSource.exists())
-						{
-							try {
-								XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
-								XmlPullParser xmlPullParser = xppFactory.newPullParser();
-								xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
-
-								String name = null;
-								int eventType = xmlPullParser.getEventType();
-								while (eventType != XmlPullParser.END_DOCUMENT) {
-									switch (eventType) {
-										case XmlPullParser.START_TAG:
-
-											if (xmlPullParser.getName().equals("station")) {
-												name = xmlPullParser.nextText();
-												searchTable.add(name);
-												Log.w("red", name);
-											}
-											break;
-										case XmlPullParser.END_TAG:
-											break;
-										default:
-											break;
-									} // end switch
-
-									// Move forward the parsing "cursor", or you can stop parsing
-									eventType = xmlPullParser.next();
-
-								} // end whiles
-
-
-							} catch (XmlPullParserException | IOException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}).start();
+				SearchByName searchByName = new SearchByName(getContext(), searchTerm, adapter);
+				searchByName.execute("");
 			}
 		});
 
@@ -195,6 +107,7 @@ public class SearchShoutcastDialog extends DialogFragment {
 
 		return builder.create();
 	}
+	
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -223,3 +136,108 @@ public class SearchShoutcastDialog extends DialogFragment {
 		super.show(manager, tag);
 	}
 }
+
+class SearchByName extends AsyncTask<String, Void, ArrayList<String>> {
+	
+	private FileOutputStream fileOutputStream;
+	private File outputSource;
+	private Context con;
+	private String urlString;
+	private ArrayList<String> searchTable = new ArrayList<>();
+	private FunDapter adapter;
+	
+	protected void onPreExecute(){
+		
+	}
+	
+	public SearchByName (Context context, String urlString, FunDapter adapter){
+		this.con = context;
+		this.urlString = urlString;
+		this.adapter = adapter;
+	}
+	
+	protected ArrayList<String> doInBackground(String...params) {
+		Log.w("Start", "");
+		fileOutputStream = null;
+		File internalDir = new File(con.getFilesDir()+"");
+		outputSource = new File(internalDir,"temp.xml");
+		try
+		{
+			fileOutputStream = new FileOutputStream(outputSource);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		
+		URL url = null;
+		try {
+			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=fgtehythytdyhte&search=" + urlString);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		InputStream inputStream = null;
+		try {
+			inputStream = url.openStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int c;
+		try {
+			while ((c = inputStream.read()) != -1)
+			{
+				assert fileOutputStream != null;
+				fileOutputStream.write(c);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if (outputSource.exists())
+		{
+			try {
+				XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
+				XmlPullParser xmlPullParser = xppFactory.newPullParser();
+				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
+				
+				String name = null;
+				int eventType = xmlPullParser.getEventType();
+				while (eventType != XmlPullParser.END_DOCUMENT) {
+					switch (eventType) {
+						case XmlPullParser.START_TAG:
+							
+							if (xmlPullParser.getName().equals("station")) {
+								int size = xmlPullParser.getAttributeCount();
+								for(int i=0;i<size;i++){
+									if(xmlPullParser.getAttributeName(i).equals("name")){
+										Log.w("Table", "");
+										searchTable.add(xmlPullParser.getAttributeValue(i));
+									}
+								}
+							}
+							break;
+						
+						case XmlPullParser.END_TAG:
+							break;
+						default:
+							break;
+					} // end switch
+					
+					// Move forward the parsing "cursor", or you can stop parsing
+					eventType = xmlPullParser.next();
+					
+				} // end whiles
+				
+				
+			} catch (XmlPullParserException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
+	protected void onPostExecute() {
+		adapter.updateData(searchTable);
+	}
+}
+ 
