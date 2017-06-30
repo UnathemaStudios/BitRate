@@ -53,6 +53,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
 		addCustom = (FloatingActionButton) view.findViewById(R.id.fab_add_custom);
 		addShoutcast = (FloatingActionButton) view.findViewById(R.id.fab_add_shoutcast);
+		addCustom.setVisibility(View.GONE);
+		addShoutcast.setVisibility(View.GONE);
 
 		addCustom.setTitle("Add Custom Station");
 		addShoutcast.setTitle("Import Station from Shoutcast.com");
@@ -116,6 +118,20 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
+
+		fabAddRadio.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+			@Override
+			public void onMenuExpanded() {
+				addCustom.setVisibility(View.VISIBLE);
+				addShoutcast.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			public void onMenuCollapsed() {
+				addCustom.setVisibility(View.GONE);
+				addShoutcast.setVisibility(View.GONE);
+			}
+		});
 
 		addCustom.setOnClickListener(new View.OnClickListener()
 		{
