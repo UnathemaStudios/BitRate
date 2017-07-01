@@ -7,8 +7,6 @@
 /build
 /captures
 .externalNativeBuild
-/app/src/main/res/values/apikeys.xml
-!/app/src/main/res/values/apikeys.xml
 .idea/dictionaries/
 app/app-release.apk
 app/src/main/res/values/apikeys.xml
