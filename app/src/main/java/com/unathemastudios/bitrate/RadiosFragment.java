@@ -26,7 +26,8 @@ import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
-public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener
+public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener,
+		SearchShoutcastDialog.NoticeDialogListener
 {
 	private FloatingActionsMenu fabAddRadio;
 	private FloatingActionButton addCustom;
@@ -232,7 +233,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	}
 	
 	@Override
-	public void onDialogPositiveClick(String name, String url)
+	public void onDialogPositiveClick(String name, String url, String description)
 	{
 		boolean found = false;
 		for(Radio item : ((MainActivity)getActivity()).radiosList){
@@ -240,9 +241,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		}
 
 		if(!found) {
-//			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, R.drawable.ic_default_radio));
 			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "defaultradio",
-					true, "user created"));
+					true, description));
 			if(((MainActivity)getActivity()).radiosList.isEmpty()){
 				getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
 				}
@@ -251,5 +251,12 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onDialogPositiveClick(Radio radio) {
+		AddRadioDialog addRadioDialog = new AddRadioDialog();
+		addRadioDialog.setTargetFragment(RadiosFragment.this, 10);
+		addRadioDialog.show(getFragmentManager(), "oil", radio);
 	}
 }

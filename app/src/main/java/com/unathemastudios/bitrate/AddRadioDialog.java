@@ -22,10 +22,10 @@ import android.widget.Toast;
 public class AddRadioDialog extends DialogFragment {
 
     public interface NoticeDialogListener {
-        public void onDialogPositiveClick(String name, String url);
+        public void onDialogPositiveClick(String name, String url, String description);
     }
     private NoticeDialogListener mListener;
-    private EditText etName, etUrl;
+    private EditText etName, etUrl, etDescription;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -36,6 +36,7 @@ public class AddRadioDialog extends DialogFragment {
         final View textEntryView = factory.inflate(R.layout.add_radio_dialog_layout, null);
         etName = (EditText)textEntryView.findViewById(R.id.etName);
         etUrl = (EditText)textEntryView.findViewById(R.id.etUrl);
+        etDescription = (EditText)textEntryView.findViewById(R.id.etDescription);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.add_radio_dialog_title)
                 .setView(textEntryView)
@@ -44,12 +45,14 @@ public class AddRadioDialog extends DialogFragment {
                         if(!(etName.getText().toString().equals("")||etUrl.getText().toString().equals("")))
                         {
 							if (etUrl.getText().toString().startsWith("http://")) {
-								mListener.onDialogPositiveClick(etName.getText().toString(), etUrl.getText().toString());
+								mListener.onDialogPositiveClick(etName.getText().toString(),
+                                        etUrl.getText().toString(), etDescription.getText().toString());
 								AddRadioDialog.this.dismiss();
 							}
 							else 
 							{
-								mListener.onDialogPositiveClick(etName.getText().toString(),"http://" + etUrl.getText().toString());
+								mListener.onDialogPositiveClick(etName.getText().toString(),
+                                        "http://" + etUrl.getText().toString(), etDescription.getText().toString());
 								AddRadioDialog.this.dismiss();
 							}
                         }
@@ -85,6 +88,13 @@ public class AddRadioDialog extends DialogFragment {
 
     @Override
     public void show(FragmentManager manager, String tag) {
+        super.show(manager, tag);
+    }
+
+    public void show(FragmentManager manager, String tag, Radio radio) {
+        etName.setText(radio.getName());
+        etUrl.setText(radio.getUrl());
+        etDescription.setText(radio.getDescription());
         super.show(manager, tag);
     }
 }

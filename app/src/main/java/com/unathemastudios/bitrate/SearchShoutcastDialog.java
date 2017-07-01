@@ -13,16 +13,14 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
-import com.amigold.fundapter.interfaces.StaticImageLoader;
-
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -42,9 +40,9 @@ import java.util.ArrayList;
 public class SearchShoutcastDialog extends DialogFragment {
 
 	public interface NoticeDialogListener {
-		public void onDialogPositiveClick(String name, String url);
+		public void onDialogPositiveClick(Radio radio);
 	}
-	private AddRadioDialog.NoticeDialogListener mListener;
+	public SearchShoutcastDialog.NoticeDialogListener mListener;
 
 	private ImageButton ibClose;
 	private ArrayList<Radio> searchTable;
@@ -72,7 +70,8 @@ public class SearchShoutcastDialog extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				searchTerm = etTerm.getText().toString().replace(" ", "+");
-				SearchByName searchByName = new SearchByName(getContext(), textEntryView, searchTerm);
+				SearchByName searchByName = new SearchByName(getContext(), textEntryView,
+						searchTerm, mListener);
 				searchByName.execute();
 			}
 		});
@@ -103,12 +102,17 @@ public class SearchShoutcastDialog extends DialogFragment {
 		// Verify that the host activity implements the callback interface
 		try {
 			// Instantiate the NoticeDialogListener so we can send events to the host
-			mListener = (AddRadioDialog.NoticeDialogListener) getTargetFragment();
+			mListener = (SearchShoutcastDialog.NoticeDialogListener) getTargetFragment();
 		} catch (ClassCastException e) {
 			// The activity doesn't implement the interface, throw exception
 			throw new ClassCastException(activity.toString()
 					+ " must implement NoticeDialogListener");
 		}
+	}
+
+	public void doSomething(Radio radio){
+		mListener.onDialogPositiveClick(radio);
+		SearchShoutcastDialog.this.dismiss();
 	}
 
 	@Override
@@ -117,21 +121,25 @@ public class SearchShoutcastDialog extends DialogFragment {
 	}
 }
 
+
 class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
-	
+
 	private Context con;
 	private String searchTerm;
 	private ArrayList<Radio> searchTable;
 	private View view;
-	
-	
-	SearchByName(Context context, View view, String searchTerm) {
+	private SearchShoutcastDialog.NoticeDialogListener mListener;
+
+
+	SearchByName(Context context, View view, String searchTerm, SearchShoutcastDialog
+			.NoticeDialogListener mListener) {
 		this.con = context;
 		this.view = view;
 		this.searchTerm = searchTerm;
+		this.mListener = mListener;
 		searchTable = new ArrayList<>();
 	}
-	
+
 	@Override
 	protected ArrayList<Radio> doInBackground(Void... params) {
 		Log.w("Start", "");
@@ -143,7 +151,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		URL url = null;
 		try {
 			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm);
@@ -167,22 +175,22 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (outputSource.exists()) {
 			try {
 				XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
 				XmlPullParser xmlPullParser = xppFactory.newPullParser();
 				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
-				
+
 				String stationName;
 				String genre, genre2, genre3;
 				int bitRate;
-				
+
 				int eventType = xmlPullParser.getEventType();
 				while (eventType != XmlPullParser.END_DOCUMENT) {
 					switch (eventType) {
 						case XmlPullParser.START_TAG:
-							
+
 							if (xmlPullParser.getName().equals("station")) {
 								int size = xmlPullParser.getAttributeCount();
 								stationName = "";
@@ -213,55 +221,64 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 								searchTable.add(new Radio(stationName, "", true, "fromShoutcast",
 										bitRate, genre + "/" + genre2 + "/" + genre3));
 							}
-							
+
 							break;
 						default:
 							break;
 					}
 					eventType = xmlPullParser.next();
 				}
-				
+
 			} catch (XmlPullParserException | IOException e) {
 				e.printStackTrace();
 			}
 		}
 		return searchTable;
 	}
-	
+
 	@Override
 	protected void onPostExecute(ArrayList<Radio> strings) {
 		super.onPostExecute(strings);
-		
+
 		FunDapter<Radio> adapter;
 		BindDictionary<Radio> bindDictionary = new BindDictionary<>();
-		
+
 		bindDictionary.addStringField(R.id.search_term_name, new StringExtractor<Radio>() {
 			@Override
 			public String getStringValue(Radio item, int position) {
 				return item.getName();
 			}
 		});
-		
+
 		bindDictionary.addStringField(R.id.search_term_bitrate, new StringExtractor<Radio>() {
 			@Override
 			public String getStringValue(Radio item, int position) {
 				return "Bitrate: " + Integer.toString(item.getBitRate());
 			}
 		});
-		
+
 		bindDictionary.addStringField(R.id.search_term_genre, new StringExtractor<Radio>() {
 			@Override
 			public String getStringValue(Radio item, int position) {
 				return "Genre: " + item.getGenre();
 			}
 		});
-		
+
 		for (int i = 0; i < strings.size(); i++) {
 			Log.w("name", strings.get(i).getName());
 		}
-		
+
 		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
+
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			}
+		});
 	}
 }
+
+
