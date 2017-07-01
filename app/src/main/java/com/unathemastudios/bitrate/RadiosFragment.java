@@ -34,6 +34,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	private FloatingActionButton addShoutcast;
 	private FunDapter adapter;
 	private SharedPreferences pref;
+	private SearchShoutcastDialog searchShoutcastDialog = null;
 
 	public RadiosFragment()
 	{
@@ -151,7 +152,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		addShoutcast.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SearchShoutcastDialog searchShoutcastDialog = new SearchShoutcastDialog();
+				searchShoutcastDialog = new SearchShoutcastDialog();
+				searchShoutcastDialog.setTargetFragment(RadiosFragment.this, 20);
 				searchShoutcastDialog.show(getFragmentManager(), "teaser");
 				fabAddRadio.collapse();
 			}
@@ -251,6 +253,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
+
+		if(searchShoutcastDialog!=null) searchShoutcastDialog.close();
 	}
 
 	@Override

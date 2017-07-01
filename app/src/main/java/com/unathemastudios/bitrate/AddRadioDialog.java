@@ -26,6 +26,7 @@ public class AddRadioDialog extends DialogFragment {
     }
     private NoticeDialogListener mListener;
     private EditText etName, etUrl, etDescription;
+    private Radio radio = null;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -37,6 +38,11 @@ public class AddRadioDialog extends DialogFragment {
         etName = (EditText)textEntryView.findViewById(R.id.etName);
         etUrl = (EditText)textEntryView.findViewById(R.id.etUrl);
         etDescription = (EditText)textEntryView.findViewById(R.id.etDescription);
+        if(radio!=null){
+            etName.setText(radio.getName());
+            etUrl.setText(radio.getUrl());
+            etDescription.setText(radio.getDescription());
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.add_radio_dialog_title)
                 .setView(textEntryView)
@@ -92,9 +98,7 @@ public class AddRadioDialog extends DialogFragment {
     }
 
     public void show(FragmentManager manager, String tag, Radio radio) {
-        etName.setText(radio.getName());
-        etUrl.setText(radio.getUrl());
-        etDescription.setText(radio.getDescription());
+        this.radio = radio;
         super.show(manager, tag);
     }
 }
