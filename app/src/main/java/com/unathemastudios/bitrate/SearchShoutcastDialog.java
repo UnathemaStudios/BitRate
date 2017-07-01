@@ -147,7 +147,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
 		
 		URL url = null;
 		try {
-			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + "API KEY IN HERE" + "&search=" + searchTerm);
+			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
