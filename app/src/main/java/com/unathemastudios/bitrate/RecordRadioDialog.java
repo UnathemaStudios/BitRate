@@ -33,7 +33,7 @@ public class RecordRadioDialog extends DialogFragment {
         final NumberPicker npHour = (NumberPicker)textEntryView.findViewById(R.id.npHour);
         final NumberPicker npMinute = (NumberPicker)textEntryView.findViewById(R.id.npMinute);
         final RadioButton rbUnlimited = (RadioButton)textEntryView.findViewById(R.id.rbUnlimitedTime);
-        final RadioButton rbLimitedTime = (RadioButton)textEntryView.findViewById(R.id.rbLimitedTime);
+//        final RadioButton rbLimitedTime = (RadioButton)textEntryView.findViewById(R.id.rbLimitedTime);
         npHour.setMaxValue(23);
         npHour.setMinValue(0);
         npHour.setFormatter(new NumberPicker.Formatter() {

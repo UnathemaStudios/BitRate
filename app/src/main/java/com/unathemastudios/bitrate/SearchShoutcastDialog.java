@@ -125,7 +125,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 	private View view;
 	
 	
-	SearchByName (Context context, View view, String searchTerm){
+	SearchByName(Context context, View view, String searchTerm) {
 		this.con = context;
 		this.view = view;
 		this.searchTerm = searchTerm;
@@ -133,17 +133,14 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 	}
 	
 	@Override
-	protected ArrayList<Radio> doInBackground(Void...params)
-	{
+	protected ArrayList<Radio> doInBackground(Void... params) {
 		Log.w("Start", "");
 		FileOutputStream fileOutputStream = null;
-		File internalDir = new File(con.getFilesDir()+"");
+		File internalDir = new File(con.getFilesDir() + "");
 		File outputSource = new File(internalDir, "temp.xml");
-		try
-		{
+		try {
 			fileOutputStream = new FileOutputStream(outputSource);
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		
@@ -163,8 +160,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		int c;
 		try {
 			assert inputStream != null;
-			while ((c = inputStream.read()) != -1)
-			{
+			while ((c = inputStream.read()) != -1) {
 				assert fileOutputStream != null;
 				fileOutputStream.write(c);
 			}
@@ -172,16 +168,15 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 			e.printStackTrace();
 		}
 		
-		if (outputSource.exists())
-		{
+		if (outputSource.exists()) {
 			try {
 				XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
 				XmlPullParser xmlPullParser = xppFactory.newPullParser();
 				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
-
-				String stationName ="";
-				String genre = "", genre2 = "", genre3 = "";
-				int bitRate = 0;
+				
+				String stationName;
+				String genre, genre2, genre3;
+				int bitRate;
 				
 				int eventType = xmlPullParser.getEventType();
 				while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -190,29 +185,35 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 							
 							if (xmlPullParser.getName().equals("station")) {
 								int size = xmlPullParser.getAttributeCount();
-								for(int i=0;i<size;i++){
-									if(xmlPullParser.getAttributeName(i).equals("name")){
+								stationName = "";
+								bitRate = 0;
+								genre = "";
+								genre2 = "";
+								genre3 = "";
+								for (int i = 0; i < size; i++) {
+									if (xmlPullParser.getAttributeName(i).equals("name")) {
 										Log.w("name", xmlPullParser.getAttributeValue(i));
 										stationName = xmlPullParser.getAttributeValue(i);
 									}
-									if(xmlPullParser.getAttributeName(i).equals("br")){
+									if (xmlPullParser.getAttributeName(i).equals("br")) {
 										bitRate = Integer.parseInt(xmlPullParser
 												.getAttributeValue(i));
+										Log.w("BR", bitRate + "");
 									}
-									else bitRate = 0;
-									if(xmlPullParser.getAttributeName(i).equals("genre")){
+									if (xmlPullParser.getAttributeName(i).equals("genre")) {
 										genre = xmlPullParser.getAttributeValue(i);
 									}
-									if(xmlPullParser.getAttributeName(i).equals("genre2")){
+									if (xmlPullParser.getAttributeName(i).equals("genre2")) {
 										genre2 = xmlPullParser.getAttributeValue(i);
 									}
-									if(xmlPullParser.getAttributeName(i).equals("genre3")){
+									if (xmlPullParser.getAttributeName(i).equals("genre3")) {
 										genre3 = xmlPullParser.getAttributeValue(i);
 									}
 								}
 								searchTable.add(new Radio(stationName, "", true, "fromShoutcast",
-										bitRate, genre+genre2+genre3));
+										bitRate, genre + "/" + genre2 + "/" + genre3));
 							}
+							
 							break;
 						default:
 							break;
@@ -224,7 +225,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return searchTable;
 	}
 	
 	@Override
@@ -233,21 +234,21 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		
 		FunDapter<Radio> adapter;
 		BindDictionary<Radio> bindDictionary = new BindDictionary<>();
-
+		
 		bindDictionary.addStringField(R.id.search_term_name, new StringExtractor<Radio>() {
 			@Override
 			public String getStringValue(Radio item, int position) {
 				return item.getName();
 			}
 		});
-
+		
 		bindDictionary.addStringField(R.id.search_term_bitrate, new StringExtractor<Radio>() {
 			@Override
 			public String getStringValue(Radio item, int position) {
 				return "Bitrate: " + Integer.toString(item.getBitRate());
 			}
 		});
-
+		
 		bindDictionary.addStringField(R.id.search_term_genre, new StringExtractor<Radio>() {
 			@Override
 			public String getStringValue(Radio item, int position) {
@@ -255,10 +256,12 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 			}
 		});
 		
-		adapter = new FunDapter(con,searchTable, R.layout.search_terms_layout, bindDictionary);
-		ListView listView = (ListView)view.findViewById(R.id.search_results_list_view);
-		listView.setAdapter(adapter);
+		for (int i = 0; i < strings.size(); i++) {
+			Log.w("name", strings.get(i).getName());
+		}
 		
+		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
+		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
+		listView.setAdapter(adapter);
 	}
 }
- 

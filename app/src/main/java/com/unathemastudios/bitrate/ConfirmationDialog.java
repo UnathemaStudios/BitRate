@@ -10,11 +10,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
-
-/**
- * Created by georg on 27/4/2017.
- */
-
 public class ConfirmationDialog extends DialogFragment {
 
 	private int position;

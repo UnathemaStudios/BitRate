@@ -33,7 +33,7 @@ class RecordingRadio {
         return size;
     }
 
-    public long getDuration() {
+    long getDuration() {
         return duration;
     }
 }
