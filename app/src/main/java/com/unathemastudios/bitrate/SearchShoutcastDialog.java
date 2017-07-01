@@ -73,6 +73,9 @@ public class SearchShoutcastDialog extends DialogFragment {
 				SearchByName searchByName = new SearchByName(getContext(), textEntryView,
 						searchTerm, mListener);
 				searchByName.execute();
+				/*mListener.onDialogPositiveClick(new Radio("TEstShoutcast", "url", true,
+						"description", 128, "genre"));
+				SearchShoutcastDialog.this.dismiss();*/
 			}
 		});
 
@@ -86,6 +89,10 @@ public class SearchShoutcastDialog extends DialogFragment {
 		});
 
 		return builder.create();
+	}
+
+	public void close(){
+		SearchShoutcastDialog.this.dismiss();
 	}
 	
 	@Override
@@ -110,10 +117,6 @@ public class SearchShoutcastDialog extends DialogFragment {
 		}
 	}
 
-	public void doSomething(Radio radio){
-		mListener.onDialogPositiveClick(radio);
-		SearchShoutcastDialog.this.dismiss();
-	}
 
 	@Override
 	public void show(FragmentManager manager, String tag) {
@@ -237,7 +240,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 	}
 
 	@Override
-	protected void onPostExecute(ArrayList<Radio> strings) {
+	protected void onPostExecute(final ArrayList<Radio> strings) {
 		super.onPostExecute(strings);
 
 		FunDapter<Radio> adapter;
@@ -275,7 +278,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+				mListener.onDialogPositiveClick(strings.get(position));
 			}
 		});
 	}
