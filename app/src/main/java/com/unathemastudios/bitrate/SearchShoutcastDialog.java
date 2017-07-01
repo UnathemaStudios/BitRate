@@ -36,11 +36,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static java.security.AccessController.getContext;
-
-/**
- * Created by georg on 30/6/2017.
- */
 
 public class SearchShoutcastDialog extends DialogFragment {
 
@@ -54,7 +49,6 @@ public class SearchShoutcastDialog extends DialogFragment {
 	private EditText etTerm;
 	private ImageButton ibSearch;
 	private String searchTerm;
-	private FunDapter<String> adapter;
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
@@ -72,27 +66,12 @@ public class SearchShoutcastDialog extends DialogFragment {
 		builder.setView(textEntryView);
 		// Create the AlertDialog object and return it
 
-		BindDictionary<String> bindDictionary = new BindDictionary<>();
-
-		bindDictionary.addStringField(R.id.search_term_name, new StringExtractor<String>() {
-			@Override
-			public String getStringValue(String item, int position) {
-				return item;
-			}
-		});
-
-		adapter = new FunDapter(getContext(),searchTable, R.layout.search_terms_layout,
-				bindDictionary);
-		ListView listView = (ListView)textEntryView.findViewById(R.id.search_results_list_view);
-		listView.setAdapter(adapter);
-		registerForContextMenu(listView);
-
 		ibSearch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				searchTerm = etTerm.getText().toString().replace(" ", "+");
-				SearchByName searchByName = new SearchByName(getContext(), searchTerm, adapter);
-				searchByName.execute("");
+				SearchByName searchByName = new SearchByName(getContext(), textEntryView, searchTerm);
+				searchByName.execute();
 			}
 		});
 
@@ -108,7 +87,6 @@ public class SearchShoutcastDialog extends DialogFragment {
 		return builder.create();
 	}
 	
-
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -137,30 +115,28 @@ public class SearchShoutcastDialog extends DialogFragment {
 	}
 }
 
-class SearchByName extends AsyncTask<String, Void, ArrayList<String>> {
+class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
 	
-	private FileOutputStream fileOutputStream;
-	private File outputSource;
 	private Context con;
-	private String urlString;
-	private ArrayList<String> searchTable = new ArrayList<>();
-	private FunDapter adapter;
+	private String searchTerm;
+	private ArrayList<String> searchTable;
+	private View view;
 	
-	protected void onPreExecute(){
-		
-	}
 	
-	public SearchByName (Context context, String urlString, FunDapter adapter){
+	SearchByName (Context context, View view, String searchTerm){
 		this.con = context;
-		this.urlString = urlString;
-		this.adapter = adapter;
+		this.view = view;
+		this.searchTerm = searchTerm;
+		searchTable = new ArrayList<>();
 	}
 	
-	protected ArrayList<String> doInBackground(String...params) {
+	@Override
+	protected ArrayList<String> doInBackground(Void...params) 
+	{
 		Log.w("Start", "");
-		fileOutputStream = null;
+		FileOutputStream fileOutputStream = null;
 		File internalDir = new File(con.getFilesDir()+"");
-		outputSource = new File(internalDir,"temp.xml");
+		File outputSource = new File(internalDir, "temp.xml");
 		try
 		{
 			fileOutputStream = new FileOutputStream(outputSource);
@@ -171,18 +147,20 @@ class SearchByName extends AsyncTask<String, Void, ArrayList<String>> {
 		
 		URL url = null;
 		try {
-			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=fgtehythytdyhte&search=" + urlString);
+			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + "API KEY IN HERE" + "&search=" + searchTerm);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 		InputStream inputStream = null;
 		try {
+			assert url != null;
 			inputStream = url.openStream();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		int c;
 		try {
+			assert inputStream != null;
 			while ((c = inputStream.read()) != -1)
 			{
 				assert fileOutputStream != null;
@@ -199,7 +177,6 @@ class SearchByName extends AsyncTask<String, Void, ArrayList<String>> {
 				XmlPullParser xmlPullParser = xppFactory.newPullParser();
 				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
 				
-				String name = null;
 				int eventType = xmlPullParser.getEventType();
 				while (eventType != XmlPullParser.END_DOCUMENT) {
 					switch (eventType) {
@@ -209,35 +186,44 @@ class SearchByName extends AsyncTask<String, Void, ArrayList<String>> {
 								int size = xmlPullParser.getAttributeCount();
 								for(int i=0;i<size;i++){
 									if(xmlPullParser.getAttributeName(i).equals("name")){
-										Log.w("Table", "");
+										Log.w("name", xmlPullParser.getAttributeValue(i));
 										searchTable.add(xmlPullParser.getAttributeValue(i));
 									}
 								}
 							}
 							break;
-						
-						case XmlPullParser.END_TAG:
-							break;
 						default:
 							break;
-					} // end switch
-					
-					// Move forward the parsing "cursor", or you can stop parsing
+					}
 					eventType = xmlPullParser.next();
-					
-				} // end whiles
-				
+				}
 				
 			} catch (XmlPullParserException | IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		return null;
+		return searchTable;
 	}
 	
-	protected void onPostExecute() {
-		adapter.updateData(searchTable);
+	@Override
+	protected void onPostExecute(ArrayList<String> strings) {
+		super.onPostExecute(strings);
+		
+		FunDapter<String> adapter;
+		BindDictionary<String> bindDictionary = new BindDictionary<>();
+		
+		bindDictionary.addStringField(R.id.search_term_name, new StringExtractor<String>() {
+			@Override
+			public String getStringValue(String item, int position) {
+				return item;
+			}
+		});
+		
+		adapter = new FunDapter(con,searchTable, R.layout.search_terms_layout, bindDictionary);
+		ListView listView = (ListView)view.findViewById(R.id.search_results_list_view);
+		listView.setAdapter(adapter);
+		adapter.updateData(strings);
+		
 	}
 }
  
