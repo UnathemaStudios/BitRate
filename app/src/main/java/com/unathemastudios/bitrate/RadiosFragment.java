@@ -152,7 +152,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			@Override
 			public void onClick(View v) {
 				SearchShoutcastDialog searchShoutcastDialog = new SearchShoutcastDialog();
-				searchShoutcastDialog.show(getFragmentManager(), "teaser");
+				searchShoutcastDialog.show(getFragmentManager(), "taser");
 				fabAddRadio.collapse();
 			}
 		});

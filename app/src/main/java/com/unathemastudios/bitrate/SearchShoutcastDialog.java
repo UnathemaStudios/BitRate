@@ -212,14 +212,14 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 										genre = xmlPullParser.getAttributeValue(i);
 									}
 									if (xmlPullParser.getAttributeName(i).equals("genre2")) {
-										genre2 = xmlPullParser.getAttributeValue(i);
+										genre2 = "/" + xmlPullParser.getAttributeValue(i);
 									}
 									if (xmlPullParser.getAttributeName(i).equals("genre3")) {
-										genre3 = xmlPullParser.getAttributeValue(i);
+										genre3 = "/" + xmlPullParser.getAttributeValue(i);
 									}
 								}
 								searchTable.add(new Radio(stationName, "", true, "fromShoutcast",
-										bitRate, genre + "/" + genre2 + "/" + genre3));
+										bitRate, genre + genre2 + genre3));
 							}
 
 							break;
