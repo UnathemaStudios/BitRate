@@ -15,11 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
+import com.amigold.fundapter.interfaces.StaticImageLoader;
 
 
 import org.xmlpull.v1.XmlPullParser;
@@ -45,7 +47,7 @@ public class SearchShoutcastDialog extends DialogFragment {
 	private AddRadioDialog.NoticeDialogListener mListener;
 
 	private ImageButton ibClose;
-	private ArrayList<String> searchTable;
+	private ArrayList<Radio> searchTable;
 	private EditText etTerm;
 	private ImageButton ibSearch;
 	private String searchTerm;
@@ -115,11 +117,11 @@ public class SearchShoutcastDialog extends DialogFragment {
 	}
 }
 
-class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
+class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 	
 	private Context con;
 	private String searchTerm;
-	private ArrayList<String> searchTable;
+	private ArrayList<Radio> searchTable;
 	private View view;
 	
 	
@@ -131,7 +133,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
 	}
 	
 	@Override
-	protected ArrayList<String> doInBackground(Void...params) 
+	protected ArrayList<Radio> doInBackground(Void...params)
 	{
 		Log.w("Start", "");
 		FileOutputStream fileOutputStream = null;
@@ -176,6 +178,10 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
 				XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
 				XmlPullParser xmlPullParser = xppFactory.newPullParser();
 				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
+
+				String stationName ="";
+				String genre = "", genre2 = "", genre3 = "";
+				int bitRate = 0;
 				
 				int eventType = xmlPullParser.getEventType();
 				while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -187,9 +193,25 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
 								for(int i=0;i<size;i++){
 									if(xmlPullParser.getAttributeName(i).equals("name")){
 										Log.w("name", xmlPullParser.getAttributeValue(i));
-										searchTable.add(xmlPullParser.getAttributeValue(i));
+										stationName = xmlPullParser.getAttributeValue(i);
+									}
+									if(xmlPullParser.getAttributeName(i).equals("br")){
+										bitRate = Integer.parseInt(xmlPullParser
+												.getAttributeValue(i));
+									}
+									else bitRate = 0;
+									if(xmlPullParser.getAttributeName(i).equals("genre")){
+										genre = xmlPullParser.getAttributeValue(i);
+									}
+									if(xmlPullParser.getAttributeName(i).equals("genre2")){
+										genre2 = xmlPullParser.getAttributeValue(i);
+									}
+									if(xmlPullParser.getAttributeName(i).equals("genre3")){
+										genre3 = xmlPullParser.getAttributeValue(i);
 									}
 								}
+								searchTable.add(new Radio(stationName, "", true, "fromShoutcast",
+										bitRate, genre+genre2+genre3));
 							}
 							break;
 						default:
@@ -202,27 +224,40 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<String>> {
 				e.printStackTrace();
 			}
 		}
-		return searchTable;
+		return null;
 	}
 	
 	@Override
-	protected void onPostExecute(ArrayList<String> strings) {
+	protected void onPostExecute(ArrayList<Radio> strings) {
 		super.onPostExecute(strings);
 		
-		FunDapter<String> adapter;
-		BindDictionary<String> bindDictionary = new BindDictionary<>();
-		
-		bindDictionary.addStringField(R.id.search_term_name, new StringExtractor<String>() {
+		FunDapter<Radio> adapter;
+		BindDictionary<Radio> bindDictionary = new BindDictionary<>();
+
+		bindDictionary.addStringField(R.id.search_term_name, new StringExtractor<Radio>() {
 			@Override
-			public String getStringValue(String item, int position) {
-				return item;
+			public String getStringValue(Radio item, int position) {
+				return item.getName();
+			}
+		});
+
+		bindDictionary.addStringField(R.id.search_term_bitrate, new StringExtractor<Radio>() {
+			@Override
+			public String getStringValue(Radio item, int position) {
+				return "Bitrate: " + Integer.toString(item.getBitRate());
+			}
+		});
+
+		bindDictionary.addStringField(R.id.search_term_genre, new StringExtractor<Radio>() {
+			@Override
+			public String getStringValue(Radio item, int position) {
+				return "Genre: " + item.getGenre();
 			}
 		});
 		
 		adapter = new FunDapter(con,searchTable, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView)view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
-		adapter.updateData(strings);
 		
 	}
 }

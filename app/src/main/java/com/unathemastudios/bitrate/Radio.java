@@ -2,7 +2,8 @@ package com.unathemastudios.bitrate;
 
 
 class Radio {
-    private String name, url, logo, description;
+    private int bitRate;
+    private String name, url, logo, description, genre;
     private boolean isRecorded, isMadeByUser;
 
     Radio (String name, String url, String logo, boolean isMadeByUser, String description){
@@ -11,6 +12,17 @@ class Radio {
 		this.logo = logo;
         this.isRecorded = false;
 		this.isMadeByUser = isMadeByUser;
+        this.description = description;
+    }
+
+    Radio (String name, String url, boolean isMadeByUser, String description, int bitRate, String
+            genre){
+        this.name = name;
+        this.url = url;
+        this.genre = genre;
+        this.bitRate = bitRate;
+        this.isRecorded = false;
+        this.isMadeByUser = isMadeByUser;
         this.description = description;
     }
 
@@ -40,5 +52,13 @@ class Radio {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getBitRate() {
+        return bitRate;
+    }
+
+    public String getGenre() {
+        return genre;
     }
 }
