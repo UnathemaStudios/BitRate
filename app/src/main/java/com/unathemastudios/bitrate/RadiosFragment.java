@@ -27,14 +27,16 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener,
-		SearchShoutcastDialog.NoticeDialogListener
+		SearchShoutcastDialog.NoticeDialogListener, ChooseLinkDialog.NoticeDialogListener
 {
 	private FloatingActionsMenu fabAddRadio;
 	private FloatingActionButton addCustom;
 	private FloatingActionButton addShoutcast;
 	private FunDapter adapter;
 	private SharedPreferences pref;
+	private Radio tempRadio;
 	private SearchShoutcastDialog searchShoutcastDialog = null;
+	private ChooseLinkDialog chooseLinkDialog = null;
 
 	public RadiosFragment()
 	{
@@ -254,11 +256,24 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
 
+		if(chooseLinkDialog!=null) chooseLinkDialog.close();
 		if(searchShoutcastDialog!=null) searchShoutcastDialog.close();
 	}
 
 	@Override
 	public void onDialogPositiveClick(Radio radio) {
+		tempRadio = radio;
+		chooseLinkDialog = new ChooseLinkDialog();
+		chooseLinkDialog.setTargetFragment(RadiosFragment.this, 25);
+		chooseLinkDialog.show(getFragmentManager(), "rice", radio.getId());
+	}
+
+	@Override
+	public void onDialogPositiveClick(String url) {
+		Radio radio = new Radio(tempRadio.getName(), url, true, "Genre: " + tempRadio.getGenre()
+				+ "\nBitrate: " + tempRadio
+				.getBitRate(),
+				tempRadio.getBitRate(), tempRadio.getGenre());
 		AddRadioDialog addRadioDialog = new AddRadioDialog();
 		addRadioDialog.setTargetFragment(RadiosFragment.this, 10);
 		addRadioDialog.show(getFragmentManager(), "oil", radio);
