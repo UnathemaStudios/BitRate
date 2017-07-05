@@ -32,8 +32,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 
@@ -145,98 +147,73 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 
 	@Override
 	protected ArrayList<Radio> doInBackground(Void... params) {
-		FileOutputStream fileOutputStream = null;
-		File internalDir = new File(con.getFilesDir() + "");
-		File outputSource = new File(internalDir, "temp.xml");
+		
+		URLConnection urlConnection = null;
 		try {
-			fileOutputStream = new FileOutputStream(outputSource);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		URL url = null;
-		try {
-			url = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		InputStream inputStream = null;
-		try {
-			assert url != null;
-			inputStream = url.openStream();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		int c;
-		try {
-			assert inputStream != null;
-			while ((c = inputStream.read()) != -1) {
-				assert fileOutputStream != null;
-				fileOutputStream.write(c);
-			}
+			urlConnection = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm).openConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		if (outputSource.exists()) {
-			try {
-				XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
-				XmlPullParser xmlPullParser = xppFactory.newPullParser();
-				xmlPullParser.setInput(new FileInputStream(outputSource), "utf-8");
+		try {
+			XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
+			XmlPullParser xmlPullParser = xppFactory.newPullParser();
+			assert urlConnection != null;
+			xmlPullParser.setInput(urlConnection.getInputStream(), "utf-8");
 
-				String stationName,id;
-				String genre, genre2, genre3;
-				int bitRate;
+			String stationName,id;
+			String genre, genre2, genre3;
+			int bitRate;
 
-				int eventType = xmlPullParser.getEventType();
-				while (eventType != XmlPullParser.END_DOCUMENT) {
-					switch (eventType) {
-						case XmlPullParser.START_TAG:
+			int eventType = xmlPullParser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				switch (eventType) {
+					case XmlPullParser.START_TAG:
 
-							if (xmlPullParser.getName().equals("station")) {
-								int size = xmlPullParser.getAttributeCount();
-								stationName = "";
-								bitRate = 0;
-								genre = "";
-								genre2 = "";
-								genre3 = "";
-								id = "";
-								for (int i = 0; i < size; i++) {
-									if (xmlPullParser.getAttributeName(i).equals("name")) {
-										stationName = xmlPullParser.getAttributeValue(i);
-									}
-									if (xmlPullParser.getAttributeName(i).equals("br")) {
-										bitRate = Integer.parseInt(xmlPullParser
-												.getAttributeValue(i));
-									}
-									if (xmlPullParser.getAttributeName(i).equals("genre")) {
-										genre = xmlPullParser.getAttributeValue(i);
-									}
-									if (xmlPullParser.getAttributeName(i).equals("genre2")) {
-										genre2 = xmlPullParser.getAttributeValue(i);
-									}
-									if (xmlPullParser.getAttributeName(i).equals("genre3")) {
-										genre3 = xmlPullParser.getAttributeValue(i);
-									}
-									if (xmlPullParser.getAttributeName(i).equals("id")) {
-										id = xmlPullParser.getAttributeValue(i);
-									}
+						if (xmlPullParser.getName().equals("station")) {
+							int size = xmlPullParser.getAttributeCount();
+							stationName = "";
+							bitRate = 0;
+							genre = "";
+							genre2 = "";
+							genre3 = "";
+							id = "";
+							for (int i = 0; i < size; i++) {
+								if (xmlPullParser.getAttributeName(i).equals("name")) {
+									stationName = xmlPullParser.getAttributeValue(i);
 								}
-								searchTable.add(new Radio(stationName, "", true, "",
-										bitRate, genre + "/" + genre2 + "/" + genre3, id));
+								if (xmlPullParser.getAttributeName(i).equals("br")) {
+									bitRate = Integer.parseInt(xmlPullParser
+											.getAttributeValue(i));
+								}
+								if (xmlPullParser.getAttributeName(i).equals("genre")) {
+									genre = xmlPullParser.getAttributeValue(i);
+								}
+								if (xmlPullParser.getAttributeName(i).equals("genre2")) {
+									genre2 = " /"+ xmlPullParser.getAttributeValue(i);
+								}
+								if (xmlPullParser.getAttributeName(i).equals("genre3")) {
+									genre3 = " /" + xmlPullParser.getAttributeValue(i);
+								}
+								if (xmlPullParser.getAttributeName(i).equals("id")) {
+									id = xmlPullParser.getAttributeValue(i);
+								}
 							}
+							searchTable.add(new Radio(stationName, "", true, "",
+									bitRate, genre + genre2 + genre3, id));
+						}
 
-							break;
-						default:
-							break;
-					}
-					eventType = xmlPullParser.next();
+						break;
+					default:
+						break;
 				}
-
-			} catch (XmlPullParserException | IOException e) {
-				e.printStackTrace();
+				eventType = xmlPullParser.next();
 			}
+
+		} catch (XmlPullParserException | IOException e) {
+			e.printStackTrace();
 		}
+		
 		return searchTable;
 	}
 

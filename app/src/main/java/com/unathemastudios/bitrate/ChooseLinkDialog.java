@@ -149,6 +149,7 @@ class ExtarctLinksFromPls extends AsyncTask<Void, Void, ArrayList<String>>{
 		}
 
 		try {
+			assert reader != null;
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
