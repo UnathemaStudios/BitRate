@@ -71,7 +71,8 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/BLACK"
             fab:fab_colorPressed="@color/colorPrimaryDark"
-            fab:fab_icon="@drawable/ic_shoutcast_temporary"
+            fab:fab_icon="@raw/shoutcast_logo"
+            android:scaleType="centerInside"
             fab:fab_size="normal"
             fab:fab_title="Import Station from Shoutcast.com"/>
 
