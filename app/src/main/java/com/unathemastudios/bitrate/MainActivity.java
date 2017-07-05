@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 					xmlSerializer.endTag(null, "Url");
 					
 					xmlSerializer.startTag(null,"Logo");
-					xmlSerializer.text("defaultradio");
+					xmlSerializer.text(entry.getLogo());
 					xmlSerializer.endTag(null,"Logo");
 
 					xmlSerializer.startTag(null,"Description");
