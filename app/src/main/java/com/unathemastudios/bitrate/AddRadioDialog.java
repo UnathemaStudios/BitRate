@@ -23,11 +23,16 @@ public class AddRadioDialog extends DialogFragment {
 
     public interface NoticeDialogListener {
         public void onDialogPositiveClick(String name, String url, String description);
+		public void onDialogPositiveClick(String name, String url, String description, int pos);
+		public void onDialogPositiveClick(String name, String url, String description, boolean fromShoutcast);
     }
     private NoticeDialogListener mListener;
     private EditText etName, etUrl, etDescription;
     private Radio radio = null;
-
+	private boolean edit = false;
+	private int pos;
+	private String positiveButton;
+	private boolean fromShoutcast = false;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -43,24 +48,37 @@ public class AddRadioDialog extends DialogFragment {
             etUrl.setText(radio.getUrl());
             etDescription.setText(radio.getDescription());
         }
+        if(edit) positiveButton = "Edit";
+		else positiveButton = "Add";
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.add_radio_dialog_title)
                 .setView(textEntryView)
-                .setPositiveButton(R.string.add_radio_dialog_add, new DialogInterface.OnClickListener() {
+                .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if(!(etName.getText().toString().equals("")||etUrl.getText().toString().equals("")))
                         {
+							 String tempUrl = "";
 							if (etUrl.getText().toString().startsWith("http://")) {
-								mListener.onDialogPositiveClick(etName.getText().toString(),
-                                        etUrl.getText().toString(), etDescription.getText().toString());
-								AddRadioDialog.this.dismiss();
+								tempUrl = etUrl.getText().toString();
 							}
 							else 
 							{
-								mListener.onDialogPositiveClick(etName.getText().toString(),
-                                        "http://" + etUrl.getText().toString(), etDescription.getText().toString());
-								AddRadioDialog.this.dismiss();
+								tempUrl = "http://" + etUrl.getText().toString();
 							}
+							
+							if(edit){
+								mListener.onDialogPositiveClick(etName.getText().toString(),
+										tempUrl, etDescription.getText().toString(), pos);
+							}
+							else if(fromShoutcast){
+								mListener.onDialogPositiveClick(etName.getText().toString(),
+										tempUrl, etDescription.getText().toString(), true);
+							}
+							else {
+								mListener.onDialogPositiveClick(etName.getText().toString(),
+										tempUrl, etDescription.getText().toString());
+							}
+							AddRadioDialog.this.dismiss();
                         }
                         else Toast.makeText(getContext(), "Name and URL can not be empty", Toast.LENGTH_SHORT).show();
                     }
@@ -101,4 +119,17 @@ public class AddRadioDialog extends DialogFragment {
         this.radio = radio;
         super.show(manager, tag);
     }
+	
+	public void show(FragmentManager manager, String tag, Radio radio, boolean edit, int pos) {
+		this.radio = radio;
+		this.edit = edit;
+		this.pos = pos;
+		super.show(manager, tag);
+	}
+	
+	public void show(FragmentManager manager, String tag, Radio radio, boolean fromShoutcast) {
+		this.radio = radio;
+		this.fromShoutcast = fromShoutcast;
+		super.show(manager, tag);
+	}
 }

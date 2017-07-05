@@ -225,6 +225,15 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				}
 				else Toast.makeText(getContext(),"You cannot delete prebuilt stations.", Toast.LENGTH_SHORT).show();
 				return true;
+			case R.id.edit_radios:
+				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser()) {
+					AddRadioDialog addRadioDialog = new AddRadioDialog();
+					addRadioDialog.setTargetFragment(RadiosFragment.this, 224);
+					addRadioDialog.show(getFragmentManager(), "potato", ((MainActivity) getActivity()).radiosList.get(info.position), true, info.position);
+				}
+				else Toast.makeText(getContext(),"You cannot edit prebuilt stations.", Toast.LENGTH_LONG).show();
+				
+				return true;
 			default:
 				return super.onContextItemSelected(item);
 		}
@@ -255,11 +264,40 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
-
+		
+	}
+	
+	@Override
+	public void onDialogPositiveClick(String name, String url, String description, int pos) {
+		((MainActivity)getActivity()).radiosList.get(pos).setName(name);
+		((MainActivity)getActivity()).radiosList.get(pos).setUrl(url);
+		((MainActivity)getActivity()).radiosList.get(pos).setDescription(description);
+		adapter.updateData(((MainActivity)getActivity()).radiosList);
+	}
+	
+	@Override
+	public void onDialogPositiveClick(String name, String url, String description, boolean fromShoutcast) {
+		boolean found = false;
+		for(Radio item : ((MainActivity)getActivity()).radiosList){
+			if(item.getName().equals(name)) found = true;
+		}
+		
+		if(!found) {
+			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "shoutcast_logo",
+					true, description));
+			if(((MainActivity)getActivity()).radiosList.isEmpty()){
+				getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+			}
+			else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+			adapter.updateData(((MainActivity) getActivity()).radiosList);
+			((MainActivity)getActivity()).loadUserRadiosToXML();
+		}
+		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
+		
 		if(chooseLinkDialog!=null) chooseLinkDialog.close();
 		if(searchShoutcastDialog!=null) searchShoutcastDialog.close();
 	}
-
+	
 	@Override
 	public void onDialogPositiveClick(Radio radio) {
 		tempRadio = radio;
@@ -276,6 +314,6 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				tempRadio.getBitRate(), tempRadio.getGenre());
 		AddRadioDialog addRadioDialog = new AddRadioDialog();
 		addRadioDialog.setTargetFragment(RadiosFragment.this, 10);
-		addRadioDialog.show(getFragmentManager(), "oil", radio);
+		addRadioDialog.show(getFragmentManager(), "oil", radio, true);
 	}
 }

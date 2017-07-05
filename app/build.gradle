@@ -7,8 +7,8 @@ android {
         applicationId "com.unathemastudios.bitrate"
         minSdkVersion 18
         targetSdkVersion 23
-        versionCode 2
-        versionName "1.01"
+        versionCode 3
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -28,10 +28,10 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.github.amigold.fundapter:library:1.0'
-    compile 'me.grantland:autofittextview:0.2.1'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.roughike:bottom-bar:2.3.0'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.android.support:palette-v7:25.3.1'
+    compile 'com.github.AndroidDeveloperLB:AutoFitTextView:4'
     testCompile 'junit:junit:4.12'
 }

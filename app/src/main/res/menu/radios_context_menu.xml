@@ -5,5 +5,7 @@
     <item android:id="@+id/delete_radios"
           android:icon="@android:drawable/ic_menu_add"
           android:title="Delete" />
+    <item android:id="@+id/edit_radios"
+          android:title="Edit" />
 
 </menu>

@@ -27,16 +27,18 @@
         android:paddingBottom="10dp"
         android:paddingTop="2dp"/>
 
-    <me.grantland.widget.AutofitTextView
+    <com.lb.auto_fit_textview.AutoResizeTextView
         android:id="@+id/noStations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center"
+        android:layout_centerInParent="true"
         android:lines="1"
         android:text="Add a new station"
         android:textColor="@color/windowBackground"
-        android:textSize="36sp"/>
+        android:textSize="1000dp"/>
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fabAddRadio"

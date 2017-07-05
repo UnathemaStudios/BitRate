@@ -33,9 +33,7 @@ import java.util.List;
 public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		.NoticeDialogListener, RecordRadioDialog.NoticeDialogListener {
 	private static final int STOPPED = 0;
-	//	private static final int LOADING = 1;
 	private static final int PLAYING = 2;
-//	private final Handler metadataHandler = new Handler();
 	private int playerStatus = STOPPED;
 	private boolean visible;
 	private boolean isRecorded;
@@ -48,7 +46,6 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	private TextView tvRadioMetadata;
 	private TextView tvIsRecorded;
 	private ImageButton ibAboutUs;
-//	private Runnable metadataRunnable;
 	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
@@ -196,7 +193,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			@Override
 			public void onClick(View v) {
 				InfoDialog infoDialog = new InfoDialog();
-				infoDialog.show(getFragmentManager(), "AK47", "About", "Description");
+				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source app\nImport stations is powered by Shoutcast.com\nPlayback is powered by libVLC");
 			}
 		});
 	}
@@ -212,10 +209,8 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		super.setMenuVisibility(visible);
 		if (visible) {
 			this.visible = true;
-//			metadataHandler.postDelayed(metadataRunnable, 300);
 			setupPage();
 		} else {
-//			metadataHandler.removeCallbacks(metadataRunnable);
 			this.visible = false;
 		}
 	}

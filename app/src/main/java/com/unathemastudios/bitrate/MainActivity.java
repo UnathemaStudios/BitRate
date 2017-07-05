@@ -610,6 +610,8 @@ public class MainActivity extends AppCompatActivity {
 			ivImageSmall.setImageResource(R.mipmap.ic_launcher);
 			tvDescription.setText("BitRate");
 			}
+			Log.w("SETFINGER", "SETFINGER");
+		tvDescription.setSelected(true);
 	}
 	
 	public int getPlaying() {

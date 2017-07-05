@@ -42,8 +42,44 @@ class Radio {
         this.description = description;
         this.id = id;
     }
-
-    public String getName() {
+	
+	void setRecorded(boolean recorded) {
+		isRecorded = recorded;
+	}
+	
+	public void setBitRate(int bitRate) {
+		this.bitRate = bitRate;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	public void setGenre(String genre) {
+		this.genre = genre;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public void setMadeByUser(boolean madeByUser) {
+		isMadeByUser = madeByUser;
+	}
+	
+	public String getName() {
         return name;
     }
 
@@ -62,10 +98,6 @@ class Radio {
     boolean isMadeByUser(){
 		return isMadeByUser;
 	}
-
-    void setRecorded(boolean recorded) {
-        isRecorded = recorded;
-    }
 
     public String getDescription() {
         return description;

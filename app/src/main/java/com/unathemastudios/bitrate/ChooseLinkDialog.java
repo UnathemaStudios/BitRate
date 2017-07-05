@@ -65,7 +65,7 @@ public class ChooseLinkDialog extends DialogFragment {
 		// Create the AlertDialog object and return it
 
 		ExtarctLinksFromPls extarctLinksFromPls = new ExtarctLinksFromPls(getContext(),
-				textEntryView, id, mListener);
+				textEntryView, id, mListener, this);
 		extarctLinksFromPls.execute();
 
 		return builder.create();
@@ -117,12 +117,14 @@ class ExtarctLinksFromPls extends AsyncTask<Void, Void, ArrayList<String>>{
 	private ArrayList<String> links;
 	private View view;
 	private ChooseLinkDialog.NoticeDialogListener mListener;
+	private ChooseLinkDialog dialog;
 
-	public ExtarctLinksFromPls(Context context, View view, String id, ChooseLinkDialog.NoticeDialogListener mListener) {
+	public ExtarctLinksFromPls(Context context, View view, String id, ChooseLinkDialog.NoticeDialogListener mListener, ChooseLinkDialog dialog) {
 		this.con = context;
 		this.view = view;
 		this.id = id;
 		this.mListener = mListener;
+		this.dialog = dialog;
 		links = new ArrayList<>();
 	}
 	@Override
@@ -162,25 +164,33 @@ class ExtarctLinksFromPls extends AsyncTask<Void, Void, ArrayList<String>>{
 		super.onPostExecute(strings);
 
 		BindDictionary<String> dictionary = new BindDictionary<>();
-
-		dictionary.addStringField(R.id.tv_choose_link_pls, new StringExtractor<String>() {
-			@Override
-			public String getStringValue(String item, int position) {
-				return "Link" + (position + 1) + ": " + item;
-			}
-		});
-
-		FunDapter<String> adapter = new FunDapter<>(con, strings, R.layout
-				.choose_link_listview_layout, dictionary);
-
-		ListView listView = (ListView)view.findViewById(R.id.lv_pls_links);
-		listView.setAdapter(adapter);
-
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				mListener.onDialogPositiveClick(strings.get(position));
-			}
-		});
+		
+		if (strings.size() == 1){
+			
+			mListener.onDialogPositiveClick(strings.get(0));
+			dialog.dismiss();
+		}
+		else{
+			
+			dictionary.addStringField(R.id.tv_choose_link_pls, new StringExtractor<String>() {
+				@Override
+				public String getStringValue(String item, int position) {
+					return "Link" + (position + 1) + ": " + item;
+				}
+			});
+			
+			FunDapter<String> adapter = new FunDapter<>(con, strings, R.layout
+					.choose_link_listview_layout, dictionary);
+			
+			ListView listView = (ListView)view.findViewById(R.id.lv_pls_links);
+			listView.setAdapter(adapter);
+			
+			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					mListener.onDialogPositiveClick(strings.get(position));
+				}
+			});
+		}		
 	}
 }

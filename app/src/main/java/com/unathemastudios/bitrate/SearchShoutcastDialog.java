@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -51,6 +52,7 @@ public class SearchShoutcastDialog extends DialogFragment {
 	private EditText etTerm;
 	private ImageButton ibSearch;
 	private String searchTerm;
+	private Button btnPrv, btnNxt;
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	@Override
@@ -61,6 +63,10 @@ public class SearchShoutcastDialog extends DialogFragment {
 		ibClose = (ImageButton)textEntryView.findViewById(R.id.ibCloseSearchDialog);
 		etTerm = (EditText)textEntryView.findViewById(R.id.etSearchTerm);
 		ibSearch = (ImageButton)textEntryView.findViewById(R.id.ibSearch);
+		btnPrv = (Button) textEntryView.findViewById(R.id.btnPrevious);
+		btnNxt = (Button) textEntryView.findViewById(R.id.btnNext);
+		btnNxt.setVisibility(View.GONE);
+		btnPrv.setVisibility(View.GONE);
 		searchTable = new ArrayList<>();
 
 
@@ -73,11 +79,8 @@ public class SearchShoutcastDialog extends DialogFragment {
 			public void onClick(View v) {
 				searchTerm = etTerm.getText().toString().replace(" ", "+");
 				SearchByName searchByName = new SearchByName(getContext(), textEntryView,
-						searchTerm, mListener);
+						searchTerm, mListener, 0);
 				searchByName.execute();
-				/*mListener.onDialogPositiveClick(new Radio("TEstShoutcast", "url", true,
-						"description", 128, "genre"));
-				SearchShoutcastDialog.this.dismiss();*/
 			}
 		});
 
@@ -131,45 +134,62 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 
 	private Context con;
 	private String searchTerm;
-	private ArrayList<Radio> searchTable;
 	private View view;
 	private SearchShoutcastDialog.NoticeDialogListener mListener;
+	private int pageNumber;
+	private boolean hasNext;
 
 
 	SearchByName(Context context, View view, String searchTerm, SearchShoutcastDialog
-			.NoticeDialogListener mListener) {
+			.NoticeDialogListener mListener, int pageNumber) {
 		this.con = context;
 		this.view = view;
 		this.searchTerm = searchTerm;
 		this.mListener = mListener;
-		searchTable = new ArrayList<>();
+		this.pageNumber = pageNumber;
 	}
 
 	@Override
 	protected ArrayList<Radio> doInBackground(Void... params) {
 		
+		if(xmlParserFunction(1, 1).size()!=0){
+			
+			hasNext = true;
+		}
+		else hasNext = false;
+		
+		
+		return xmlParserFunction(0, 20);
+	}
+	
+	private ArrayList<Radio> xmlParserFunction(int x, int y){
+		
+		
+		ArrayList<Radio> searchTable = new ArrayList<>();
+		
 		URLConnection urlConnection = null;
 		try {
-			urlConnection = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm).openConnection();
+			urlConnection = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm + "&limit=" + (pageNumber+x)*20  + "," + y).openConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
+		
 		try {
 			XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
 			XmlPullParser xmlPullParser = xppFactory.newPullParser();
 			assert urlConnection != null;
 			xmlPullParser.setInput(urlConnection.getInputStream(), "utf-8");
-
+			
 			String stationName,id;
 			String genre, genre2, genre3;
 			int bitRate;
-
+			
 			int eventType = xmlPullParser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				switch (eventType) {
 					case XmlPullParser.START_TAG:
-
+						
 						if (xmlPullParser.getName().equals("station")) {
 							int size = xmlPullParser.getAttributeCount();
 							stationName = "";
@@ -202,14 +222,14 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 							searchTable.add(new Radio(stationName, "", true, "",
 									bitRate, genre + genre2 + genre3, id));
 						}
-
+						
 						break;
 					default:
 						break;
 				}
 				eventType = xmlPullParser.next();
 			}
-
+			
 		} catch (XmlPullParserException | IOException e) {
 			e.printStackTrace();
 		}
@@ -244,12 +264,37 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 				return "Genre: " + item.getGenre();
 			}
 		});
-
-
+		
 		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
-
+		Button btnPrv, btnNxt;
+		btnPrv = (Button) view.findViewById(R.id.btnPrevious);
+		btnNxt = (Button) view.findViewById(R.id.btnNext);
+		
+		btnNxt.setVisibility(View.VISIBLE);
+		btnPrv.setVisibility(View.VISIBLE);
+		
+		btnNxt.setEnabled(hasNext);
+		btnPrv.setEnabled(pageNumber!=0);
+		
+		btnNxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SearchByName searchByName = new SearchByName(con, view, searchTerm, mListener, pageNumber+1);
+				searchByName.execute();
+			}
+		});
+		
+		btnPrv.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SearchByName searchByName = new SearchByName(con, view, searchTerm, mListener, pageNumber-1);
+				searchByName.execute();
+			}
+		});
+		
+		
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -73,20 +73,17 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <me.grantland.widget.AutofitTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/tvRadioMetadata"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textAlignment="center"
-            android:textSize="16sp"
-            app:minTextSize="16sp"
+            android:textSize="1000dp"
             android:textColor="@color/textColorPrimary"/>
 
     </LinearLayout>
@@ -96,10 +93,10 @@
         android:layout_height="0dp"
         android:layout_weight="3">
 
-        <me.grantland.widget.AutofitTextView
+        <com.lb.auto_fit_textview.AutoResizeTextView
             android:id="@+id/tvPlayingNowName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:elevation="4dp"
@@ -107,10 +104,9 @@
             android:maxLines="1"
             android:textAlignment="center"
             android:textColor="@color/textColorPrimary"
-            android:textSize="50sp"
+            android:textSize="1000dp"
             android:layout_gravity="center"
-            android:gravity="center_horizontal"
-            autofit:minTextSize="8sp"/>
+            android:gravity="center_vertical"/>
         
 
     </LinearLayout>
