@@ -329,7 +329,11 @@ public class MainService extends Service {
 			}
 			case "SET_SERVICE_FINGER":
 			{
-				finger = intent.getIntExtra("finger", -1);
+				finger = intent.getIntExtra("finger", -2);
+				if (finger == -1)
+				{
+					close();
+				}
 				break;
 			}
 			case "PLAYER_STOP": {

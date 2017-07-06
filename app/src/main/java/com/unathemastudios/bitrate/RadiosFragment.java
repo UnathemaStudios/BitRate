@@ -195,8 +195,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 						{
 							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
 							{
-								((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", "no url", -1);
-								((MainActivity) getActivity()).tellServiceP("CLOSE");
+								((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", -1);
 							}
 							((MainActivity)getActivity()).setFinger(-1);
 							SharedPreferences.Editor editor = pref.edit();
