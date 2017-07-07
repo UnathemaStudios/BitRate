@@ -161,7 +161,6 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 			e.printStackTrace();
 		}
 		
-		
 		try {
 			XmlPullParserFactory xppFactory = XmlPullParserFactory.newInstance();
 			XmlPullParser xmlPullParser = xppFactory.newPullParser();

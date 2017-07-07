@@ -28,8 +28,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
+            android:ems="10"
             android:hint="Search Shoutcast.com"
-            android:ems="10"/>
+            android:imeOptions="actionSearch"
+            android:inputType="text"/>
 
         <ImageButton
             android:id="@+id/ibSearch"
