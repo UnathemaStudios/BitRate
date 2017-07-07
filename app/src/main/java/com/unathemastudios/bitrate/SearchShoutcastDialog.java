@@ -152,24 +152,11 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 	@Override
 	protected ArrayList<Radio> doInBackground(Void... params) {
 		
-		if(xmlParserFunction(1, 1).size()!=0){
-			
-			hasNext = true;
-		}
-		else hasNext = false;
-		
-		
-		return xmlParserFunction(0, 20);
-	}
-	
-	private ArrayList<Radio> xmlParserFunction(int x, int y){
-		
-		
 		ArrayList<Radio> searchTable = new ArrayList<>();
 		
 		URLConnection urlConnection = null;
 		try {
-			urlConnection = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm + "&limit=" + (pageNumber+x)*20  + "," + y).openConnection();
+			urlConnection = new URL("http://api.shoutcast.com/legacy/stationsearch?k=" + con.getString(R.string.shoutcast) + "&search=" + searchTerm + "&limit=" + pageNumber*20  + "," + 21).openConnection();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -219,8 +206,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 									id = xmlPullParser.getAttributeValue(i);
 								}
 							}
-							searchTable.add(new Radio(stationName, "", true, "",
-									bitRate, genre + genre2 + genre3, id));
+							searchTable.add(new Radio(stationName, "", true, "", bitRate, genre + genre2 + genre3, id));
 						}
 						
 						break;
@@ -233,6 +219,13 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		} catch (XmlPullParserException | IOException e) {
 			e.printStackTrace();
 		}
+		
+		if(searchTable.size() == 21)
+		{
+			hasNext = true;
+			searchTable.remove(20);
+		}
+		else hasNext = false;
 		
 		return searchTable;
 	}
