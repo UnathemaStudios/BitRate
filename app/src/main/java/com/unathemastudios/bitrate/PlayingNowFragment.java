@@ -231,6 +231,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		}
 		if(((MainActivity) getActivity()).getPlayerName().equals("")){
 			tvRadioName.setText("BitRate");
+			tvRadioMetadata.setText("");
 		}
 		else tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		tvRadioMetadata.setSelected(true);

@@ -27,6 +27,7 @@ import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
 
+import org.videolan.libvlc.LibVLC;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -57,7 +58,8 @@ public class SearchShoutcastDialog extends DialogFragment {
 		etTerm = (EditText) textEntryView.findViewById(R.id.etSearchTerm);
 		btnPrv = (Button) textEntryView.findViewById(R.id.btnPrevious);
 		btnNxt = (Button) textEntryView.findViewById(R.id.btnNext);
-		tvGenre = (TextView) textEntryView.findViewById(R.id.tv_search_by_genre); 
+		tvGenre = (TextView) textEntryView.findViewById(R.id.tv_search_by_genre);
+		textEntryView.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		
 		btnNxt.setVisibility(View.GONE);
 		btnPrv.setVisibility(View.GONE);
@@ -79,6 +81,21 @@ public class SearchShoutcastDialog extends DialogFragment {
 					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(textEntryView.getWindowToken(), 0);
 					return true;
+				}
+				return false;
+			}
+		});
+		
+		etTerm.setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_ENTER) {
+					searchTerm = etTerm.getText().toString().replace(" ", "+");
+					SearchByName searchByName = new SearchByName(getContext(), textEntryView,
+							searchTerm, mListener, 0);
+					searchByName.execute();
+					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(textEntryView.getWindowToken(), 0);
 				}
 				return false;
 			}
@@ -181,6 +198,16 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		this.searchTerm = searchTerm;
 		this.mListener = mListener;
 		this.pageNumber = pageNumber;
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
+		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
+		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -294,6 +321,8 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		Button btnPrv, btnNxt;
 		btnPrv = (Button) view.findViewById(R.id.btnPrevious);
 		btnNxt = (Button) view.findViewById(R.id.btnNext);
@@ -340,6 +369,16 @@ class BrowseByPrimaryGenre extends AsyncTask<Void, Void, ArrayList<Genre>> {
 		this.con = context;
 		this.view = view;
 		this.mListener = mListener;
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
+		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
+		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -421,6 +460,8 @@ class BrowseByPrimaryGenre extends AsyncTask<Void, Void, ArrayList<Genre>> {
 		adapter = new FunDapter(con, genres, R.layout.genre_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -451,6 +492,16 @@ class BrowseBySecondaryGenre extends AsyncTask<Void, Void, ArrayList<Genre>> {
 		this.view = view;
 		this.genreID = genreID;
 		this.mListener = mListener;
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
+		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
+		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -534,6 +585,8 @@ class BrowseBySecondaryGenre extends AsyncTask<Void, Void, ArrayList<Genre>> {
 		adapter = new FunDapter(con, genres, R.layout.genre_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -562,6 +615,16 @@ class SearchByGenreID extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		this.genreID = genreID;
 		this.mListener = mListener;
 		this.pageNumber = pageNumber;
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
+		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
+		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -675,6 +738,8 @@ class SearchByGenreID extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
 		listView.setAdapter(adapter);
+		view.findViewById(R.id.search_results_list_view).setVisibility(View.VISIBLE);
+		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		Button btnPrv, btnNxt;
 		btnPrv = (Button) view.findViewById(R.id.btnPrevious);
 		btnNxt = (Button) view.findViewById(R.id.btnNext);

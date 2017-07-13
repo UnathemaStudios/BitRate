@@ -83,8 +83,9 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textAlignment="center"
+            android:textColor="@color/textColorPrimary"
             android:textSize="1000dp"
-            android:textColor="@color/textColorPrimary"/>
+            android:typeface="monospace"/>
 
     </LinearLayout>
     
@@ -97,16 +98,17 @@
             android:id="@+id/tvPlayingNowName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:elevation="4dp"
-            android:fontFamily="monospace"
+            android:fontFamily="serif-monospace"
+            android:gravity="center_vertical"
             android:maxLines="1"
             android:textAlignment="center"
             android:textColor="@color/textColorPrimary"
             android:textSize="1000dp"
-            android:layout_gravity="center"
-            android:gravity="center_vertical"/>
+            />
         
 
     </LinearLayout>
