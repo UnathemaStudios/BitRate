@@ -687,11 +687,8 @@ public class MainActivity extends AppCompatActivity {
 //TODO: License
 //TODO: Translate
 //TODO: sch record UI
-//TODO: add confirmation dialog when deleting a station
 //
 //TODO: Notification Custom
-//TODO: Log file
 //TODO: Alarm (Schedule)
-//TODO: PlayStore
 //TODO: Chat
 //
