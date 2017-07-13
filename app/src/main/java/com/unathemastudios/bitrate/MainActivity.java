@@ -686,7 +686,6 @@ public class MainActivity extends AppCompatActivity {
 //TODO: UNICODE METADATA
 //TODO: License
 //TODO: Translate
-//TODO: active recordings in folder
 //TODO: sch record UI
 //TODO: add confirmation dialog when deleting a station
 //

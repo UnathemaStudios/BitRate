@@ -27,7 +27,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener,
-		SearchShoutcastDialog.NoticeDialogListener, ChooseLinkDialog.NoticeDialogListener
+		SearchShoutcastDialog.NoticeDialogListener, ChooseLinkDialog.NoticeDialogListener, ConfirmationDialog.NoticeDialogListener
 {
 	private FloatingActionsMenu fabAddRadio;
 	private FloatingActionButton addCustom;
@@ -188,37 +188,12 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			case R.id.delete_radios:
 				if (((MainActivity)getActivity()).radiosList.get(info.position).isMadeByUser())
 				{
+					
 					if (!((MainActivity)getActivity()).radiosList.get(info.position).isRecorded())
 					{
-						((MainActivity) getActivity()).radiosList.remove(info.position);
-						if (((MainActivity)getActivity()).finger == info.position)
-						{
-							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
-							{
-								((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", -1);
-							}
-							((MainActivity)getActivity()).setFinger(-1);
-							SharedPreferences.Editor editor = pref.edit();
-							editor.putInt("lastfinger",-1);
-							editor.apply();
-						}
-						else if (((MainActivity)getActivity()).finger > info.position)
-						{
-							((MainActivity)getActivity()).finger --;
-							if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
-							{
-								((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", ((MainActivity) getActivity()).finger);
-							}
-							SharedPreferences.Editor editor = pref.edit();
-							editor.putInt("lastfinger",((MainActivity)getActivity()).finger);
-							editor.apply();
-						}
-						if(((MainActivity)getActivity()).radiosList.isEmpty()){
-							getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
-						}
-						else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
-						adapter.updateData(((MainActivity) getActivity()).radiosList);
-						((MainActivity)getActivity()).loadUserRadiosToXML();
+						ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+						confirmationDialog.setTargetFragment(RadiosFragment.this, 90);
+						confirmationDialog.show(getFragmentManager(), "sushi", info.position);
 					}
 					else Toast.makeText(getContext(),"You cannot delete a station that is currently being recorded.", Toast.LENGTH_LONG).show();
 				}
@@ -314,5 +289,39 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		AddRadioDialog addRadioDialog = new AddRadioDialog();
 		addRadioDialog.setTargetFragment(RadiosFragment.this, 10);
 		addRadioDialog.show(getFragmentManager(), "oil", radio, true);
+	}
+	
+	
+	@Override
+	public void onDialogPositiveClick(int pos) {
+		((MainActivity) getActivity()).radiosList.remove(pos);
+		if (((MainActivity)getActivity()).finger == pos)
+		{
+			if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
+			{
+				((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", -1);
+			}
+			((MainActivity)getActivity()).setFinger(-1);
+			SharedPreferences.Editor editor = pref.edit();
+			editor.putInt("lastfinger",-1);
+			editor.apply();
+		}
+		else if (((MainActivity)getActivity()).finger > pos)
+		{
+			((MainActivity)getActivity()).finger --;
+			if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
+			{
+				((MainActivity) getActivity()).tellServicePF("SET_SERVICE_FINGER", ((MainActivity) getActivity()).finger);
+			}
+			SharedPreferences.Editor editor = pref.edit();
+			editor.putInt("lastfinger",((MainActivity)getActivity()).finger);
+			editor.apply();
+		}
+		if(((MainActivity)getActivity()).radiosList.isEmpty()){
+			getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+		}
+		else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+		adapter.updateData(((MainActivity) getActivity()).radiosList);
+		((MainActivity)getActivity()).loadUserRadiosToXML();
 	}
 }
