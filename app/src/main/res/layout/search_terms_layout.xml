@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:weightSum="3"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:weightSum="3">
 
     <TextView
         android:id="@+id/search_term_name"
@@ -11,8 +11,8 @@
         android:layout_height="0dp"
         android:layout_weight="2"
         android:textAlignment="textStart"
-        android:textSize="20sp"
         android:textColor="@color/BLACK"
+        android:textSize="20sp"
         android:textStyle="bold"/>
 
     <LinearLayout
