@@ -114,6 +114,8 @@ public class SearchShoutcastDialog extends DialogFragment {
 			public void onClick(View v) {
 				BrowseByPrimaryGenre browseByPrimaryGenre = new BrowseByPrimaryGenre(getContext(), textEntryView, mListener);
 				browseByPrimaryGenre.execute();
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(textEntryView.getWindowToken(), 0);
 			}
 		});
 		
