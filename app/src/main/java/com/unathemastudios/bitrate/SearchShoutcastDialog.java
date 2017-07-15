@@ -60,6 +60,7 @@ public class SearchShoutcastDialog extends DialogFragment {
 		btnNxt = (Button) textEntryView.findViewById(R.id.btnNext);
 		tvGenre = (TextView) textEntryView.findViewById(R.id.tv_search_by_genre);
 		textEntryView.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
+		textEntryView.findViewById(R.id.no_stations_found).setVisibility(View.GONE);
 		
 		btnNxt.setVisibility(View.GONE);
 		btnPrv.setVisibility(View.GONE);
@@ -210,6 +211,7 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
 		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
 		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
+		view.findViewById(R.id.no_stations_found).setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -322,7 +324,13 @@ class SearchByName extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		
 		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
-		listView.setAdapter(adapter);
+		listView.setAdapter(null);
+		if(strings.size()!=0) {
+			listView.setAdapter(adapter);
+		}
+		else{
+			view.findViewById(R.id.no_stations_found).setVisibility(View.VISIBLE);
+		}
 		view.findViewById(R.id.search_results_list_view).setVisibility(View.VISIBLE);
 		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		Button btnPrv, btnNxt;
@@ -381,6 +389,8 @@ class BrowseByPrimaryGenre extends AsyncTask<Void, Void, ArrayList<Genre>> {
 		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
 		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
 		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
+		view.findViewById(R.id.no_stations_found).setVisibility(View.GONE);
+
 	}
 	
 	@Override
@@ -504,6 +514,8 @@ class BrowseBySecondaryGenre extends AsyncTask<Void, Void, ArrayList<Genre>> {
 		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
 		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
 		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
+		view.findViewById(R.id.no_stations_found).setVisibility(View.GONE);
+
 	}
 	
 	@Override
@@ -627,6 +639,8 @@ class SearchByGenreID extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		view.findViewById(R.id.search_results_list_view).setVisibility(View.GONE);
 		view.findViewById(R.id.btnNext).setVisibility(View.GONE);
 		view.findViewById(R.id.btnPrevious).setVisibility(View.GONE);
+		view.findViewById(R.id.no_stations_found).setVisibility(View.GONE);
+
 	}
 	
 	@Override
@@ -739,7 +753,13 @@ class SearchByGenreID extends AsyncTask<Void, Void, ArrayList<Radio>> {
 		
 		adapter = new FunDapter(con, strings, R.layout.search_terms_layout, bindDictionary);
 		ListView listView = (ListView) view.findViewById(R.id.search_results_list_view);
-		listView.setAdapter(adapter);
+		listView.setAdapter(null);
+		if(strings.size()!=0) {
+			listView.setAdapter(adapter);
+		}
+		else{
+			view.findViewById(R.id.no_stations_found).setVisibility(View.VISIBLE);
+		}
 		view.findViewById(R.id.search_results_list_view).setVisibility(View.VISIBLE);
 		view.findViewById(R.id.loadingStationsLayout).setVisibility(View.GONE);
 		Button btnPrv, btnNxt;

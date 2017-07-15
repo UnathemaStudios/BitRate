@@ -64,6 +64,26 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/no_stations_found"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="1dp">
+
+        <com.lb.auto_fit_textview.AutoResizeTextView
+            android:id="@+id/no_stations_found_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="No stations found"
+            android:textAlignment="center"
+            android:textColor="@color/bb_darkBackgroundColor"
+            android:textSize="20sp"/>
     </RelativeLayout>
 
     <ListView
