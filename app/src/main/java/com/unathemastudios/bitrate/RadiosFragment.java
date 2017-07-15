@@ -2,10 +2,11 @@ package com.unathemastudios.bitrate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -15,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
@@ -25,6 +25,8 @@ import com.amigold.fundapter.interfaces.ItemClickListener;
 import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+
+import static android.view.View.*;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener,
 		SearchShoutcastDialog.NoticeDialogListener, ChooseLinkDialog.NoticeDialogListener, ConfirmationDialog.NoticeDialogListener
@@ -59,8 +61,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
 		addCustom = (FloatingActionButton) view.findViewById(R.id.fab_add_custom);
 		addShoutcast = (FloatingActionButton) view.findViewById(R.id.fab_add_shoutcast);
-		addCustom.setVisibility(View.GONE);
-		addShoutcast.setVisibility(View.GONE);
+		addCustom.setVisibility(GONE);
+		addShoutcast.setVisibility(GONE);
 
 		addCustom.setTitle("Add Custom Station");
 		addShoutcast.setTitle("Import Station from Shoutcast.com");
@@ -119,7 +121,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		
 		return view;
 	}
-	
+
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
@@ -128,18 +130,20 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		fabAddRadio.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
 			@Override
 			public void onMenuExpanded() {
-				addCustom.setVisibility(View.VISIBLE);
-				addShoutcast.setVisibility(View.VISIBLE);
+				FabVisibilityTask fabVisibilityTask = new FabVisibilityTask(addCustom,
+						addShoutcast, true);
+				fabVisibilityTask.execute();
 			}
 
 			@Override
 			public void onMenuCollapsed() {
-				addCustom.setVisibility(View.GONE);
-				addShoutcast.setVisibility(View.GONE);
+				FabVisibilityTask fabVisibilityTask = new FabVisibilityTask(addCustom,
+						addShoutcast, false);
+				fabVisibilityTask.execute();
 			}
 		});
 
-		addCustom.setOnClickListener(new View.OnClickListener()
+		addCustom.setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -151,7 +155,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 
-		addShoutcast.setOnClickListener(new View.OnClickListener() {
+		addShoutcast.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				searchShoutcastDialog = new SearchShoutcastDialog();
@@ -163,9 +167,9 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 
 
 		if(((MainActivity)getActivity()).radiosList.isEmpty()){
-			getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+			getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
 		}
-		else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+		else getActivity().findViewById(R.id.noStations).setVisibility(GONE);
 	}
 	
 	@Override
@@ -231,9 +235,9 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "defaultradio",
 					true, description));
 			if(((MainActivity)getActivity()).radiosList.isEmpty()){
-				getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+				getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
 				}
-			else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+			else getActivity().findViewById(R.id.noStations).setVisibility(GONE);
 			adapter.updateData(((MainActivity) getActivity()).radiosList);
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
@@ -260,9 +264,9 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "shoutcast_logo",
 					true, description));
 			if(((MainActivity)getActivity()).radiosList.isEmpty()){
-				getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+				getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
 			}
-			else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+			else getActivity().findViewById(R.id.noStations).setVisibility(GONE);
 			adapter.updateData(((MainActivity) getActivity()).radiosList);
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
@@ -318,10 +322,45 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			editor.apply();
 		}
 		if(((MainActivity)getActivity()).radiosList.isEmpty()){
-			getActivity().findViewById(R.id.noStations).setVisibility(View.VISIBLE);
+			getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
 		}
-		else getActivity().findViewById(R.id.noStations).setVisibility(View.GONE);
+		else getActivity().findViewById(R.id.noStations).setVisibility(GONE);
 		adapter.updateData(((MainActivity) getActivity()).radiosList);
 		((MainActivity)getActivity()).loadUserRadiosToXML();
+	}
+}
+
+class FabVisibilityTask extends AsyncTask<Void, Void, Void> {
+
+	private FloatingActionButton fabButton1, fabButton2;
+	private boolean open;
+
+	public FabVisibilityTask(FloatingActionButton fabButton1, FloatingActionButton fabButton2,
+							 boolean open){
+		this.fabButton1 = fabButton1;
+		this.fabButton2 = fabButton2;
+		this.open = open;
+	}
+
+	@Override
+	protected Void doInBackground(Void... params) {
+
+		SystemClock.sleep(60);
+
+		return null;
+	}
+
+	@Override
+	protected void onPostExecute(Void aVoid) {
+		super.onPostExecute(aVoid);
+
+		if(open) {
+			fabButton1.setVisibility(View.VISIBLE);
+			fabButton2.setVisibility(View.VISIBLE);
+		}
+		else{
+			fabButton1.setVisibility(View.GONE);
+			fabButton2.setVisibility(View.GONE);
+		}
 	}
 }
