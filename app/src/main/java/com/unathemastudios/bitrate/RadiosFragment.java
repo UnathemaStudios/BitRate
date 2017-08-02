@@ -2,6 +2,8 @@ package com.unathemastudios.bitrate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -158,10 +160,16 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		addShoutcast.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				searchShoutcastDialog = new SearchShoutcastDialog();
-				searchShoutcastDialog.setTargetFragment(RadiosFragment.this, 20);
-				searchShoutcastDialog.show(getFragmentManager(), "teaser");
-				fabAddRadio.collapse();
+				if(checkNetworkConnection()==1||checkNetworkConnection()==2) {
+					searchShoutcastDialog = new SearchShoutcastDialog();
+					searchShoutcastDialog.setTargetFragment(RadiosFragment.this, 20);
+					searchShoutcastDialog.show(getFragmentManager(), "teaser");
+					fabAddRadio.collapse();
+				}
+				else{
+					Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
+					fabAddRadio.collapse();
+				}
 			}
 		});
 
@@ -327,6 +335,26 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		else getActivity().findViewById(R.id.noStations).setVisibility(GONE);
 		adapter.updateData(((MainActivity) getActivity()).radiosList);
 		((MainActivity)getActivity()).loadUserRadiosToXML();
+	}
+
+	private int checkNetworkConnection() {
+		boolean wifiConnected;
+		boolean mobileConnected;
+		ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context
+				.CONNECTIVITY_SERVICE);
+		NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+		if (activeInfo != null && activeInfo.isConnected()) {
+			wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+			mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+			if (wifiConnected) {
+				return 1;
+			} else if (mobileConnected) {
+				return 2;
+			}
+		} else {
+			return 0;
+		}
+		return -1;
 	}
 }
 
