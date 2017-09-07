@@ -28,6 +28,7 @@ import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
+
 import static android.view.View.*;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener,
@@ -120,7 +121,6 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 				editor.apply();
 			}
 		});
-		
 		return view;
 	}
 
