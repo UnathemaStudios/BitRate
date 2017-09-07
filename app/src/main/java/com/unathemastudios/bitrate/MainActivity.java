@@ -684,7 +684,6 @@ public class MainActivity extends AppCompatActivity {
 //
 
 //TODO: Search in radiosFragment George
-//TODO: After new radio play instantly and go to playing now
 //TODO: Fix rec, button when deny permission
 //TODO: When click small player go to playingNow
 //TODO: If finished recording is 0kb delete automaticaly

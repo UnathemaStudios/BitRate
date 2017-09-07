@@ -231,7 +231,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		super.onDestroy();
 	}
 	
-	@Override
+	@Override //Custom add
 	public void onDialogPositiveClick(String name, String url, String description)
 	{
 		boolean found = false;
@@ -253,7 +253,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		
 	}
 	
-	@Override
+	@Override //Edit
 	public void onDialogPositiveClick(String name, String url, String description, int pos) {
 		((MainActivity)getActivity()).radiosList.get(pos).setName(name);
 		((MainActivity)getActivity()).radiosList.get(pos).setUrl(url);
@@ -261,7 +261,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		adapter.updateData(((MainActivity)getActivity()).radiosList);
 	}
 	
-	@Override
+	@Override // Add from shoutcast
 	public void onDialogPositiveClick(String name, String url, String description, boolean fromShoutcast) {
 		boolean found = false;
 		for(Radio item : ((MainActivity)getActivity()).radiosList){
@@ -269,8 +269,18 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		}
 		
 		if(!found) {
-			((MainActivity) getActivity()).radiosList.add(new Radio(name, url, "shoutcast_logo",
-					true, description));
+			//Add and play radio
+			Radio cRadio = new Radio(name, url, "shoutcast_logo", true, description);
+			((MainActivity) getActivity()).radiosList.add(cRadio);
+			((MainActivity) getActivity()).tellServiceP("PLAYER_PLAY", cRadio.getUrl(), (
+					(MainActivity)getActivity()).radiosList.size()-1);
+			((MainActivity) getActivity()).disableButtons();
+			((MainActivity) getActivity()).setFinger(((MainActivity) getActivity()).radiosList.size()-1);
+			SharedPreferences.Editor editor = pref.edit();
+			editor.putInt("lastfinger", ((MainActivity)getActivity()).radiosList.size()-1);
+			editor.apply();
+			((MainActivity)getActivity()).pageSelector(0);
+
 			if(((MainActivity)getActivity()).radiosList.isEmpty()){
 				getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
 			}
@@ -279,12 +289,12 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			((MainActivity)getActivity()).loadUserRadiosToXML();
 		}
 		else Toast.makeText(getContext(),name + " already exists", Toast.LENGTH_SHORT).show();
-		
+
 		if(chooseLinkDialog!=null) chooseLinkDialog.close();
 		if(searchShoutcastDialog!=null) searchShoutcastDialog.close();
 	}
 	
-	@Override
+	@Override // From SearchShoutcastDialog
 	public void onDialogPositiveClick(Radio radio) {
 		tempRadio = radio;
 		chooseLinkDialog = new ChooseLinkDialog();
@@ -292,7 +302,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		chooseLinkDialog.show(getFragmentManager(), "rice", radio.getId());
 	}
 
-	@Override
+	@Override // From Choose link Dialog
 	public void onDialogPositiveClick(String url) {
 		Radio radio = new Radio(tempRadio.getName(), url, true, "Genre: " + tempRadio.getGenre()
 				+ "\nBitrate: " + tempRadio
@@ -304,7 +314,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	}
 	
 	
-	@Override
+	@Override // Confirmation Dialog - Delete
 	public void onDialogPositiveClick(int pos) {
 		((MainActivity) getActivity()).radiosList.remove(pos);
 		if (((MainActivity)getActivity()).finger == pos)
