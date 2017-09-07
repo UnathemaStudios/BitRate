@@ -480,6 +480,7 @@ public class MainActivity extends AppCompatActivity {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 				Log.w("Main", "Permission (Write to external storage) already granted");
+				playingNowFragment.recContinue();
 				rec(radiosList.get(finger).getUrl(), duration);
 			} else {
 				durationtmp = duration;
@@ -497,6 +498,7 @@ public class MainActivity extends AppCompatActivity {
 		if (requestCode == 5) {
 			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Log.w("Main", "Permission (Write to external storage) just granted");
+				playingNowFragment.recContinue();
 				rec(radiosList.get(finger).getUrl(), durationtmp);
 			} else {
 				Log.w("Main", "Permission (Write to external storage) denied");
@@ -684,7 +686,6 @@ public class MainActivity extends AppCompatActivity {
 //
 
 //TODO: Search in radiosFragment George
-//TODO: Fix rec, button when deny permission
 //TODO: When click small player go to playingNow
 //TODO: If finished recording is 0kb delete automaticaly
 

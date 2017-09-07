@@ -314,6 +314,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			int duration = (hour * 60) + minute;
 			((MainActivity) getActivity()).recordCurrentRadio(duration);
 		}
+	}
+
+	public void recContinue(){
 		((MainActivity) getActivity()).setIsRecordedStatus(true);
 		isRecorded = true;
 		setRecCurrentRadioUI();
