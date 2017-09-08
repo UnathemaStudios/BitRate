@@ -23,23 +23,30 @@ public class SleepTimerDialog extends DialogFragment {
     @NonNull
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the Builder class for convenient dialog construction
-        LayoutInflater factory = LayoutInflater.from(getContext());
-        final View textEntryView = factory.inflate(R.layout.sleep_timer_dialog_layout, null);
-        timePicker = (NumberPicker)textEntryView.findViewById(R.id.numberPicker);
-        timePicker.setMaxValue(8);
-        timePicker.setMinValue(1);
-		timePicker.setDisplayedValues(new String[]{"15", "30", "45", "60", "75", "90", "105", "120"});
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Select Sleep Minutes")
-                .setView(textEntryView)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogPositiveClick(timePicker.getValue()*15);
-                        SleepTimerDialog.this.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.add_radio_dialog_cancel, new DialogInterface.OnClickListener() {
+		// Use the Builder class for convenient dialog construction
+		LayoutInflater factory = LayoutInflater.from(getContext());
+		final View textEntryView = factory.inflate(R.layout.sleep_timer_dialog_layout, null);
+		timePicker = (NumberPicker)textEntryView.findViewById(R.id.numberPicker);
+		int maxValue = 12;
+		final int interval = 10;
+		timePicker.setMaxValue(maxValue);
+		timePicker.setMinValue(1);
+		String[] values = new String[maxValue];
+		for (int i = 0 ; i < maxValue ; i++)
+		{
+			values[i] = Integer.toString((i+1)*interval);
+		}
+		timePicker.setDisplayedValues(values);
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Select Sleep Minutes")
+				.setView(textEntryView)
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						mListener.onDialogPositiveClick(timePicker.getValue()*interval);
+						SleepTimerDialog.this.dismiss();
+					}
+				})
+				.setNegativeButton(R.string.add_radio_dialog_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         SleepTimerDialog.this.getDialog().cancel();
                     }

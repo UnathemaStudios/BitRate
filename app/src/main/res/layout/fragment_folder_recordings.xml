@@ -23,6 +23,5 @@
         android:gravity="center_vertical"
         android:textSize="1000dp"
         android:textColor="@color/windowBackground"
-        
         android:text="No complete recordings"/>
 </RelativeLayout>

@@ -164,6 +164,7 @@ public class MainService extends Service {
 				sleepMinutes--;
 				if (sleepMinutes == 0) {
 					stop();
+					stoppedByUser = true;
 				}
 				send("timeRemaining", sleepMinutes);
 			}
@@ -440,8 +441,9 @@ public class MainService extends Service {
 	
 	public void close() {
 		stop();
+		stoppedByUser = true;
+		streamPlayer.release();
 		if (activeRecordings == 0) {
-			streamPlayer.release();
 			stopForeground(true);
 			stopSelf();
 		}
