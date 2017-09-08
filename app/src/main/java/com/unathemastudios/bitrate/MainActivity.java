@@ -682,20 +682,21 @@ public class MainActivity extends AppCompatActivity {
 	}
 }
 
-//TODO LIST
+//TODO: PRIORITY HIGH
 //
-
-//TODO: Search in radiosFragment George
-//TODO: When click small player go to playingNow
-//TODO: If finished recording is 0kb delete automaticaly
-
-//TODO: chceckbox instead of radiogroup in record dialog
-//TODO: UNICODE METADATA
-//TODO: License
+//TODO: When click small player go to playingNow ( GIATI ??? )	Jojos
+//TODO: If finished recording is 0kb delete automaticaly		Thanos
+//TODO: Alarm Clock (one time)									Thanos
+//TODO: VLC -> EXO + META										Thanos
 //TODO: Translate
+//TODO: Notification Custom										Jojos
+//TODO: License
+
+
+
+//TODO: PRIORITY LOW
+//
+//TODO: Search in radiosFragment 								Jojos
+//TODO: chceckbox instead of radiogroup in record dialog		Jojos
 //TODO: sch record UI
-//
-//TODO: Notification Custom
-//TODO: Alarm (Schedule)
 //TODO: Chat
-//
