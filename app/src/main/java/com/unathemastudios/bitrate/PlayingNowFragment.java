@@ -319,8 +319,10 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	public void recContinue(){
 		((MainActivity) getActivity()).setIsRecordedStatus(true);
 		isRecorded = true;
-		setRecCurrentRadioUI();
-		((MainActivity)getActivity()).pageSelector(2);
+		if(visible) {
+			setRecCurrentRadioUI();
+			((MainActivity) getActivity()).pageSelector(2);
+		}
 	}
 }
 
