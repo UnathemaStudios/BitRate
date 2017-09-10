@@ -62,6 +62,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="2dp"
                 android:layout_marginStart="7dp"
+                android:elevation="4dp"
                 android:scaleType="centerInside"/>
 
             <ImageButton

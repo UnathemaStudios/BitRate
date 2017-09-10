@@ -284,6 +284,20 @@ public class MainActivity extends AppCompatActivity {
 						.show();
 			}
 		});
+
+		ivImageSmall.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pageSelector(0);
+			}
+		});
+		tvDescription.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pageSelector(0);
+			}
+		});
+
 		//start listening for broadcasts
 		if (serviceReceiver != null) {
 			registerReceiver(serviceReceiver, new IntentFilter("0"));
@@ -297,7 +311,8 @@ public class MainActivity extends AppCompatActivity {
 		if (isMyServiceRunning(MainService.class)) {
 			tellServiceP("REQUEST_PLAYER_STATUS");
 		} else setFinger(pref.getInt("lastfinger",-1));
-		
+
+
 		
 	}
 	
@@ -684,7 +699,6 @@ public class MainActivity extends AppCompatActivity {
 
 //TODO: PRIORITY HIGH
 //
-//TODO: When click small player go to playingNow				Jojos	( GIATI ??? )
 //TODO: Alarm Clock (one time)									Thanos
 //TODO: VLC -> EXO + META										Thanos
 //TODO: Translate
