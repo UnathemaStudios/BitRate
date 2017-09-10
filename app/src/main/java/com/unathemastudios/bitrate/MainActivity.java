@@ -696,6 +696,7 @@ public class MainActivity extends AppCompatActivity {
 
 //TODO: PRIORITY LOW
 //
+//TODO: Class for constant variables
 //TODO: Search in radiosFragment 								Jojos
 //TODO: chceckbox instead of radiogroup in record dialog		Jojos
 //TODO: sch record UI
