@@ -684,7 +684,7 @@ public class MainActivity extends AppCompatActivity {
 
 //TODO: PRIORITY HIGH
 //
-//TODO: When click small player go to playingNow ( GIATI ??? )	Jojos
+//TODO: When click small player go to playingNow				Jojos	( GIATI ??? )
 //TODO: Alarm Clock (one time)									Thanos
 //TODO: VLC -> EXO + META										Thanos
 //TODO: Translate
