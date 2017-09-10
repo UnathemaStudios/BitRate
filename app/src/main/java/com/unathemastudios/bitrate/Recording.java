@@ -135,7 +135,7 @@ class Recording implements Serializable
 				} while (connectionLost && (!stopped && (duration == -60 || ((System.currentTimeMillis() / 1000) < (startTimeInSeconds + duration)))));
 				
 				Log.w("Recorder", String.valueOf(bytesRead / 1024) + " KBs downloaded.");
-				
+								
 				try
 				{
 					if (fileOutputStream!=null)
@@ -150,6 +150,10 @@ class Recording implements Serializable
 				MainService.activeRecordings--;
 				status = MainService.NOTRECORDING;
 				tellServiceRecordingRecordingStopped();
+				if (bytesRead == 0)
+				{
+					outputSourceComplete.delete();
+				}
 			}
 		}).start();
 	}

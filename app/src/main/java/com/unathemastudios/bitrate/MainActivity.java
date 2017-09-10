@@ -685,7 +685,6 @@ public class MainActivity extends AppCompatActivity {
 //TODO: PRIORITY HIGH
 //
 //TODO: When click small player go to playingNow ( GIATI ??? )	Jojos
-//TODO: If finished recording is 0kb delete automaticaly		Thanos
 //TODO: Alarm Clock (one time)									Thanos
 //TODO: VLC -> EXO + META										Thanos
 //TODO: Translate
