@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                tools:context="com.unathemastudios.bitrate.AlarmFragment"
+                android:background="@color/darkGrey">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/alarm_layout_for_fragments"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/relativeLayout20"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/darkGrey">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/relativeLayout20"
+        android:elevation="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="50dp">
+
+        <com.roughike.bottombar.BottomBar
+            android:id="@+id/bottomBarAlarm"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:elevation="4dp"
+            app:bb_tabXmlResource="@xml/bottom_navigation_tabs_for_alarm" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

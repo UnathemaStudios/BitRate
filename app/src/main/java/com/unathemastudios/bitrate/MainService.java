@@ -430,7 +430,7 @@ public class MainService extends Service {
 		if (streamPlayer.isPlaying()) {
 			streamPlayer.stop();
 		}
-		streamPlayer.getMedia().release();
+		//streamPlayer.getMedia().release();
 		sleepMinutes = -1;
 		stopSleepTimer();
 		stopCheckIfStopped();

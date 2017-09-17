@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        icon="@drawable/ic_alarm_bottom_bar"
+        id="@+id/tab_alarm"
+        activeColor="@color/colorAccent"
+        title="Alarm"/>
+    <tab
+        icon="@drawable/ic_av_timer"
+        id="@+id/tab_sch_record"
+        activeColor="@color/colorAccent"
+        title="Shedule Record"/>
+</tabs>
