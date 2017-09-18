@@ -39,10 +39,9 @@ public class AlarmEventDialog extends DialogFragment {
 						ChooseLinkDialog.this.getDialog().cancel();
 					}
 				});
-		// Create the AlertDialog object and return it
+//		 Create the AlertDialog object and return it
 		
-		ExtarctLinksFromPls extarctLinksFromPls = new ExtarctLinksFromPls(getContext(),
-				textEntryView, id, mListener, this);
+		ExtarctLinksFromPls extarctLinksFromPls = new ExtarctLinksFromPls(getContext(), textEntryView, id, mListener, this);
 		extarctLinksFromPls.execute();
 		
 		return builder.create();

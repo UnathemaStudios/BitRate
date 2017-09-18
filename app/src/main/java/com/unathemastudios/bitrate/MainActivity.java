@@ -313,8 +313,11 @@ public class MainActivity extends AppCompatActivity {
 		
 		if (isMyServiceRunning(MainService.class)) {
 			tellServiceP("REQUEST_PLAYER_STATUS");
-		} else setFinger(pref.getInt("lastfinger",-1));
-		
+		}
+		else 
+		{
+			setFinger(pref.getInt("lastfinger",-1));
+		}
 		
 		alarmList = new ArrayList<>();
 		alarmList.add(new Alarm(radiosList.get(0), 10, 10, true, false));
@@ -624,18 +627,27 @@ public class MainActivity extends AppCompatActivity {
 		return radiosList.get(finger).getName();
 	}
 	
-	
 	public void setFinger(int passedFinger) {
 		finger = passedFinger;
 		if(finger!=-1) {
-			ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
-			tvDescription.setText(radiosList.get(finger).getName());
+			if (radiosList.size() >= finger + 1)
+			{
+				ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
+				tvDescription.setText(radiosList.get(finger).getName());
+			}
+			else
+			{
+				ivImageSmall.setImageResource(R.mipmap.ic_launcher);
+				tvDescription.setText("BitRate");
+			}
 		}
-		else{
+		else
+		{
 			ivImageSmall.setImageResource(R.mipmap.ic_launcher);
 			tvDescription.setText("BitRate");
-			}
-			Log.w("SETFINGER", "SETFINGER");
+		}
+		
+		Log.w("SETFINGER", "SETFINGER");
 		tvDescription.setSelected(true);
 	}
 	
