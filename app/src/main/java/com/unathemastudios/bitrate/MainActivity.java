@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
 		ibPPbutton.setEnabled(true);
 		findViewById(R.id.loadingLayout).setVisibility(View.INVISIBLE);
 		playing = PLAYING;
-		if (finger != -1)
+		if (finger != -1 && radiosList.size() >= finger + 1)
 		{
 			playingNowFragment.setPPButtonStatus(PLAYING, radiosList.get(finger).isRecorded());
 		}
@@ -629,17 +629,10 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void setFinger(int passedFinger) {
 		finger = passedFinger;
-		if(finger!=-1) {
-			if (radiosList.size() >= finger + 1)
-			{
-				ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
-				tvDescription.setText(radiosList.get(finger).getName());
-			}
-			else
-			{
-				ivImageSmall.setImageResource(R.mipmap.ic_launcher);
-				tvDescription.setText("BitRate");
-			}
+		if(finger!=-1 && radiosList.size() >= finger + 1)
+		{
+			ivImageSmall.setImageResource(getResources().getIdentifier(radiosList.get(finger).getLogo(), "raw", getApplicationContext().getPackageName()));
+			tvDescription.setText(radiosList.get(finger).getName());
 		}
 		else
 		{
