@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 	private RadiosFragment radiosFragment;
 	private PlayingNowFragment playingNowFragment;
 	private RecordFragment recordFragment;
-	private AlarmFragment alarmFragment;
+//	private AlarmFragment alarmFragment;
 	private ImageButton ibPPbutton;
 	private ImageView ivImageSmall;
 	private TextView tvDescription;
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
 		recordFragment = new RecordFragment();
-		alarmFragment = new AlarmFragment();
+//		alarmFragment = new AlarmFragment();
 		
 		
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 				super.onTabReselected(tab);
 			}
 		});
-		viewPager.setOffscreenPageLimit(3);
+		viewPager.setOffscreenPageLimit(2);
 		pageSelector(1);
 		
 		//load default radio list from XML
@@ -319,10 +319,10 @@ public class MainActivity extends AppCompatActivity {
 			setFinger(pref.getInt("lastfinger",-1));
 		}
 		
-		alarmList = new ArrayList<>();
-		alarmList.add(new Alarm(radiosList.get(0), 10, 10, true, false));
-		alarmList.add(new Alarm(radiosList.get(0), 10, 20, false, false));
-		alarmList.add(new Alarm(radiosList.get(0), 10, 30, true, false));
+//		alarmList = new ArrayList<>();
+//		alarmList.add(new Alarm(radiosList.get(0), 10, 10, true, false));
+//		alarmList.add(new Alarm(radiosList.get(0), 10, 20, false, false));
+//		alarmList.add(new Alarm(radiosList.get(0), 10, 30, true, false));
 	}
 	
 	void loadUserRadiosToXML()
@@ -475,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
 		adapter.addFragment(playingNowFragment, "Playing Now");
 		adapter.addFragment(radiosFragment, "Stations");
 		adapter.addFragment(recordFragment, "Recording");
-		adapter.addFragment(alarmFragment, "Scheduling");
+//		adapter.addFragment(alarmFragment, "Scheduling");
 		viewPager.setAdapter(adapter);
 	}
 	
@@ -483,8 +483,8 @@ public class MainActivity extends AppCompatActivity {
 		tabLayout.getTabAt(0).setIcon(R.drawable.ic_play_circle);
 		tabLayout.getTabAt(1).setIcon(R.drawable.ic_radio);
 		tabLayout.getTabAt(2).setIcon(R.drawable.ic_recording_now);
-		tabLayout.getTabAt(3).setIcon(R.drawable.ic_access_time_black_24dp);
-	}
+//		tabLayout.getTabAt(3).setIcon(R.drawable.ic_access_time_black_24dp);
+	} 
 	
 	@Override
 	protected void onRestart() {

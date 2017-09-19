@@ -36,13 +36,13 @@ public class AlarmEventDialog extends DialogFragment {
 				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						ChooseLinkDialog.this.getDialog().cancel();
+//						ChooseLinkDialog.this.getDialog().cancel();
 					}
 				});
 //		 Create the AlertDialog object and return it
 		
-		ExtarctLinksFromPls extarctLinksFromPls = new ExtarctLinksFromPls(getContext(), textEntryView, id, mListener, this);
-		extarctLinksFromPls.execute();
+//		ExtarctLinksFromPls extarctLinksFromPls = new ExtarctLinksFromPls(getContext(), textEntryView, id, mListener, this);
+//		extarctLinksFromPls.execute();
 		
 		return builder.create();
 	}
