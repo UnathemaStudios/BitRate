@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
 		recordFragment = new RecordFragment();
-//		alarmFragment = new AlarmFragment();
+		alarmFragment = new AlarmFragment();
 		
 		
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 				super.onTabReselected(tab);
 			}
 		});
-		viewPager.setOffscreenPageLimit(2);
+		viewPager.setOffscreenPageLimit(3);
 		pageSelector(1);
 		
 		//load default radio list from XML
@@ -710,6 +710,10 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 }
+//TODO: PRIORITY FLAME!
+//TODO: Date/Time picker for the poor
+//TODO: Date format for device
+
 
 //TODO: PRIORITY HIGH
 //

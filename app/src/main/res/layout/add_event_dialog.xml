@@ -6,7 +6,7 @@
               android:weightSum="100">
 
     <TextView
-        android:id="@+id/tvDateSelected"
+        android:id="@+id/tvTimeSelectedForEvent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="20"
@@ -32,7 +32,7 @@
             android:text="Add Specific Date"/>
 
         <TextView
-            android:id="@+id/tvTimeSelectedForEvent"
+            android:id="@+id/tvDateSelected"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -41,7 +41,19 @@
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="italic"/>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Choose Station:"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:textStyle="italic"/>
 
     <Spinner
         android:id="@+id/spChooseRadio"

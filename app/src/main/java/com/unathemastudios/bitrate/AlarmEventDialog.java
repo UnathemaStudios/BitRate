@@ -25,7 +25,8 @@ import org.w3c.dom.Text;
  * Created by Thanos on 17-Sep-17.
  */
 
-public class AlarmEventDialog extends DialogFragment implements TimePickerFragment.NoticeDialogListener {
+public class AlarmEventDialog extends DialogFragment implements TimePickerFragment
+		.NoticeDialogListener, DatePickerFragment.NoticeDialogListener {
 
 
 	public interface NoticeDialogListener {
@@ -57,11 +58,12 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if(isChecked) tvDate.setEnabled(true);
+				else tvDate.setEnabled(false);
 			}
 		});
 
 		//Time TextBox
-		tvTime.setText((CharSequence) calendar.getTime());
+		tvTime.setText(Calendar.HOUR_OF_DAY + ":" + Calendar.MINUTE);
 		tvTime.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -70,6 +72,9 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 				timePickerFragment.show(getFragmentManager(), "GIMMETIME");
 			}
 		});
+
+		//Date TextBox
+		tvDate.setText(Calendar.DAY_OF_MONTH + "/" + Calendar.MONTH + "/" + Calendar.YEAR);
 
 		//Spinner
 		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R
@@ -125,5 +130,10 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 		hour = hourOfTHeDay;
 		this.minute = minute;
 		tvTime.setText(hourOfTHeDay + ":" + minute);
+	}
+
+	@Override
+	public void onDialogPositiveClick(int year, int month, int day) {
+		tvDate.setText(day + "/" + month + "/" + year);
 	}
 }
