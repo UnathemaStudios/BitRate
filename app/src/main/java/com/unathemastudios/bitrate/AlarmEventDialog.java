@@ -75,6 +75,14 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 
 		//Date TextBox
 		tvDate.setText(Calendar.DAY_OF_MONTH + "/" + Calendar.MONTH + "/" + Calendar.YEAR);
+		tvDate.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DatePickerFragment datePickerFragment = new DatePickerFragment();
+				datePickerFragment.setTargetFragment(AlarmEventDialog.this, 52);
+				datePickerFragment.show(getFragmentManager(), "GIMMEDATE");
+			}
+		});
 
 		//Spinner
 		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R
@@ -84,6 +92,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 		}
 		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(arrayAdapter);
+
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setView(textEntryView)
