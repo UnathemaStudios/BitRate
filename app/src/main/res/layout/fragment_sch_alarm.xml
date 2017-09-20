@@ -15,18 +15,15 @@
         android:layout_alignParentTop="true"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/fabAddAlarmEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:clickable="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
         fab:fabSize="normal"
-        fab:fab_addButtonColorNormal="@color/colorAccent"
-        fab:fab_addButtonColorPressed="@color/RED"
-        fab:fab_addButtonPlusIconColor="@color/textColorPrimary"
         fab:srcCompat="@drawable/ic_add"/>
 
 

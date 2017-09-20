@@ -2,6 +2,7 @@ package com.unathemastudios.bitrate;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,18 +26,17 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SchAlarm extends Fragment {
+public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogListener {
 	
 	private TextView tvTime, tvDescription;
 	private Switch aSwitch;
 	private ImageView ibBin;
 	private FunDapter<Alarm> funDapter;
-	
-	
+	private FloatingActionButton fabCreateNew;
+
 	public SchAlarm() {
 		// Required empty public constructor
 	}
-	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,9 +48,16 @@ public class SchAlarm extends Fragment {
 		tvDescription = (TextView) view.findViewById(R.id.tvDescription_for_alarm);
 		aSwitch = (Switch) view.findViewById(R.id.sw_for_alarm);
 		ibBin = (ImageView) view.findViewById(R.id.ibBin_for_alarm);
+		fabCreateNew = (FloatingActionButton) view.findViewById(R.id.fabAddAlarmEvent);
 		
-		
-		
+		fabCreateNew.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				AlarmEventDialog alarmEventDialog = new AlarmEventDialog();
+				alarmEventDialog.setTargetFragment(SchAlarm.this, 51);
+				alarmEventDialog.show(getFragmentManager(), "EVENTUH?");
+			}
+		});
 		
 		BindDictionary<Alarm> bindDictionary = new BindDictionary<>();
 		
@@ -99,5 +106,9 @@ public class SchAlarm extends Fragment {
 		
 		return view;
 	}
-	
+
+	@Override
+	public void onDialogPositiveClick(String url) {
+
+	}
 }
