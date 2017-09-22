@@ -105,17 +105,23 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 				.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy " +
-								"HH:mm");
+						Log.w("hgfhgf", tvDate.getText().toString()+" "+tvTime.getText().toString());
+						
+						
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy " + "HH:mm");
 						Date datetoepoch = null;
 						try {
-							datetoepoch = simpleDateFormat.parse(date + " " + hour + ":" + minute);
+							datetoepoch = simpleDateFormat.parse(tvDate.getText().toString() + " " + tvTime.getText().toString());
 						} catch (ParseException e) {
 							e.printStackTrace();
 						}
 						Log.w("date", datetoepoch + "");
 						assert datetoepoch != null;
 						long time = datetoepoch.getTime();
+						Log.w("MILIS", time+"");
+						
+						Log.w("HOURS", ((time - System.currentTimeMillis()) / 1000 / 60 / 60)+" HOURS");
+						
 						long timetoepoch = time - System.currentTimeMillis();
 						Timestamp stamp = new Timestamp(timetoepoch);
 						Date date2 = new Date(stamp.getDate());
@@ -163,7 +169,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 
 	@Override
 	public void onDialogPositiveClick(int year, int month, int day) {
-		this.date = day + "/" + month + "/" + year;
+		this.date = day + "/" + (month + 1) + "/" + year;
 		tvDate.setText(this.date);
 	}
 }
