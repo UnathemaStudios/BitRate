@@ -4,22 +4,26 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by Thanos on 17-Sep-17.
@@ -30,7 +34,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 
 
 	public interface NoticeDialogListener {
-		public void onDialogPositiveClick(String url);
+		public void onDialogPositiveClick(Alarm alarm);
 	}
 	public AlarmEventDialog.NoticeDialogListener mListener;
 
@@ -38,6 +42,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 	private CheckBox checkBox;
 	private Spinner spinner;
 	private Calendar calendar;
+	String date;
 	private int hour = 0;
 	private int minute = 0;
 	
@@ -100,6 +105,21 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 				.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy " +
+								"HH:mm");
+						Date datetoepoch = null;
+						try {
+							datetoepoch = simpleDateFormat.parse(date + " " + hour + ":" + minute);
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+						Log.w("date", datetoepoch + "");
+						assert datetoepoch != null;
+						long time = datetoepoch.getTime();
+						long timetoepoch = time - System.currentTimeMillis();
+						Timestamp stamp = new Timestamp(timetoepoch);
+						Date date2 = new Date(stamp.getDate());
+						Log.w("till", date2 +"");
 
 					}
 				})
@@ -135,7 +155,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 	}
 
 	@Override
-	public void onDialogPositiveClick(int hourOfTHeDay, int minute) {
+	public void onDialogPositiveClick(int hourOfTHeDay, int minute, boolean is24) {
 		hour = hourOfTHeDay;
 		this.minute = minute;
 		tvTime.setText(hourOfTHeDay + ":" + minute);
@@ -143,6 +163,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 
 	@Override
 	public void onDialogPositiveClick(int year, int month, int day) {
-		tvDate.setText(day + "/" + month + "/" + year);
+		this.date = day + "/" + month + "/" + year;
+		tvDate.setText(this.date);
 	}
 }

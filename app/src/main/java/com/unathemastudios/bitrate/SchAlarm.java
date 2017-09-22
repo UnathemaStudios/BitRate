@@ -64,7 +64,7 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 		bindDictionary.addStringField(R.id.tvtime_for_alarm, new StringExtractor<Alarm>() {
 			@Override
 			public String getStringValue(Alarm item, int position) {
-				return item.getHour() + ":" + item.getMinute();
+				return null;//item.getHour() + ":" + item.getMinute();
 			}
 		});
 		
@@ -108,7 +108,7 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 	}
 
 	@Override
-	public void onDialogPositiveClick(String url) {
+	public void onDialogPositiveClick(Alarm alarm) {
 
 	}
 }

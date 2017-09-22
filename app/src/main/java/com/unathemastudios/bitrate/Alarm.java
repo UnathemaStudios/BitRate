@@ -7,14 +7,13 @@ package com.unathemastudios.bitrate;
 public class Alarm {
 	
 	private Radio alarmRadio;
-	private int hour, minute;
+	private long timestamp;
 	private boolean isActive, isRecord;
 	
 	
-	public Alarm(Radio radio, int hour, int minute, boolean isActive, boolean isRecord) {
+	public Alarm(Radio radio, long timestamp, boolean isActive, boolean isRecord) {
 		this.alarmRadio = radio;
-		this.hour = hour;
-		this.minute = minute;
+		this.timestamp = timestamp;
 		this.isActive = isActive;
 		this.isRecord = isRecord;
 	}
@@ -22,15 +21,11 @@ public class Alarm {
 	public Radio getAlarmRadio() {
 		return alarmRadio;
 	}
-	
-	public int getHour() {
-		return hour;
+
+	public long getTimestamp() {
+		return timestamp;
 	}
-	
-	public int getMinute() {
-		return minute;
-	}
-	
+
 	public boolean isActive() {
 		return isActive;
 	}
