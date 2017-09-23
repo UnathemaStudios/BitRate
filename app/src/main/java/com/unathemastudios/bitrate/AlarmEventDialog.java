@@ -118,9 +118,8 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 						Log.w("date", datetoepoch + "");
 						assert datetoepoch != null;
 						long time = datetoepoch.getTime();
-						Log.w("MILIS", time+"");
 						
-						Log.w("HOURS", ((time - System.currentTimeMillis()) / 1000 / 60 / 60)+" HOURS");
+						Log.w("ALARM IN", ((time - System.currentTimeMillis()) / 1000 / 60 / 60)+" HOURS" + " & " + ((time - System.currentTimeMillis()) / 1000 / 60 % 60)+" MINUTES");
 						
 						long timetoepoch = time - System.currentTimeMillis();
 						Timestamp stamp = new Timestamp(timetoepoch);
