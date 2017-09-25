@@ -42,9 +42,6 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 	private CheckBox checkBox;
 	private Spinner spinner;
 	private Calendar calendar;
-	String date;
-	private int hour = 0;
-	private int minute = 0;
 	
 
 	@RequiresApi(api = Build.VERSION_CODES.N)
@@ -59,6 +56,8 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 		spinner = (Spinner) textEntryView.findViewById(R.id.spChooseRadio);
 		tvDate.setEnabled(false);
 		calendar = Calendar.getInstance();
+		
+		//Checkbox
 		checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -68,7 +67,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 		});
 
 		//Time TextBox
-		tvTime.setText(Calendar.HOUR_OF_DAY + ":" + Calendar.MINUTE);
+		tvTime.setText(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
 		tvTime.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -79,7 +78,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 		});
 
 		//Date TextBox
-		tvDate.setText(Calendar.DAY_OF_MONTH + "/" + Calendar.MONTH + "/" + Calendar.YEAR);
+		tvDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + "/" +( calendar.get(Calendar.MONTH) +1 ) + "/" + calendar.get(Calendar.YEAR));
 		tvDate.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -117,14 +116,12 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 						}
 						Log.w("date", datetoepoch + "");
 						assert datetoepoch != null;
+						datetoepoch.get
 						long time = datetoepoch.getTime();
 						
 						Log.w("ALARM IN", ((time - System.currentTimeMillis()) / 1000 / 60 / 60)+" HOURS" + " & " + ((time - System.currentTimeMillis()) / 1000 / 60 % 60)+" MINUTES");
 						
-						long timetoepoch = time - System.currentTimeMillis();
-						Timestamp stamp = new Timestamp(timetoepoch);
-						Date date2 = new Date(stamp.getDate());
-						Log.w("till", date2 +"");
+						mListener.onDialogPositiveClick(new Alarm());
 
 					}
 				})
@@ -161,14 +158,11 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 
 	@Override
 	public void onDialogPositiveClick(int hourOfTHeDay, int minute, boolean is24) {
-		hour = hourOfTHeDay;
-		this.minute = minute;
 		tvTime.setText(hourOfTHeDay + ":" + minute);
 	}
 
 	@Override
 	public void onDialogPositiveClick(int year, int month, int day) {
-		this.date = day + "/" + (month + 1) + "/" + year;
-		tvDate.setText(this.date);
+		tvDate.setText(day + "/" + (month + 1) + "/" + year);
 	}
 }

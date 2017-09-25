@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -401,7 +402,70 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	@Override
+	
+	
+	
+	
+	
+	
+	
+	
+	void loadAlarmEventsToXML() {
+		FileOutputStream fileOutputStream = null;
+		File outputDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
+		File outputFile = new File(outputDir, "alarms.xml");
+		
+		try {
+			fileOutputStream = new FileOutputStream(outputFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		
+		XmlSerializer xmlSerializer = Xml.newSerializer();
+		StringWriter writer = new StringWriter();
+		try {
+			xmlSerializer.setOutput(writer);
+			xmlSerializer.startDocument("UTF-8", true);
+			xmlSerializer.startTag(null, "Radios");
+			
+			for (Alarm entry : alarmList) {
+				
+//				if (entry.isMadeByUser()) {
+//					xmlSerializer.startTag(null, "Name");
+//					xmlSerializer.text(entry.getName());
+//					xmlSerializer.endTag(null, "Name");
+//					
+//					xmlSerializer.startTag(null, "Url");
+//					xmlSerializer.text(entry.getUrl());
+//					xmlSerializer.endTag(null, "Url");
+//					
+//					xmlSerializer.startTag(null, "Logo");
+//					xmlSerializer.text(entry.getLogo());
+//					xmlSerializer.endTag(null, "Logo");
+//					
+//					xmlSerializer.startTag(null, "Description");
+//					xmlSerializer.text(entry.getDescription());
+//					xmlSerializer.endTag(null, "Description");
+//					
+//				}
+			}
+			
+			xmlSerializer.endTag(null, "Radios");
+			xmlSerializer.endDocument();
+			xmlSerializer.flush();
+			String dataWrite = writer.toString();
+			assert fileOutputStream != null;
+			fileOutputStream.write(dataWrite.getBytes());
+			fileOutputStream.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+		
+		
+		@Override
 	public void onBackPressed() {
 		if (!backPressed) {
 			Toast.makeText(getApplicationContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
