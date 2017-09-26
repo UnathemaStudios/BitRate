@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.icu.text.DecimalFormat;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -21,7 +22,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -116,12 +116,12 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 						}
 						Log.w("date", datetoepoch + "");
 						assert datetoepoch != null;
-						datetoepoch.get
 						long time = datetoepoch.getTime();
 						
 						Log.w("ALARM IN", ((time - System.currentTimeMillis()) / 1000 / 60 / 60)+" HOURS" + " & " + ((time - System.currentTimeMillis()) / 1000 / 60 % 60)+" MINUTES");
-						
-						mListener.onDialogPositiveClick(new Alarm());
+						mListener.onDialogPositiveClick(new Alarm(((MainActivity)getActivity())
+								.radiosList.get(spinner.getSelectedItemPosition()), time, false,
+								false, checkBox.isChecked()));
 
 					}
 				})
@@ -156,9 +156,26 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 		super.show(manager, tag);
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.N)
 	@Override
-	public void onDialogPositiveClick(int hourOfTHeDay, int minute, boolean is24) {
-		tvTime.setText(hourOfTHeDay + ":" + minute);
+	public void onDialogPositiveClick(int hourOfTHeDay, int minute) {
+		tvTime.setText(new DecimalFormat("00").format(hourOfTHeDay) + ":" + new DecimalFormat
+				("00").format(minute));
+
+		if(hourOfTHeDay<calendar.get(Calendar.HOUR_OF_DAY) || (hourOfTHeDay == calendar.get(Calendar.HOUR_OF_DAY) && minute <= calendar.get
+				(Calendar.MINUTE))) {
+			if (!checkBox.isChecked()) {
+				tvDate.setText((calendar.get(Calendar.DAY_OF_MONTH) +1)+ "/" + (calendar.get
+						(Calendar
+						.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR));
+			}
+		}
+		else {
+			if (!checkBox.isChecked()) {
+				tvDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar
+						.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR));
+			}
+		}
 	}
 
 	@Override

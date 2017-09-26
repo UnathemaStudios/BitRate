@@ -15,7 +15,7 @@ public class TimePickerFragment extends DialogFragment
 		implements TimePickerDialog.OnTimeSetListener {
 
 	public interface NoticeDialogListener {
-		public void onDialogPositiveClick(int hourOfTHeDay, int minute, boolean is24);
+		public void onDialogPositiveClick(int hourOfTHeDay, int minute);
 	}
 	public TimePickerFragment.NoticeDialogListener mListener;
 
@@ -47,7 +47,7 @@ public class TimePickerFragment extends DialogFragment
 	}
 
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-		mListener.onDialogPositiveClick(hourOfDay, minute, DateFormat.is24HourFormat(getActivity()));
+		mListener.onDialogPositiveClick(hourOfDay, minute);
 		this.dismiss();
 	}
 }

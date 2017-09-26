@@ -1,6 +1,8 @@
 package com.unathemastudios.bitrate;
 
 
+import android.icu.text.DecimalFormat;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,15 +14,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.BooleanExtractor;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.ItemClickListener;
-import com.amigold.fundapter.interfaces.StaticImageLoader;
-
-import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -64,7 +65,15 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 		bindDictionary.addStringField(R.id.tvtime_for_alarm, new StringExtractor<Alarm>() {
 			@Override
 			public String getStringValue(Alarm item, int position) {
-				return null;//item.getHour() + ":" + item.getMinute();
+				Date date = new Date(item.getTimestamp());
+				String string;
+				if(item.isHasSpecificDate()){
+					string = date.getDay() + "/" + date.getMonth() + "/" + (date.getYear() +
+							1900) + " " +
+							date.getHours() + ":" + date.getMinutes();
+				}
+				else string = date.getHours() + ":" + date.getMinutes();
+				return string;
 			}
 		});
 		
@@ -79,7 +88,7 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 			@Override
 			public void onClick(Alarm item, int position, View view) {
 				if(item.isActive()){
-					//Stop Alarm
+					item.cancelAlarm();
 				}
 				((MainActivity)getActivity()).alarmList.remove(position);
 				funDapter.updateData(((MainActivity)getActivity()).alarmList);
@@ -95,7 +104,10 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 		}).onClick(new ItemClickListener<Alarm>() {
 			@Override
 			public void onClick(Alarm item, int position, View view) {
-				item.setActive(!item.isActive());
+				String message = item.toggleState();
+				if(!(message == null)){
+					Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 		
@@ -109,6 +121,9 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 
 	@Override
 	public void onDialogPositiveClick(Alarm alarm) {
-
+		String message = alarm.toggleState();
+		Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+		((MainActivity)getActivity()).alarmList.add(alarm);
+		funDapter.updateData(((MainActivity)getActivity()).alarmList);
 	}
 }
