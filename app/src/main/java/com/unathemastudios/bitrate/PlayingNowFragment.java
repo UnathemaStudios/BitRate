@@ -1,6 +1,8 @@
 package com.unathemastudios.bitrate;
 
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -196,6 +198,18 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source app\nImport stations is powered by Shoutcast.com\nPlayback is powered by libVLC");
 			}
 		});
+
+		tvRadioMetadata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) (getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Title", tvRadioMetadata.getText());
+                assert clipboard != null;
+                clipboard.setPrimaryClip(clip);
+
+                Toast.makeText(getContext(), "Copied to Clipboard!", Toast.LENGTH_SHORT).show();
+            }
+        });
 	}
 	
 	@Nullable

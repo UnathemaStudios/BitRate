@@ -90,8 +90,11 @@
         android:id="@+id/search_results_list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_weight="9"
-        android:elevation="1dp"/>
+        android:elevation="1dp"
+        android:theme="@style/MyMaterialTheme" />
 
     <LinearLayout
         android:layout_width="match_parent"
