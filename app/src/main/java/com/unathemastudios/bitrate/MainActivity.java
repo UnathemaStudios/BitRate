@@ -787,7 +787,7 @@ public class MainActivity extends AppCompatActivity {
 //TODO: Notification Custom										Jojos
 //TODO: License
 
-
+//TODO: Find cause for null pointer exception in MAINSERVICE and fix the if(intent.getAction()!=null)
 
 //TODO: PRIORITY LOW
 //

@@ -318,79 +318,79 @@ public class MainService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		switch (intent.getAction()) {
-			case "PLAYER_PLAY": {
-				if (intent.hasExtra("url")) {
-					playerUrl = intent.getStringExtra("url");
-					finger = intent.getIntExtra("finger", -1);
-				} 
-				play(playerUrl);
-				stoppedByUser = false;
-				break;
-			}
-			case "SET_SERVICE_FINGER":
-			{
-				finger = intent.getIntExtra("finger", -2);
-				if (finger == -1)
-				{
+		if(intent.getAction()!=null) {
+			switch (intent.getAction()) {
+				case "PLAYER_PLAY": {
+					if (intent.hasExtra("url")) {
+						playerUrl = intent.getStringExtra("url");
+						finger = intent.getIntExtra("finger", -1);
+					}
+					play(playerUrl);
+					stoppedByUser = false;
+					break;
+				}
+				case "SET_SERVICE_FINGER": {
+					finger = intent.getIntExtra("finger", -2);
+					if (finger == -1) {
+						close();
+					}
+					break;
+				}
+				case "PLAYER_STOP": {
+					stop();
+					stoppedByUser = true;
+					break;
+				}
+				case "REQUEST_PLAYER_STATUS": {
+					send("SET_FINGER", finger);
+					send(Integer.toString(playerStatus));
+					send("timeRemaining", sleepMinutes);
+					break;
+				}
+				case "REQUEST_METADATA": {
+					sendMetadata();
+					break;
+				}
+				case "CLOSE": {
 					close();
+					break;
 				}
-				break;
-			}
-			case "PLAYER_STOP": {
-				stop();
-				stoppedByUser = true;
-				break;
-			}
-			case "REQUEST_PLAYER_STATUS": {
-				send("SET_FINGER", finger);
-				send(Integer.toString(playerStatus));
-				send("timeRemaining", sleepMinutes);
-				break;
-			}
-			case "REQUEST_METADATA": {
-				sendMetadata();
-				break;
-			}
-			case "CLOSE": {
-				close();
-				break;
-			}
-			case "SLEEPTIMER": {
-				sleepMinutes = intent.getIntExtra("sleepTime", -1);
-				startSleepTimer();
-				break;
-			}
-			case "RECORD": {
-				String urlString = intent.getStringExtra("urlString");
-				rec.put(key, new Recording(date(), urlString, (long) intent.getIntExtra
-						("duration", -1) * 60, intent.getStringExtra("name"), getApplicationContext(), key));
-				rec.get(key).start();
-				if (activeRecordings == 0) {
-					startRecordingBroadcast();
+				case "SLEEPTIMER": {
+					sleepMinutes = intent.getIntExtra("sleepTime", -1);
+					startSleepTimer();
+					break;
 				}
-				key++;
-				activeRecordings++;
-				Log.w("activeRecordings", String.valueOf(activeRecordings));
-				buildNotification();
-				break;
-			}
-			case "STOP_RECORD": {
-				int passedKey = intent.getIntExtra("key", -1);
-				rec.get(passedKey).stop();
-				break;
-			}
-			case "RECORDING_STOPPED": {
-				rec.remove(intent.getIntExtra("hashKey", -1));
-				Log.w("activeRecordings", String.valueOf(activeRecordings));
-				if (activeRecordings == 0) {
-					stopRecordingBroadcast();
-					zeroRecordingBroadcast();
-					rec.clear();
-					Log.w("Recorder", "No Recordings");
+				case "RECORD": {
+					String urlString = intent.getStringExtra("urlString");
+					rec.put(key, new Recording(date(), urlString, (long) intent.getIntExtra
+							("duration", -1) * 60, intent.getStringExtra("name"), getApplicationContext(), key));
+					rec.get(key).start();
+					if (activeRecordings == 0) {
+						startRecordingBroadcast();
+					}
+					key++;
+					activeRecordings++;
+					Log.w("activeRecordings", String.valueOf(activeRecordings));
+					buildNotification();
+					break;
 				}
-				buildNotification();
-				break;
+				case "STOP_RECORD": {
+					int passedKey = intent.getIntExtra("key", -1);
+					rec.get(passedKey).stop();
+					break;
+				}
+				case "RECORDING_STOPPED": {
+					rec.remove(intent.getIntExtra("hashKey", -1));
+					Log.w("activeRecordings", String.valueOf(activeRecordings));
+					if (activeRecordings == 0) {
+						stopRecordingBroadcast();
+						zeroRecordingBroadcast();
+						rec.clear();
+						Log.w("Recorder", "No Recordings");
+					}
+					buildNotification();
+					break;
+				}
 			}
 		}
 		return START_STICKY;
