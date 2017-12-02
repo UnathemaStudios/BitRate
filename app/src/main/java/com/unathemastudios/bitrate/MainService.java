@@ -22,31 +22,40 @@ import android.support.v7.app.NotificationCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
-
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.Media;
-import org.videolan.libvlc.MediaPlayer;
-
-import java.util.ArrayList;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import java.util.Date;
 import java.util.HashMap;
 
 public class MainService extends Service {
 	
-	//	public final static int NO_NETWORK = 0;
 	public final static int WIFI = 1;
 	public final static int MOBILE = 2;
-	//	public final static int ERROR = -1;
 	public final static int RECORDING = 0;
 	public final static int NOTRECORDING = 1;
-	//GENERAL
 	private static final int notificationID = 8888;
 	private static final int STOPPED = 0;
 	private static final int LOADING = 1;
-	
-	//RECORDER
 	private static final int PLAYING = 2;
-	//	public final static int UNLISTED = 3;
 	public static int activeRecordings = 0;
 	private static Integer key;
 	public boolean firstTime = true;
@@ -54,8 +63,6 @@ public class MainService extends Service {
 	private boolean stoppedByUser = true;
 	@SuppressLint("UseSparseArrays")
 	private HashMap<Integer, Recording> rec = new HashMap<>();
-	
-	//PLAYER
 	private android.os.Handler recordingHandler = new android.os.Handler();
 	private Runnable recordingRunnable = new Runnable() {
 		@Override
@@ -68,96 +75,53 @@ public class MainService extends Service {
 			recordingHandler.postDelayed(this, 500);
 		}
 	};
-	private String status;
-	private LibVLC mLibVLC = null;
-	private MediaPlayer streamPlayer = null;
+	private SimpleExoPlayer player;
+	private DataSource.Factory dataSourceFactory;
+	private ExtractorsFactory extractorsFactory;
+	private MediaSource mediaSource;
 	private int finger = -1;
 	private int playerStatus = STOPPED;
 	private int sleepMinutes = -1;
 	private String playerUrl = null;
-	private String playerMetadata = "NO DATA";
 	private android.os.Handler sleepTimerHandler = new android.os.Handler();
 	private AudioManager audioManager;
-	private int bytesRead = -1;
-	private int counter = -1;
-	private android.os.Handler checkIfStoppedHandler = new android.os.Handler();
-	private Runnable checkIfStoppedRunnable = new Runnable() {
-		public void run() {
-//			Log.w("-----------------------", "-----------------------------------------------------");
-			
-			if (streamPlayer.getMedia().getStats() != null) {
-//				Log.w("COUNTER", counter+"");
-//				Log.w("BYTES READ" , bytesRead+"");
-//				Log.w("PLAYER STATE", streamPlayer.getPlayerState()+"");
-				if (streamPlayer.getPlayerState() == 3 || streamPlayer.getPlayerState() == 6 || streamPlayer.getPlayerState() == 5) {
-					if (bytesRead == streamPlayer.getMedia().getStats().readBytes) {
-						counter++;
-						if (counter == 5) {
-							streamPlayer.stop();
-							streamPlayer.play();
-							counter = 0;
-						}
-					} else {
-						counter = 0;
-					}
-				}
-
-//				Log.w("BITRATE", Math.round(streamPlayer.getMedia().getStats().demuxBitrate * 8000) + " kbps");
-//				Log.w("KILOBYTES READ", Math.round(streamPlayer.getMedia().getStats().readBytes / 1024) + " KB");
-				bytesRead = streamPlayer.getMedia().getStats().readBytes;
-			}
-//			if (streamPlayer.getMedia().getTrackCount() > 0) {
-//				if (streamPlayer.getMedia().getTrack(0).codec.equals("MPEG Audio layer 1/2")) {
-//					Log.w("TYPE", "MP3");
-//				} else if (streamPlayer.getMedia().getTrack(0).codec.equals("MPEG AAC Audio")) {
-//					Log.w("TYPE", "AAC");
-//				} else if (streamPlayer.getMedia().getTrack(0).codec.equals("FLAC (Free Lossless Audio Codec)")) {
-//					Log.w("TYPE", "FLAC");
-//				} else {
-//					Log.w("TYPE", streamPlayer.getMedia().getTrack(0).codec);
-//				}
-//			}
-			checkIfStoppedHandler.postDelayed(this, 1000);
-		}
-	};
+	
+	
 	private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
 		@Override
 		public void onAudioFocusChange(int focusChange) {
 			switch (focusChange) {
 				case AudioManager.AUDIOFOCUS_GAIN:
-					// resume playback
 					if (!stoppedByUser) {
 						if (playerStatus == STOPPED) {
 							play(playerUrl);
 						} else {
-							streamPlayer.play();
+							player.setVolume((float)1);
 						}
 					}
 					break;
-				
+
 				case AudioManager.AUDIOFOCUS_LOSS:
-					// Lost focus for an unbounded amount of time: stop playback and release media player
 					if (playerStatus != STOPPED) {
 						stop();
 					}
 					break;
-				
+
 				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 					if (playerStatus != STOPPED) {
 						stop();
 					}
 					break;
-				
+
 				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-					// Lost focus for a short time, but it's ok to keep playing
-					// at an attenuated level
 					if (playerStatus == PLAYING) {
-						streamPlayer.pause();
+						player.setVolume((float)0.1);
 					}
 					break;
 			}
 		}
 	};
+	
 	private Runnable sleepTimerRunnable = new Runnable() {
 		public void run() {
 			if (sleepMinutes != -1) {
@@ -171,6 +135,7 @@ public class MainService extends Service {
 			sleepTimerHandler.postDelayed(this, 60000);
 		}
 	};
+	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -189,89 +154,72 @@ public class MainService extends Service {
 					}
 				}
 			}
-			/*else if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) 
-			{
-				if (checkNetworkConnection() == NO_NETWORK)
-				{
-//					Log.w("Network", "No Network");
-//					if (playerStatus != STOPPED)
-//					{
-//						stop();
-//					}
-				}
-				else if (checkNetworkConnection() == WIFI)
-				{
-//					Log.w("Network", "WIFI");
-				}
-				else if (checkNetworkConnection() == MOBILE)
-				{
-//					Log.w("Network", "MOBILE");
-				}
-				else if (checkNetworkConnection() == ERROR)
-				{
-//					Log.w("Network", "ERROR");
-				}
-			}*/
 		}
 	};
 	
-	public void startCheckIfStopped() {
-		checkIfStoppedHandler.postDelayed(checkIfStoppedRunnable, 1000);
-//		Log.w("CHECK IF STOPPED", "STARTED");
-	}
-	
-	public void stopCheckIfStopped() {
-		checkIfStoppedHandler.removeCallbacks(checkIfStoppedRunnable);
-//		Log.w("CHECK IF STOPPED", "STOPPED");
-	}
 	
 	@Override
 	public void onCreate() {
-		
-		final ArrayList<String> args = new ArrayList<>();
-		args.add("-vv");
-		args.add("--network-caching=1000");
-		mLibVLC = new LibVLC(this, args);
-		streamPlayer = new MediaPlayer(mLibVLC);
-		
-		streamPlayer.setEventListener(new MediaPlayer.EventListener() {
+		BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+		DefaultBandwidthMeter defaultBandwidthMeter = new DefaultBandwidthMeter();
+		extractorsFactory = new DefaultExtractorsFactory();
+		TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+		TrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
+		dataSourceFactory = new DefaultDataSourceFactory(
+				this,
+				Util.getUserAgent(this, "BitRate"),
+				defaultBandwidthMeter);
+		player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
+		player.addListener(new ExoPlayer.EventListener() {
 			@Override
-			public void onEvent(MediaPlayer.Event event) {
-				switch (event.type) {
-					case MediaPlayer.Event.Buffering:
-//						Log.w("BUFFERING", "" + (int) event.getBuffering());
-						if ((int) event.getBuffering() == 100) {
-							playerStatus = PLAYING;
-							send(Integer.toString(playerStatus));
-							buildNotification();
-							status = "DONE";
-//							Log.w("STATUS", status);
-						}
-						if (status.equals("CONNECTING") && (int) event.getBuffering() >= 2) {
-							status = "BUFFERING";
-//							Log.w("STATUS", status);
-						}
-						break;
-					case MediaPlayer.Event.Opening:
-//						Log.w("MEDIAPLAYER EVENT", "OPENING");
-						break;
-					case MediaPlayer.Event.Playing:
-//						Log.w("MEDIAPLAYER EVENT", "PLAYING");
-						break;
-					case MediaPlayer.Event.Stopped:
-//						Log.w("MEDIAPLAYER EVENT", "STOPPED");
-						break;
-					case MediaPlayer.Event.EncounteredError:
-//						Log.w("MEDIAPLAYER EVENT", "ERROR");
-						break;
-					case MediaPlayer.Event.MediaChanged:
-//						Log.w("MEDIAPLAYER EVENT", "MEDIACHANGED");
-						break;
-					case MediaPlayer.Event.EndReached:
-//                        Log.w("MEDIAPLAYER EVENT", "END REACHED");
-					default:
-//						Log.w("UN MEDIA PLAYER EVENT",String.valueOf(event.type));
+			public void onTimelineChanged(Timeline timeline, Object manifest) {
+				
+			}
+			
+			@Override
+			public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+				
+			}
+			
+			@Override
+			public void onLoadingChanged(boolean isLoading) {
+				Log.w("onLoadingChanged", String.valueOf(isLoading));
+			}
+			
+			@Override
+			public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+				if(playbackState == ExoPlayer.STATE_READY){
+					playerStatus = PLAYING;
+					send(Integer.toString(playerStatus));
+					buildNotification();
+					Log.w("onPlayerStateChanged", "STATE_READY");
+				} else if (playbackState == ExoPlayer.STATE_BUFFERING){
+					playerStatus = LOADING;
+					send(Integer.toString(playerStatus));
+					buildNotification();
+					Log.w("onPlayerStateChanged", "STATE_BUFFERING");
+				} else if (playbackState == ExoPlayer.STATE_ENDED){
+					Log.w("onPlayerStateChanged", "STATE_ENDED");
+				} else if (playbackState == ExoPlayer.STATE_IDLE){					
+					Log.w("onPlayerStateChanged", "STATE_IDLE");
 				}
+			}
+			
+			@Override
+			public void onPlayerError(ExoPlaybackException error) {
+				Log.w("onPlayerError", error.getCause().getMessage());
+				Log.w("onPlayerError", error.getCause().getCause().getMessage());
+				player.prepare(mediaSource);
+			}
+			
+			@Override
+			public void onPositionDiscontinuity() {
+				
+			}
+			
+			@Override
+			public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+				
 			}
 		});
 		
@@ -281,39 +229,6 @@ public class MainService extends Service {
 			registerReceiver(serviceReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
 		}
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-	}
-	
-	public void startMediaListener() {
-		streamPlayer.getMedia().setEventListener(new Media.EventListener() {
-			@Override
-			public void onEvent(Media.Event event) {
-				switch (event.type) {
-					case Media.Event.MetaChanged:
-//						if (streamPlayer.getMedia().getMeta(Media.Meta.Title) != null) {
-//							Log.w("Title", streamPlayer.getMedia().getMeta(Media.Meta.Title));
-//						}
-//						if (streamPlayer.getMedia().getMeta(Media.Meta.Genre) != null) {
-//							Log.w("Genre", streamPlayer.getMedia().getMeta(Media.Meta.Genre));
-//						}
-						if (streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying) != null) {
-//							Log.w("NowPlaying", streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying));
-							playerMetadata = streamPlayer.getMedia().getMeta(Media.Meta.NowPlaying);
-							sendMetadata();
-						} else
-						
-						{
-							playerMetadata = "NO DATA";
-							sendMetadata();
-						}
-						break;
-					case Media.Event.StateChanged:
-//						Log.w("MEDIA STATE", String.valueOf(streamPlayer.getMedia().getState()));
-						break;
-					default:
-//						Log.w("UNKNOWN EVENT", String.valueOf(event.type));
-				}
-			}
-		});
 	}
 	
 	@Override
@@ -345,10 +260,6 @@ public class MainService extends Service {
 					send("SET_FINGER", finger);
 					send(Integer.toString(playerStatus));
 					send("timeRemaining", sleepMinutes);
-					break;
-				}
-				case "REQUEST_METADATA": {
-					sendMetadata();
 					break;
 				}
 				case "CLOSE": {
@@ -400,22 +311,20 @@ public class MainService extends Service {
 		if (playerStatus != STOPPED) {
 			stop();
 		}
-		playerStatus = LOADING;
-		status = "CONNECTING";
-//		Log.w("STATUS", status);
-		send(Integer.toString(playerStatus));
-		buildNotification();
 		
 		if (checkNetworkConnection() == WIFI || checkNetworkConnection() == MOBILE) {
 			int result = audioManager.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-				streamPlayer.setMedia(new Media(mLibVLC, Uri.parse(urlString)));
-				streamPlayer.play();
-				startMediaListener();
-				startCheckIfStopped();
-//				playerStatus = PLAYING;
-//				send(Integer.toString(playerStatus));
-//				buildNotification();
+				
+				mediaSource = new ExtractorMediaSource(
+						Uri.parse(urlString),
+						dataSourceFactory,
+						extractorsFactory,
+						null,
+						null);
+				
+				player.prepare(mediaSource);
+				player.setPlayWhenReady(true);
 			}
 		} else {
 			playerStatus = STOPPED;
@@ -427,13 +336,11 @@ public class MainService extends Service {
 	
 	public void stop() {
 		
-		if (streamPlayer.isPlaying()) {
-			streamPlayer.stop();
-		}
-		//streamPlayer.getMedia().release();
+		player.stop();
+		player.setPlayWhenReady(false);
+		
 		sleepMinutes = -1;
 		stopSleepTimer();
-		stopCheckIfStopped();
 		playerStatus = STOPPED;
 		send(Integer.toString(playerStatus));
 		buildNotification();
@@ -442,7 +349,7 @@ public class MainService extends Service {
 	public void close() {
 		stop();
 		stoppedByUser = true;
-		streamPlayer.release();
+		player.release();
 		if (activeRecordings == 0) {
 			stopForeground(true);
 			stopSelf();
@@ -537,6 +444,7 @@ public class MainService extends Service {
 		}
 		
 		if (notificationExists) {
+			assert notificationManager != null;
 			notificationManager.notify(notificationID, notificationBuilder.build());
 		} else {
 			startForeground(notificationID, notificationBuilder.build());
@@ -576,17 +484,11 @@ public class MainService extends Service {
 		}
 	}
 	
-	public void sendMetadata() {
-		Intent intent = new Intent();
-		intent.setAction("metadataBroadcast");
-		intent.putExtra("streamTitle", playerMetadata);
-		sendBroadcast(intent);
-	}
-	
 	private int checkNetworkConnection() {
 		boolean wifiConnected;
 		boolean mobileConnected;
 		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		assert connMgr != null;
 		NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
 		if (activeInfo != null && activeInfo.isConnected()) {
 			wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;

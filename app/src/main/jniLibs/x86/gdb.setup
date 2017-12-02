@@ -1,2 +1,0 @@
-set solib-search-path jni/obj/local/x86
-directory /home/thanos/android-ndk/platforms/android-9/arch-x86/usr/include /home/thanos/android-ndk/sources/android/support /home/thanos/android-ndk/sources/cxx-stl/llvm-libc++ /home/thanos/android-ndk/sources/cxx-stl/llvm-libc++abi /home/thanos/android-ndk/sources/cxx-stl/llvm-libc++/include /home/thanos/android-ndk/sources/cxx-stl/llvm-libc++/../llvm-libc++abi/include /home/thanos/android-ndk/sources/cxx-stl/llvm-libc++/../../android/support/include jni /home/thanos/vlc-android/vlc/include

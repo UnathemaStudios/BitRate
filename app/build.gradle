@@ -32,5 +32,6 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.android.support:palette-v7:25.4.0'
     compile 'com.github.AndroidDeveloperLB:AutoFitTextView:4'
+    compile 'com.google.android.exoplayer:exoplayer-core:r2.4.3'
     testCompile 'junit:junit:4.12'
 }
