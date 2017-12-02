@@ -183,7 +183,7 @@ public class MainService extends Service {
 			
 			@Override
 			public void onLoadingChanged(boolean isLoading) {
-				Log.w("onLoadingChanged", String.valueOf(isLoading));
+				//Log.w("onLoadingChanged", String.valueOf(isLoading));
 			}
 			
 			@Override
@@ -192,23 +192,23 @@ public class MainService extends Service {
 					playerStatus = PLAYING;
 					send(Integer.toString(playerStatus));
 					buildNotification();
-					Log.w("onPlayerStateChanged", "STATE_READY");
+					//Log.w("onPlayerStateChanged", "STATE_READY");
 				} else if (playbackState == ExoPlayer.STATE_BUFFERING){
 					playerStatus = LOADING;
 					send(Integer.toString(playerStatus));
 					buildNotification();
-					Log.w("onPlayerStateChanged", "STATE_BUFFERING");
+					//Log.w("onPlayerStateChanged", "STATE_BUFFERING");
 				} else if (playbackState == ExoPlayer.STATE_ENDED){
-					Log.w("onPlayerStateChanged", "STATE_ENDED");
+					//Log.w("onPlayerStateChanged", "STATE_ENDED");
 				} else if (playbackState == ExoPlayer.STATE_IDLE){					
-					Log.w("onPlayerStateChanged", "STATE_IDLE");
+					//Log.w("onPlayerStateChanged", "STATE_IDLE");
 				}
 			}
 			
 			@Override
 			public void onPlayerError(ExoPlaybackException error) {
-				Log.w("onPlayerError", error.getCause().getMessage());
-				Log.w("onPlayerError", error.getCause().getCause().getMessage());
+				//Log.w("onPlayerError", error.getCause().getMessage());
+				//Log.w("onPlayerError", error.getCause().getCause().getMessage());
 				player.prepare(mediaSource);
 			}
 			
