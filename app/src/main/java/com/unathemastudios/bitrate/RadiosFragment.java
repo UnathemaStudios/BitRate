@@ -9,13 +9,18 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -29,6 +34,10 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 
+import java.util.ArrayList;
+
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+
 import static android.view.View.*;
 
 public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDialogListener,
@@ -40,6 +49,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	private FunDapter adapter;
 	private SharedPreferences pref;
 	private Radio tempRadio;
+	private EditText etSearchRadio;
+	private ImageButton ibClearText;
 	private SearchShoutcastDialog searchShoutcastDialog = null;
 	private ChooseLinkDialog chooseLinkDialog = null;
 
@@ -64,6 +75,9 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		fabAddRadio = (FloatingActionsMenu) view.findViewById(R.id.fabAddRadio);
 		addCustom = (FloatingActionButton) view.findViewById(R.id.fab_add_custom);
 		addShoutcast = (FloatingActionButton) view.findViewById(R.id.fab_add_shoutcast);
+		etSearchRadio = (EditText) view.findViewById(R.id.etRadioSearch);
+		ibClearText = (ImageButton) view.findViewById(R.id.ibClearText);
+		ibClearText.setVisibility(View.GONE);
 		addCustom.setVisibility(GONE);
 		addShoutcast.setVisibility(GONE);
 
@@ -125,7 +139,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	public void onViewCreated(final View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 
@@ -173,6 +187,46 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 
+		etSearchRadio.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if(s.length()==0){
+					adapter.updateData(((MainActivity)getActivity()).radiosList);
+					ibClearText.setVisibility(View.GONE);
+				}
+				else {
+					ibClearText.setVisibility(View.VISIBLE);
+					ArrayList<Radio> tempRadiosList = new ArrayList<>();
+					for (Radio r : ((MainActivity) getActivity()).radiosList) {
+						int ratio = FuzzySearch.tokenSortPartialRatio(s.toString(), r.getName());
+						if (ratio > 70) {
+							tempRadiosList.add(r);
+						}
+					}
+
+					adapter.updateData(tempRadiosList);
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+		});
+
+		ibClearText.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				etSearchRadio.setText("");
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+			}
+		});
 
 		if(((MainActivity)getActivity()).radiosList.isEmpty()){
 			getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
@@ -346,6 +400,8 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		adapter.updateData(((MainActivity) getActivity()).radiosList);
 		((MainActivity)getActivity()).loadUserRadiosToXML();
 	}
+
+
 
 	private int checkNetworkConnection() {
 		boolean wifiConnected;

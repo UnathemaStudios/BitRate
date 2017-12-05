@@ -786,7 +786,6 @@ public class MainActivity extends AppCompatActivity {
 //TODO: PRIORITY HIGH
 //
 //TODO: Alarm Clock (one time)									Thanos
-//TODO: VLC -> EXO + META										Thanos
 //TODO: Translate
 //TODO: Notification Custom										Jojos
 //TODO: License
@@ -796,7 +795,6 @@ public class MainActivity extends AppCompatActivity {
 //TODO: PRIORITY LOW
 //
 //TODO: Class for constant variables
-//TODO: Search in radiosFragment 								Jojos
 //TODO: chceckbox instead of radiogroup in record dialog		Jojos
 //TODO: sch record UI
 //TODO: Chat

@@ -9,11 +9,46 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <!-- Dummy thing for focus gain-->
+
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"/>
+
+    <EditText
+        android:id="@+id/etRadioSearch"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="10dp"
+        android:ems="10"
+        android:hint="@string/search_hint"
+        android:inputType="none"
+        android:paddingLeft="10dp"
+        android:singleLine="true"
+        android:textColor="@color/navigationBarColor"
+        android:textColorHint="@color/bb_inActiveBottomBarItemColor"
+        android:typeface="monospace"/>
+
+    <ImageButton
+        android:id="@+id/ibClearText"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:elevation="10dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+
     <ListView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/etRadioSearch"
         android:layout_marginBottom="50dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
@@ -58,6 +93,17 @@
         fab:fab_labelStyle="@style/menu_labels_style">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_shoutcast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            fab:fab_colorNormal="@color/BLACK"
+            fab:fab_colorPressed="@color/colorPrimaryDark"
+            fab:fab_icon="@raw/shoutcast_logo"
+            fab:fab_size="normal"
+            fab:fab_title="Import Station from Shoutcast.com"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_custom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,17 +112,6 @@
             fab:fab_icon="@drawable/ic_add_custom_station"
             fab:fab_size="normal"
             fab:fab_title="Add Custom Station"/>
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_add_shoutcast"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/BLACK"
-            fab:fab_colorPressed="@color/colorPrimaryDark"
-            fab:fab_icon="@raw/shoutcast_logo"
-            android:scaleType="centerInside"
-            fab:fab_size="normal"
-            fab:fab_title="Import Station from Shoutcast.com"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

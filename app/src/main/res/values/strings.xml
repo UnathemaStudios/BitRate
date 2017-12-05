@@ -9,4 +9,5 @@
     <string name="add_radio_dialog_title">Add New Radio</string>
     <string name="add_radio_dialog_add">ADD</string>
     <string name="add_radio_dialog_cancel">CANCEL</string>
+    <string name="search_hint"><i>Search your station list...</i></string>
 </resources>
