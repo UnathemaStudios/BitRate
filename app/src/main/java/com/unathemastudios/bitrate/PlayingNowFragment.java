@@ -13,6 +13,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Shader;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,23 +51,17 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	private TextView tvRadioMetadata;
 	private TextView tvIsRecorded;
 	private ImageButton ibAboutUs;
-	
-	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
+
+	private android.os.Handler metadataHandler = new android.os.Handler();
+	private Runnable metadataRunnable = new Runnable() {
 		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals("metadataBroadcast")) {
-				if (!intent.getStringExtra("streamTitle").equals("NO DATA"))
-				{
-					tvRadioMetadata.setText(intent.getStringExtra("streamTitle"));
-				}
-				else
-				{
-					tvRadioMetadata.setText("");
-				}
-			}
+		public void run() {
+			MetadataThread metadataThread = new MetadataThread(getActivity().findViewById(android.R.id.content), ((MainActivity)getActivity()).getPlayerURL());
+			metadataThread.execute();
+			metadataHandler.postDelayed(this, 10000);
 		}
 	};
-	
+
 	public PlayingNowFragment() {
 		// Required empty public constructor
 	}
@@ -94,15 +91,12 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	
 	@Override
 	public void onDestroy() {
-		getActivity().unregisterReceiver(serviceReceiver);
-//		metadataHandler.removeCallbacks(metadataRunnable);
 		super.onDestroy();
 	}
 	
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 	}
 	
 	@Override
@@ -130,15 +124,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		ivRadio.setImageResource(getResources().getIdentifier(((MainActivity) getActivity()).getPlayerDrawable(),"raw",getContext().getPackageName()));
 		tvRadioName.setText(((MainActivity) getActivity()).getPlayerName());
 		ibSleepTimer.setImageResource(R.drawable.ic_snooze);
-		
-		
-		if (serviceReceiver != null) {
-			getActivity().registerReceiver(serviceReceiver, new IntentFilter("metadataBroadcast"));
-		}
-		if (((MainActivity)getActivity()).isMyServiceRunning(MainService.class))
-		{
-			((MainActivity)getActivity()).tellServiceP("REQUEST_METADATA");
-		}
+
 
 
 		recordCurrentRadio.setOnClickListener(new View.OnClickListener() {
@@ -210,6 +196,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
                 Toast.makeText(getContext(), "Copied to Clipboard!", Toast.LENGTH_SHORT).show();
             }
         });
+
 	}
 	
 	@Nullable
@@ -223,9 +210,12 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		super.setMenuVisibility(visible);
 		if (visible) {
 			this.visible = true;
+			tvRadioMetadata.setText("");
+			metadataHandler.post(metadataRunnable);
 			setupPage();
 		} else {
 			this.visible = false;
+			metadataHandler.removeCallbacks(metadataRunnable);
 		}
 	}
 	
@@ -337,6 +327,44 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			setRecCurrentRadioUI();
 			((MainActivity) getActivity()).pageSelector(2);
 		}
+	}
+}
+
+class MetadataThread extends AsyncTask<Void, Void, String> {
+
+	private View view;
+	private String metadataUrl;
+
+	public MetadataThread(View view, String metadataUrl){
+
+		this.view = view;
+		this.metadataUrl = metadataUrl;
+	}
+
+	@Override
+	protected String doInBackground(Void... voids) {
+		String streamTitle = "";
+
+		IcyMetadata streamMeta = new IcyMetadata();
+		try {
+			streamMeta.setStreamUrl(new URL(metadataUrl));
+			streamMeta.refreshMeta();
+			//Log.w("METADATA", streamMeta.getStreamTitle());
+
+			streamTitle = streamMeta.getStreamTitle();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+		return streamTitle;
+	}
+
+	@Override
+	protected void onPostExecute(String s) {
+		super.onPostExecute(s);
+		((TextView)view.findViewById(R.id.tvRadioMetadata)).setText(s);
 	}
 }
 
