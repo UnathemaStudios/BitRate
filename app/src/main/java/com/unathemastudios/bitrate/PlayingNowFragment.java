@@ -211,7 +211,9 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 		if (visible) {
 			this.visible = true;
 			tvRadioMetadata.setText("");
-			metadataHandler.post(metadataRunnable);
+			if(((MainActivity)getActivity()).finger!=-1) {
+				metadataHandler.post(metadataRunnable);
+			}
 			setupPage();
 		} else {
 			this.visible = false;
