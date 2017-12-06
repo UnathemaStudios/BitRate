@@ -85,8 +85,7 @@ public class MainService extends Service {
 	private String playerUrl = null;
 	private android.os.Handler sleepTimerHandler = new android.os.Handler();
 	private AudioManager audioManager;
-	
-	
+    
 	private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
 		@Override
 		public void onAudioFocusChange(int focusChange) {
@@ -198,11 +197,12 @@ public class MainService extends Service {
 					send(Integer.toString(playerStatus));
 					buildNotification();
 					//Log.w("onPlayerStateChanged", "STATE_BUFFERING");
-				} else if (playbackState == ExoPlayer.STATE_ENDED){
+				} 
+				/*else if (playbackState == ExoPlayer.STATE_ENDED){
 					//Log.w("onPlayerStateChanged", "STATE_ENDED");
 				} else if (playbackState == ExoPlayer.STATE_IDLE){					
 					//Log.w("onPlayerStateChanged", "STATE_IDLE");
-				}
+				}*/
 			}
 			
 			@Override

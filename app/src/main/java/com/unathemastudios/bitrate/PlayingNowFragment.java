@@ -181,7 +181,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			@Override
 			public void onClick(View v) {
 				InfoDialog infoDialog = new InfoDialog();
-				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source app\nImport stations is powered by Shoutcast.com\nPlayback is powered by libVLC");
+				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source app\nImport stations is powered by Shoutcast.com\nPlayback is powered by exoplayer");
 			}
 		});
 

@@ -24,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.amigold.fundapter.BindDictionary;
 import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.StringExtractor;
@@ -33,10 +32,9 @@ import com.amigold.fundapter.interfaces.StaticImageLoader;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
-
 import java.util.ArrayList;
 
-import me.xdrop.fuzzywuzzy.FuzzySearch;
+//import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 import static android.view.View.*;
 
@@ -46,7 +44,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	private FloatingActionsMenu fabAddRadio;
 	private FloatingActionButton addCustom;
 	private FloatingActionButton addShoutcast;
-	private FunDapter adapter;
+	private FunDapter<Radio> adapter;
 	private SharedPreferences pref;
 	private Radio tempRadio;
 	private EditText etSearchRadio;
@@ -116,7 +114,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			}
 		});
 		
-		adapter = new FunDapter(getContext(), ((MainActivity) getActivity()).radiosList, R.layout.grid_view_layout, dictionary);
+		adapter = new FunDapter<>(getContext(), ((MainActivity) getActivity()).radiosList, R.layout.grid_view_layout, dictionary);
 		
 		final ListView radiosGrid = (ListView) view.findViewById(R.id.gridView);
 		radiosGrid.setAdapter(adapter);
@@ -203,10 +201,17 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 					ibClearText.setVisibility(View.VISIBLE);
 					ArrayList<Radio> tempRadiosList = new ArrayList<>();
 					for (Radio r : ((MainActivity) getActivity()).radiosList) {
-						int ratio = FuzzySearch.tokenSortPartialRatio(s.toString(), r.getName());
-						if (ratio > 70) {
-							tempRadiosList.add(r);
-						}
+					    
+					    
+//						int ratio = FuzzySearch.tokenSortPartialRatio(r.getName(), s.toString());
+//						if (ratio > 50) {
+//							tempRadiosList.add(r);
+//						}
+						if(r.getName().toLowerCase().contains(s.toString().toLowerCase()))
+                        {
+                            tempRadiosList.add(r);
+                        }
+						
 					}
 
 					adapter.updateData(tempRadiosList);
@@ -224,6 +229,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			public void onClick(View v) {
 				etSearchRadio.setText("");
 				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				assert imm != null;
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 			}
 		});
@@ -408,6 +414,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		boolean mobileConnected;
 		ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context
 				.CONNECTIVITY_SERVICE);
+		assert connMgr != null;
 		NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
 		if (activeInfo != null && activeInfo.isConnected()) {
 			wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
@@ -429,8 +436,8 @@ class FabVisibilityTask extends AsyncTask<Void, Void, Void> {
 	private FloatingActionButton fabButton1, fabButton2;
 	private boolean open;
 
-	public FabVisibilityTask(FloatingActionButton fabButton1, FloatingActionButton fabButton2,
-							 boolean open){
+	FabVisibilityTask(FloatingActionButton fabButton1, FloatingActionButton fabButton2,
+					  boolean open){
 		this.fabButton1 = fabButton1;
 		this.fabButton2 = fabButton2;
 		this.open = open;

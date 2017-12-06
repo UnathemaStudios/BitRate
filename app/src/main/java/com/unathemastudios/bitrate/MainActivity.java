@@ -25,18 +25,16 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 	private RadiosFragment radiosFragment;
 	private PlayingNowFragment playingNowFragment;
 	private RecordFragment recordFragment;
-	private AlarmFragment alarmFragment;
+	//TODO: private AlarmFragment alarmFragment;
 	private ImageButton ibPPbutton;
 	private ImageView ivImageSmall;
 	private TextView tvDescription;
@@ -68,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
 	private boolean backPressed = false;
 	private boolean playerVisible = false;
 	public ArrayList<Alarm> alarmList;
-
-	//Broadcast Receiver
+	
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -104,23 +101,17 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		//Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		//setSupportActionBar(toolbar);
-		
-		
+        
 		pref = getPreferences(Context.MODE_PRIVATE);
-		
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
 		recordFragment = new RecordFragment();
-		alarmFragment = new AlarmFragment();
-		
-		
+		//TODO: alarmFragment = new AlarmFragment();
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		setupViewPager(viewPager);
-		
 		tabLayout = (TabLayout) findViewById(R.id.tabs);
 		tabLayout.setupWithViewPager(viewPager);
 		setupTabIcons();
-		
 		playerLayout = (RelativeLayout) findViewById(R.id.relativeLayout2);
 		tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
 			
@@ -137,6 +128,11 @@ public class MainActivity extends AppCompatActivity {
 					slideToTop();
 					playerVisible = true;
 				}
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                assert imm != null;
+                imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
+				
 			}
 			
 			@Override
@@ -151,7 +147,8 @@ public class MainActivity extends AppCompatActivity {
 				super.onTabReselected(tab);
 			}
 		});
-		viewPager.setOffscreenPageLimit(3);
+		//TODO: 3 2
+		viewPager.setOffscreenPageLimit(2);
 		pageSelector(1);
 		
 		//load default radio list from XML
@@ -204,10 +201,7 @@ public class MainActivity extends AppCompatActivity {
 		} catch (XmlPullParserException | IOException e) {
 			e.printStackTrace();
 		}
-		
-		
-		
-		
+        
 		//load user radio list from XML if exists
 		File directory = new File(String.valueOf(getApplicationContext().getFilesDir()));
 		File outputSource = new File(directory, "userradios.xml");
@@ -262,9 +256,7 @@ public class MainActivity extends AppCompatActivity {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
+        
 		//-//-//-//- Tabs Ended -//-//-//-//-//
 		
 		ibPPbutton = (ImageButton) findViewById(R.id.ibPPbutton);
@@ -285,8 +277,7 @@ public class MainActivity extends AppCompatActivity {
 						play();
 					}
 				}
-				else Toast.makeText(getApplicationContext(), "Please select a station first", Toast.LENGTH_SHORT)
-						.show();
+				else Toast.makeText(getApplicationContext(), "Please select a station first", Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -310,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
 			registerReceiver(serviceReceiver, new IntentFilter("2"));
 			registerReceiver(serviceReceiver, new IntentFilter("SET_FINGER"));
 			registerReceiver(serviceReceiver, new IntentFilter("timeRemaining"));
-			
 		}
 		
 		if (isMyServiceRunning(MainService.class)) {
@@ -402,14 +392,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	void loadAlarmEventsToXML() {
 		FileOutputStream fileOutputStream = null;
 		File outputDir = new File(Environment.getExternalStorageDirectory() + "/Streams");
@@ -463,9 +445,8 @@ public class MainActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-		
-		
-		@Override
+    
+    @Override
 	public void onBackPressed() {
 		if (!backPressed) {
 			Toast.makeText(getApplicationContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
@@ -540,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
 		adapter.addFragment(playingNowFragment, "Playing Now");
 		adapter.addFragment(radiosFragment, "Stations");
 		adapter.addFragment(recordFragment, "Recording");
-		adapter.addFragment(alarmFragment, "Scheduling");
+		//TODO: adapter.addFragment(alarmFragment, "Scheduling");
 		viewPager.setAdapter(adapter);
 	}
 	
@@ -548,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
 		tabLayout.getTabAt(0).setIcon(R.drawable.ic_play_circle);
 		tabLayout.getTabAt(1).setIcon(R.drawable.ic_radio);
 		tabLayout.getTabAt(2).setIcon(R.drawable.ic_recording_now);
-		tabLayout.getTabAt(3).setIcon(R.drawable.ic_access_time_black_24dp);
+		//TODO: tabLayout.getTabAt(3).setIcon(R.drawable.ic_access_time_black_24dp);
 	} 
 	
 	@Override
