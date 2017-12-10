@@ -233,7 +233,7 @@ public class MainService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if(intent.getAction()!=null) {
+		if(intent!=null && intent.getAction() != null) {
 			switch (intent.getAction()) {
 				case "PLAYER_PLAY": {
 					if (intent.hasExtra("url")) {

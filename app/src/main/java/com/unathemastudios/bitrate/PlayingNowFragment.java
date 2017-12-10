@@ -91,6 +91,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	
 	@Override
 	public void onDestroy() {
+		metadataHandler.removeCallbacks(metadataRunnable);
 		super.onDestroy();
 	}
 	
@@ -181,7 +182,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			@Override
 			public void onClick(View v) {
 				InfoDialog infoDialog = new InfoDialog();
-				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source app\nImport stations is powered by Shoutcast.com\nPlayback is powered by exoplayer");
+				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source appplication.\n\nStation directory is provided by Shoutcast.com\n\nPlayback is powered by Exoplayer\n\nv1.3.2");
 			}
 		});
 
