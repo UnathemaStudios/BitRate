@@ -79,7 +79,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 	
 	public static int getDominantColor(Bitmap bitmap) {
 		List<Palette.Swatch> swatchesTemp = Palette.from(bitmap).generate().getSwatches();
-		List<Palette.Swatch> swatches = new ArrayList<Palette.Swatch>(swatchesTemp);
+		List<Palette.Swatch> swatches = new ArrayList<>(swatchesTemp);
 		Collections.sort(swatches, new Comparator<Palette.Swatch>() {
 			@Override
 			public int compare(Palette.Swatch swatch1, Palette.Swatch swatch2) {
@@ -182,7 +182,7 @@ public class PlayingNowFragment extends Fragment implements SleepTimerDialog
 			@Override
 			public void onClick(View v) {
 				InfoDialog infoDialog = new InfoDialog();
-				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source appplication.\n\nStation directory is provided by Shoutcast.com\n\nPlayback is powered by Exoplayer\n\nv1.3.2");
+				infoDialog.show(getFragmentManager(), "AK47", "About", "This is an open source appplication.\n\nStation directory is provided by Shoutcast.com\n\nPlayback is powered by Exoplayer\n\nv" + BuildConfig.VERSION_NAME);
 			}
 		});
 

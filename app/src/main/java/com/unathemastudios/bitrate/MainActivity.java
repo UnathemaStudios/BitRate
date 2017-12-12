@@ -695,7 +695,11 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public String getPlayerURL(){
-		return radiosList.get(finger).getUrl();
+		if(finger!=-1)
+		{
+			return radiosList.get(finger).getUrl();
+		}
+		else return "-1";
 	}
 	
 	public void setIsRecordedStatus(boolean status) {
