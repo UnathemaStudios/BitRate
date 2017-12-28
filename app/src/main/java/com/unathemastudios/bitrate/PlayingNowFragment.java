@@ -367,7 +367,9 @@ class MetadataThread extends AsyncTask<Void, Void, String> {
 	@Override
 	protected void onPostExecute(String s) {
 		super.onPostExecute(s);
-		((TextView)view.findViewById(R.id.tvRadioMetadata)).setText(s);
+		if (view != null){
+			((TextView) view.findViewById(R.id.tvRadioMetadata)).setText(s);
+		}
 	}
 }
 

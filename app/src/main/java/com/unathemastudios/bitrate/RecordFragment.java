@@ -114,8 +114,8 @@ public class RecordFragment extends Fragment {
 				new Timer().schedule(new TimerTask() {
 					@Override public void run() {
 						manager.beginTransaction()
-								//.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
-								.replace(R.id.record_layout_for_fragments, folderRecordings).commit();
+						//.setCustomAnimations(R.anim.slide_in_from_left,R.anim.slide_out_from_left)
+						.replace(R.id.record_layout_for_fragments, folderRecordings).commit();
 					}
 				}, 0);
 			}
