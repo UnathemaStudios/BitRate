@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 	private RadiosFragment radiosFragment;
 	private PlayingNowFragment playingNowFragment;
 	private RecordFragment recordFragment;
-	//TODO: private AlarmFragment alarmFragment;
+	private AlarmFragment alarmFragment;
 	private ImageButton ibPPbutton;
 	private ImageView ivImageSmall;
 	private TextView tvDescription;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 		radiosFragment = new RadiosFragment();
 		playingNowFragment = new PlayingNowFragment();
 		recordFragment = new RecordFragment();
-		//TODO: alarmFragment = new AlarmFragment();
+		alarmFragment = new AlarmFragment();
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		setupViewPager(viewPager);
 		tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		//TODO: 3 2
-		viewPager.setOffscreenPageLimit(2);
+		viewPager.setOffscreenPageLimit(3);
 		pageSelector(1);
 		
 		//load default radio list from XML
@@ -521,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
 		adapter.addFragment(playingNowFragment, "Playing Now");
 		adapter.addFragment(radiosFragment, "Stations");
 		adapter.addFragment(recordFragment, "Recording");
-		//TODO: adapter.addFragment(alarmFragment, "Scheduling");
+		adapter.addFragment(alarmFragment, "Scheduling");
 		viewPager.setAdapter(adapter);
 	}
 	
@@ -529,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
 		tabLayout.getTabAt(0).setIcon(R.drawable.ic_play_circle);
 		tabLayout.getTabAt(1).setIcon(R.drawable.ic_radio);
 		tabLayout.getTabAt(2).setIcon(R.drawable.ic_recording_now);
-		//TODO: tabLayout.getTabAt(3).setIcon(R.drawable.ic_access_time_black_24dp);
+		tabLayout.getTabAt(3).setIcon(R.drawable.ic_access_time_black_24dp);
 	} 
 	
 	@Override

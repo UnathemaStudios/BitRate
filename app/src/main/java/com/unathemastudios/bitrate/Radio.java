@@ -1,10 +1,13 @@
 package com.unathemastudios.bitrate;
 
 
+import java.util.ArrayList;
+
 class Radio {
     private int bitRate;
     private String name, url, logo, description, genre, id;
     private boolean isRecorded, isMadeByUser;
+    public ArrayList<Alarm> alarms;
 
     Radio (String name, String url, String logo, boolean isMadeByUser, String description){
         this.name = name;
@@ -16,6 +19,7 @@ class Radio {
         this.bitRate = 0;
         this.genre = "";
         this.id = "";
+        alarms = new ArrayList<>();
     }
 
     Radio (String name, String url, boolean isMadeByUser, String description, int bitRate, String
@@ -28,6 +32,7 @@ class Radio {
         this.isRecorded = false;
         this.isMadeByUser = isMadeByUser;
         this.description = description;
+        alarms = new ArrayList<>();
     }
 
     Radio (String name, String url, boolean isMadeByUser, String description, int bitRate, String
@@ -41,6 +46,33 @@ class Radio {
         this.isMadeByUser = isMadeByUser;
         this.description = description;
         this.id = id;
+        alarms = new ArrayList<>();
+    }
+    
+    public void addAlarm(Alarm alarm){
+        alarms.add(alarm);
+    }
+    
+    public int getNoEvents(){
+        return alarms.size();
+    }
+    
+    public void fixAlarmPosition(){
+        for(Alarm al : alarms){
+            al.setFingerPosition(al.getFingerPosition()-1);
+            al.cancelAlarm();
+            al.setAlarm();
+        }
+    }
+    
+    public void deleteAlarms(){
+        for(Alarm al : alarms){
+            al.cancelAlarm();
+        }
+    }
+    
+    public void fireAlarm(){
+        alarms.get(alarms.size()-1).setAlarm();
     }
 	
 	void setRecorded(boolean recorded) {

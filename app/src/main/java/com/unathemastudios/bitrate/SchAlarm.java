@@ -121,7 +121,9 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 
 	@Override
 	public void onDialogPositiveClick(Alarm alarm) {
-		String message = alarm.toggleState();
+		((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).addAlarm(alarm);
+		((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).alarms.get(0).setContext(getContext());
+		String message = ((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).alarms.get(0).toggleState();
 		Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 		((MainActivity)getActivity()).alarmList.add(alarm);
 		funDapter.updateData(((MainActivity)getActivity()).alarmList);

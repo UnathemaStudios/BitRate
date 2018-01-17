@@ -376,6 +376,9 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	
 	@Override // Confirmation Dialog - Delete
 	public void onDialogPositiveClick(int pos) {
+		if (((MainActivity)getActivity()).finger == pos){
+			((MainActivity) getActivity()).radiosList.get(pos).deleteAlarms();
+		}
 		((MainActivity) getActivity()).radiosList.remove(pos);
 		if (((MainActivity)getActivity()).finger == pos)
 		{
@@ -387,6 +390,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			SharedPreferences.Editor editor = pref.edit();
 			editor.putInt("lastfinger",-1);
 			editor.apply();
+			
 		}
 		else if (((MainActivity)getActivity()).finger > pos)
 		{
@@ -398,6 +402,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 			SharedPreferences.Editor editor = pref.edit();
 			editor.putInt("lastfinger",((MainActivity)getActivity()).finger);
 			editor.apply();
+			
 		}
 		if(((MainActivity)getActivity()).radiosList.isEmpty()){
 			getActivity().findViewById(R.id.noStations).setVisibility(VISIBLE);
@@ -405,6 +410,15 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 		else getActivity().findViewById(R.id.noStations).setVisibility(GONE);
 		adapter.updateData(((MainActivity) getActivity()).radiosList);
 		((MainActivity)getActivity()).loadUserRadiosToXML();
+
+		//Alarm Fix Position
+		if(pos == ((MainActivity)getActivity()).radiosList.size()) {
+			for (int i = pos; i < ((MainActivity) getActivity()).radiosList.size(); i++) {
+				if (((MainActivity) getActivity()).radiosList.get(i).getNoEvents() > 0) {
+					((MainActivity) getActivity()).radiosList.get(i).fixAlarmPosition();
+				}
+			}
+		}
 	}
 
 

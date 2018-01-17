@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +60,9 @@ public class SchRecord extends Fragment {
 
                 pIntent = PendingIntent.getService(getContext(), 1, intent, 0);
 
-                manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 10*1000, pIntent);
-				manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 10*1000, 60*1000, pIntent);
+                manager.set(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime() + 10*1000, pIntent);
+                Log.w("ExTimestamp", Long.toString(SystemClock.elapsedRealtime() + 10*1000));
+				//manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 10*1000, 60*1000, pIntent);
 				
 				
             }

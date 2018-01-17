@@ -121,7 +121,7 @@ public class AlarmEventDialog extends DialogFragment implements TimePickerFragme
 						Log.w("ALARM IN", ((time - System.currentTimeMillis()) / 1000 / 60 / 60)+" HOURS" + " & " + ((time - System.currentTimeMillis()) / 1000 / 60 % 60)+" MINUTES");
 						mListener.onDialogPositiveClick(new Alarm(((MainActivity)getActivity())
 								.radiosList.get(spinner.getSelectedItemPosition()), time, false,
-								false, checkBox.isChecked()));
+								false, checkBox.isChecked(), spinner.getSelectedItemPosition()));
 
 					}
 				})
