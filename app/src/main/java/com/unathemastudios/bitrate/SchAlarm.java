@@ -21,6 +21,8 @@ import com.amigold.fundapter.FunDapter;
 import com.amigold.fundapter.extractors.BooleanExtractor;
 import com.amigold.fundapter.extractors.StringExtractor;
 import com.amigold.fundapter.interfaces.ItemClickListener;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -32,6 +34,7 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 	private TextView tvTime, tvDescription;
 	private Switch aSwitch;
 	private ImageView ibBin;
+	private ArrayList<Alarm> alarmList;
 	private FunDapter<Alarm> funDapter;
 	private FloatingActionButton fabCreateNew;
 
@@ -50,6 +53,7 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 		aSwitch = (Switch) view.findViewById(R.id.sw_for_alarm);
 		ibBin = (ImageView) view.findViewById(R.id.ibBin_for_alarm);
 		fabCreateNew = (FloatingActionButton) view.findViewById(R.id.fabAddAlarmEvent);
+		alarmList = new ArrayList<>();
 		
 		fabCreateNew.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -87,11 +91,9 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 		bindDictionary.addBaseField(R.id.ibBin_for_alarm).onClick(new ItemClickListener<Alarm>() {
 			@Override
 			public void onClick(Alarm item, int position, View view) {
-				if(item.isActive()){
-					item.cancelAlarm();
-				}
-				((MainActivity)getActivity()).alarmList.remove(position);
-				funDapter.updateData(((MainActivity)getActivity()).alarmList);
+				((MainActivity)getActivity()).radiosList.get(item.getFingerPosition()).deleteAlarms(item.getTimestamp());
+
+				updateList();
 			}
 		});
 		
@@ -104,28 +106,35 @@ public class SchAlarm extends Fragment implements AlarmEventDialog.NoticeDialogL
 		}).onClick(new ItemClickListener<Alarm>() {
 			@Override
 			public void onClick(Alarm item, int position, View view) {
-				String message = item.toggleState();
+				String message = ((MainActivity)getActivity()).radiosList.get(item.getFingerPosition()).toggleAlarm(item.getTimestamp());
 				if(!(message == null)){
 					Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 				}
 			}
 		});
 		
-		funDapter = new FunDapter(getContext(), ((MainActivity)getActivity()).alarmList, R.layout.alarm_item_layout, bindDictionary);
+		funDapter = new FunDapter<>(getContext(), alarmList, R.layout.alarm_item_layout, bindDictionary);
+		this.updateList();
 		
 		ListView listView = (ListView) view.findViewById(R.id.lv_for_alarm);
 		listView.setAdapter(funDapter);
 		
 		return view;
 	}
+	private void updateList(){
+		alarmList.clear();
+		for(Radio r: ((MainActivity)getActivity()).radiosList){
+			alarmList.addAll(r.alarms);
+		}
+		funDapter.updateData(alarmList);
+	}
 
 	@Override
 	public void onDialogPositiveClick(Alarm alarm) {
 		((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).addAlarm(alarm);
 		((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).alarms.get(0).setContext(getContext());
-		String message = ((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).alarms.get(0).toggleState();
+		String message = ((MainActivity)getActivity()).radiosList.get(alarm.getFingerPosition()).toggleAlarm(alarm.getTimestamp());
 		Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-		((MainActivity)getActivity()).alarmList.add(alarm);
-		funDapter.updateData(((MainActivity)getActivity()).alarmList);
+		updateList();
 	}
 }

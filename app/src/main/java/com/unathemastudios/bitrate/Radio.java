@@ -65,10 +65,31 @@ class Radio {
         }
     }
     
-    public void deleteAlarms(){
-        for(Alarm al : alarms){
-            al.cancelAlarm();
+    public void deleteAlarms(long timestamp){
+        if(timestamp!=0) {
+            for (Alarm al : alarms) {
+                if (al.getTimestamp() == timestamp) {
+                    al.cancelAlarm();
+                    alarms.remove(al);
+                }
+            }
         }
+        else{
+            for (Alarm al : alarms) {
+                al.cancelAlarm();
+            }
+            alarms.clear();
+        }
+    }
+
+    public String toggleAlarm(long timestamp){
+        String msg = "";
+        for (Alarm al : alarms) {
+            if (al.getTimestamp() == timestamp) {
+                msg = al.toggleState();
+            }
+        }
+        return msg;
     }
     
     public void fireAlarm(){

@@ -65,8 +65,7 @@ public class MainActivity extends AppCompatActivity {
 	private int durationtmp;
 	private boolean backPressed = false;
 	private boolean playerVisible = false;
-	public ArrayList<Alarm> alarmList;
-	
+
 	private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -310,8 +309,7 @@ public class MainActivity extends AppCompatActivity {
 		{
 			setFinger(pref.getInt("lastfinger",-1));
 		}
-		
-		alarmList = new ArrayList<>();
+
 		//alarmList.add(new Alarm(radiosList.get(0), 10, 10, true, false));
 		//alarmList.add(new Alarm(radiosList.get(0), 10, 20, false, false));
 		//alarmList.add(new Alarm(radiosList.get(0), 10, 30, true, false));
@@ -410,28 +408,27 @@ public class MainActivity extends AppCompatActivity {
 			xmlSerializer.setOutput(writer);
 			xmlSerializer.startDocument("UTF-8", true);
 			xmlSerializer.startTag(null, "Radios");
-			
-			for (Alarm entry : alarmList) {
+			//TODO: WHAT IS THIS ↓↓↓
+			/*for (Alarm entry : alarmList) {
 				
-//				if (entry.isMadeByUser()) {
-//					xmlSerializer.startTag(null, "Name");
-//					xmlSerializer.text(entry.getName());
-//					xmlSerializer.endTag(null, "Name");
-//					
-//					xmlSerializer.startTag(null, "Url");
-//					xmlSerializer.text(entry.getUrl());
-//					xmlSerializer.endTag(null, "Url");
-//					
-//					xmlSerializer.startTag(null, "Logo");
-//					xmlSerializer.text(entry.getLogo());
-//					xmlSerializer.endTag(null, "Logo");
-//					
-//					xmlSerializer.startTag(null, "Description");
-//					xmlSerializer.text(entry.getDescription());
-//					xmlSerializer.endTag(null, "Description");
-//					
-//				}
-			}
+				if (entry.isMadeByUser()) {
+					xmlSerializer.startTag(null, "Name");
+					xmlSerializer.text(entry.getName());
+					xmlSerializer.endTag(null, "Name");
+
+					xmlSerializer.startTag(null, "Url");
+					xmlSerializer.text(entry.getUrl());
+					xmlSerializer.endTag(null, "Url");
+
+					xmlSerializer.startTag(null, "Logo");
+					xmlSerializer.text(entry.getLogo());
+					xmlSerializer.endTag(null, "Logo");
+
+					xmlSerializer.startTag(null, "Description");
+					xmlSerializer.text(entry.getDescription());
+					xmlSerializer.endTag(null, "Description");
+				}
+			}*/
 			
 			xmlSerializer.endTag(null, "Radios");
 			xmlSerializer.endDocument();

@@ -377,7 +377,7 @@ public class RadiosFragment extends Fragment implements AddRadioDialog.NoticeDia
 	@Override // Confirmation Dialog - Delete
 	public void onDialogPositiveClick(int pos) {
 		if (((MainActivity)getActivity()).finger == pos){
-			((MainActivity) getActivity()).radiosList.get(pos).deleteAlarms();
+			((MainActivity) getActivity()).radiosList.get(pos).deleteAlarms(0);
 		}
 		((MainActivity) getActivity()).radiosList.remove(pos);
 		if (((MainActivity)getActivity()).finger == pos)
